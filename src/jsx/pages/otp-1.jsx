@@ -1,7 +1,33 @@
-import React from "react";
-import { Link } from "react-router-dom";
+
+import React, { useState, useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../UserContext";
 
 function Otp1() {
+    const [phone, setPhone] = useState("");
+    const {userID, setUserId } = useContext(UserContext);
+    const history = useHistory();
+    const changePhone = e=>{
+        setPhone(e.target.value)
+    }
+    const sendCode = e=>{
+        if (phone.length == 11){
+            axios.post("https://hi-exchange.com/api/v2/token/otp/", {
+                mobile: phone
+            }).then(data=>{
+                console.log(data);
+                if(data.data.id){
+                    setUserId(data.data.id);
+                    history.push("opt-2");
+                }
+            }).catch(e=>{
+                console.log(e);
+            });
+        }
+    }
+    
+ 
     return (
         <>
             <div className="authincation section-padding">
@@ -25,18 +51,17 @@ function Otp1() {
                                         <span>
                                             <i className="fa fa-angle-left"></i>
                                         </span>{" "}
-                                        Back
+                                        بازگشت
                                     </Link>
                                     <h3 className="text-center">
-                                        OTP Verification
+                                        احراز هویت با رمز یکبار مصرف
                                     </h3>
                                     <p className="text-center mb-5">
-                                        We will send one time code on this
-                                        number
+                                        به شماره وارد شده یک کد ارسال خواهد شد.
                                     </p>
                                     <form action="#">
                                         <div className="mb-3">
-                                            <label>Your phone number</label>
+                                            <label>شماره همراه</label>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text ps-4 pe-4">
@@ -46,28 +71,25 @@ function Otp1() {
                                                 <input
                                                     type="text"
                                                     className="form-control"
-                                                    value="+1 12365480"
+                                                    placeholder="09...."
+                                                    value={phone}
+                                                    onChange={ changePhone}
                                                 />
                                             </div>
                                         </div>
                                         <div className="text-center mt-4">
-                                            <Link
-                                                to={"./otp-2"}
-                                                type="submit"
-                                                className="btn btn-success w-100"
-                                            >
-                                                Send
-                                            </Link>
+                                            <button className="btn btn-success w-100" onClick={sendCode}>ارسال</button>
+                                           
                                         </div>
                                     </form>
                                     <div className="new-account mt-3 d-flex justify-content-between">
                                         <p>
-                                            Don't get code?{" "}
+                                            دریافت نکردید؟?{" "}
                                             <Link
                                                 className="text-primary"
                                                 to={"./otp-1"}
                                             >
-                                                Resend
+                                                ارسال دوباره
                                             </Link>
                                         </p>
                                     </div>

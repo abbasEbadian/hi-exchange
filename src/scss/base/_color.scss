@@ -1,0 +1,15 @@
+.btn-success{
+    color: white !important;
+    background: linear-gradient(160deg, #00a04f 0%, rgba(61, 131, 91, 0.5) 100%) !important;
+    border: none !important;
+    transition: 0.2s;
+    &:disabled{
+        color: white;
+        filter: grayscale(50%);
+    }
+    &:hover{
+        color: white;
+        background: linear-gradient(160deg, #0c8f4d 0%, rgba(61, 116, 84, 0.5) 100%) !important;
+
+    }
+}

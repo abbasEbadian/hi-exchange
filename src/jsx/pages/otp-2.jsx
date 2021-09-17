@@ -1,7 +1,27 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext,  } from "react";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../UserContext";
 
 function Otp2() {
+    const [code, setCode]= useState("");
+    const {userID} = useContext(UserContext);
+
+    const history = useHistory();
+
+    const verifyCode = e=>{
+        if(code.length != 5) return
+        axios.post("https://hi-exchange.com/api/v2/token/verify/", {
+            id: userID,
+            otp: code,
+        })
+        .then(data=>{
+            console.log(data);
+        })
+    }
+// "access: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMxODAwODc0LCJqdGkiOiI0YmRjYmU5MmMxZTg0ZmYzODdkN2QwNGNjYzA1MmM3NiIsInVzZXJfaWQiOjIzfQ.U4ZsR6M44R_uJGthS3bQGGEqz-0LreMBViudd_MDIfc"
+//     "refresh: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYzMTg4NTQ3NCwianRpIjoiMzg5NWIzOGFhMTNjNDExMWE0OTMwZGIzY2NlOWY1ZGMiLCJ1c2VyX2lkIjoyM30.dKPTdaw2AwrXrBL-VxCo-t7N6RtVYdS70Llqt7d9mNY"
+//     "otp_id: 23"
     return (
         <>
             <div className="authincation section-padding">
@@ -25,32 +45,27 @@ function Otp2() {
                                         <span>
                                             <i className="fa fa-angle-left"></i>
                                         </span>{" "}
-                                        Back
+                                        بازگشت
                                     </Link>
                                     <h3 className="text-center">
-                                        OTP Verification
+                                        احراز هویت با رمز یکبار مصرف
                                     </h3>
                                     <p className="text-center mb-5">
-                                        We will send one time code on this
-                                        number
+                                        لطفا در صورت ارسال کد ، آن را وارد کنید
                                     </p>
                                     <form action="#">
                                         <div className="mb-3">
-                                            <label>Your OTP Code</label>
+                                            <label>رمز یکبار مصرف:</label>
                                             <input
                                                 type="text"
                                                 className="form-control text-center font-weight-bold"
-                                                value="11 22 33"
+                                                placeholder="11 22 33"
+                                                value={code}
+                                                onChange={e => setCode(e.target.value)}
                                             />
                                         </div>
                                         <div className="text-center">
-                                            <Link
-                                                to={"./"}
-                                                type="submit"
-                                                className="btn btn-success w-100"
-                                            >
-                                                Verify
-                                            </Link>
+                                            <button onClick={verifyCode} className="btn btn-success w-100">تایید</button>          
                                         </div>
                                     </form>
                                     <div className="info mt-3">

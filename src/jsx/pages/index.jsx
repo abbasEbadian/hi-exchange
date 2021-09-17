@@ -209,8 +209,8 @@ function Dashboard() {
                                         <div className="card-body p-0">
                                             <div className="row">
                                                 <div className="col-xl-12 col-xxl-6 col-lg-6 px-0">
-                                                    <RadialChart />
-                                                    <h4 className="mt-5">موجودی کل : <strong>$125480</strong></h4>
+                                                    <RadialChart currentUser={currentUser}/>
+                                                    <h4 className="mt-5">موجودی کل : <strong>${currentUser.dollarCredit }</strong></h4>
                                                 </div>
                                                 <div className="col-xl-12 col-xxl-6 col-lg-6">
 

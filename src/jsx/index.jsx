@@ -27,15 +27,32 @@ import History from './pages/history';
 import Demo from './pages/demo';
 import Landing from './pages/landing';
 import {UserContext} from './UserContext';
+import axios from  'axios';
+import { useDispatch } from 'react-redux'
+import { update_convert_rates, update_currencies } from '../redux/actions'
 
-function  getCurrencyList(){
-    return [
-        {symbol: "BTC", fullName: "bitcoin", persianName: "بیت کوین", },
-        {symbol: "LTC", fullName: "litecoin", persianName: "لایت کوین", },
-        {symbol: "MTC", fullName: "maltcoin", persianName: "مالت کوین", },
-        {symbol: "WTC", fullName: "waltcoin", persianName: "وات کوین", },
-        {symbol: "STC", fullName: "saltcoin", persianName: "سالت کوین", },
-    ]
+function convertToRates(cl){
+    /* 
+    *   @param cl : currencyList fetched from server api/v2/service/list/
+    *   @type : object
+    * 
+    *   @retruns rates: object
+    *   containing two way rates
+    *   {"BTC/ETH" : 50, "ETH/BTH": 1/50 }
+    */
+
+    let rates = {}
+    for(let i=0; i<cl.length ; i++)
+        for(let j=i; j< cl.length; j++){
+            let cur1 = cl[i], cur2 = cl[j];
+            let key1 = cur1["small_name_slug"] + "/" + cur2["small_name_slug"]
+            let key2 = cur2["small_name_slug"] + "/" + cur1["small_name_slug"]
+            let rate1 = cur1["fix_buy_price"] / cur2["fix_buy_price"];
+
+            rates[key1] = rate1; 
+            rates[key2] = 1/rate1; 
+        }
+    return rates
 }
 function getCurrentUser() {
     return {
@@ -47,37 +64,43 @@ function getCurrentUser() {
             firstDeposit: false
         },
         currencies:{
-            BTC: 1.324,
+            BTC: 10.56,
             LTC: 5.6,
             WTC: 10.899,
         },
     }
 }
 function  getKarmozd(){
-    return 0.25;
+    return 0.01;
 }
 
 
 const Index = ()=> {
     const [user, setUser] = useState({});
-    const [currencyList, setCurrenyList] = useState([]);
+    const dispatch = useDispatch();
     const [ karmozd , setKarmozd ] = useState(0);
+    const [userID, setUserID] = useState("");
+    const [OTP, setOTP] = useState(0);
 
     const updateUser= e=>{
         setUser( getCurrentUser());
-        
     }
     useEffect( ()=>{
+        axios.get("https://hi-exchange.com/api/v2/service/list/", {}).then(data=>{
+            dispatch(update_currencies(data.data))
+            dispatch(update_convert_rates(convertToRates(data.data)));
+        })
         updateUser();
-        setCurrenyList (getCurrencyList()); 
+        
         setKarmozd( getKarmozd() );
     }, []);
+    
     return (
         <>
             <BrowserRouter basename={'/cheerio-react/'}>
                 <div id="main-wrapper">
                     <Switch>
-                        <UserContext.Provider value={{currencyList, karmozd, user}}> 
+                        <UserContext.Provider value={{karmozd, user, OTP, setOTP, userID, setUserID}}> 
                         <Route path='/' exact component={Dashboard} />
                         <Route path='/buy-sell' component={BuySell} />
                         <Route path='/accounts' component={Accounts} />
