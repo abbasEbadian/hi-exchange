@@ -1,27 +1,33 @@
-import React, { useState, useContext,  } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
-import axios from "axios";
-import { UserContext } from "../UserContext";
-
-function Otp2() {
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { userLogin } from '../../redux/actions'
+import Loader from 'react-loader-spinner'
+import { connect } from 'react-redux'
+function Otp2({userLogin}) {
     const [code, setCode]= useState("");
-    const {userID} = useContext(UserContext);
+    const [authID, setAuthID] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false); 
+    const history = useHistory()
 
-    const history = useHistory();
-
-    const verifyCode = e=>{
-        if(code.length != 5) return
-        axios.post("https://hi-exchange.com/api/v2/token/verify/", {
-            id: userID,
-            otp: code,
-        })
-        .then(data=>{
-            console.log(data);
-        })
+    useEffect(()=>{
+        setAuthID(localStorage.getItem('hiexchange_authID'))
+    }, [authID])
+    const resetAuth = e=>{
+        localStorage.clear("hiexchange_authID");
+        history.push('/')
     }
-// "access: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjMxODAwODc0LCJqdGkiOiI0YmRjYmU5MmMxZTg0ZmYzODdkN2QwNGNjYzA1MmM3NiIsInVzZXJfaWQiOjIzfQ.U4ZsR6M44R_uJGthS3bQGGEqz-0LreMBViudd_MDIfc"
-//     "refresh: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYzMTg4NTQ3NCwianRpIjoiMzg5NWIzOGFhMTNjNDExMWE0OTMwZGIzY2NlOWY1ZGMiLCJ1c2VyX2lkIjoyM30.dKPTdaw2AwrXrBL-VxCo-t7N6RtVYdS70Llqt7d9mNY"
-//     "otp_id: 23"
+    const verifyCode = e=>{
+        if(code.length !== 5) return
+        setIsSubmitting(true);
+        userLogin( {
+            id: authID,
+            otp: code,
+        }, history, setIsSubmitting )
+        
+    }
+
     return (
         <>
             <div className="authincation section-padding">
@@ -55,25 +61,49 @@ function Otp2() {
                                     </p>
                                     <form action="#">
                                         <div className="mb-3">
-                                            <label>رمز یکبار مصرف:</label>
+                                            <label className="form-label">رمز یکبار مصرف:</label>
                                             <input
                                                 type="text"
                                                 className="form-control text-center font-weight-bold"
-                                                placeholder="11 22 33"
+                                                placeholder="1 2 3 4 5"
                                                 value={code}
                                                 onChange={e => setCode(e.target.value)}
                                             />
                                         </div>
                                         <div className="text-center">
-                                            <button onClick={verifyCode} className="btn btn-success w-100">تایید</button>          
+                                            {!isSubmitting ?
+                                                <button type="button" onClick={verifyCode} className="btn btn-success w-100">تایید</button>          
+                                                :
+                                                <Loader
+                                                    type="ThreeDots"
+                                                    height={48}
+                                                ></Loader>
+                                            }
                                         </div>
                                     </form>
-                                    <div className="info mt-3">
-                                        <p className="text-muted">
-                                            You dont recommended to save
-                                            password to browsers!
+                                    <div className="new-account mt-3 d-flex justify-content-between">
+                                        <p>
+                                            دریافت نکردید؟{" "}
+                                            <Link
+                                                className="text-primary"
+                                                to={"./otp-1"}
+                                            >
+                                                <button 
+                                                onClick={resetAuth}>ارسال دوباره</button>
+                                            </Link>
                                         </p>
                                     </div>
+                                    <ToastContainer
+                                        position="top-right"
+                                        autoClose={5000}
+                                        hideProgressBar={false}
+                                        newestOnTop={false}
+                                        closeOnClick
+                                        rtl={true}
+                                        pauseOnFocusLoss
+                                        draggable
+                                        pauseOnHover
+                                        />
                                 </div>
                             </div>
                         </div>
@@ -84,4 +114,4 @@ function Otp2() {
     );
 }
 
-export default Otp2;
+export default connect(null,{userLogin})(Otp2);

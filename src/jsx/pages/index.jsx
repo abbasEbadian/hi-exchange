@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import AreaChart from '../charts/area';
 import BtcChart from '../charts/btc';
 import LtcChart from '../charts/ltc';
@@ -8,21 +8,24 @@ import PageTitle from '../element/page-title';
 import Convert from '../element/convert';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
-import { UserContext } from '../UserContext';
-
-
+import { useSelector, useDispatch } from 'react-redux';
+import { get_wallet_list } from '../../redux/actions'
 
 
 function Dashboard() {
-    const { user:currentUser } = useContext(UserContext);
-    console.log(currentUser);
-    
+    const dispatch = useDispatch()
+    const currentUser  = useSelector(state => state.session.user)
+    const wallet = useSelector(state=> state.wallet);
+    useEffect(()=>{
+        dispatch(get_wallet_list())
+    }, [])
+    console.log(wallet)
     return (
         <>
             <Header2 />
             <Sidebar />
             <PageTitle />
-
+            
             <div className="content-body">
                 <div className="container-fluid">
                     <div className="row">
@@ -35,9 +38,9 @@ function Dashboard() {
                                                 <div className="card-body">
                                                     <img src={require('../../images/profile/2.png')} alt="" />
                                                     <h4>سلام ، 
-                                                        { currentUser.name }    
+                                                    {(currentUser.first_name||'') + " " + currentUser.last_name}   
                                                     </h4>
-                                                    {   currentUser &&  currentUser.account && !currentUser.account.accountVerified &&
+                                                    {   currentUser &&  currentUser.authentication_status === "unverified" &&
                                                         <p>
                                                             <small>حساب کاربری شما هنوز تایید نشده است.</small>
                                                         </p>
@@ -46,7 +49,7 @@ function Dashboard() {
                                                     <ul>
                                                         <li>
                                                             <a href="#">
-                                                            {   currentUser &&  currentUser.account && currentUser.account.accountVerified?
+                                                            {   currentUser &&  currentUser.authentication_status !== "unverified"?
                                                                  <span className="verified">
                                                                     <i className="icofont-check-alt"></i>
                                                                 </span>
@@ -60,7 +63,7 @@ function Dashboard() {
                                                         </li>
                                                         <li>
                                                             <a href="#">
-                                                            {   currentUser &&  currentUser.account && currentUser.account.twoStepVerification?
+                                                            {   currentUser &&  currentUser && currentUser.twoStepVerification?
                                                                  <span className="verified">
                                                                     <i className="icofont-check-alt"></i>
                                                                 </span>
@@ -68,12 +71,12 @@ function Dashboard() {
                                                                 <span className="not-verified">
                                                                     <i className="icofont-close-line"></i></span>
                                                             }
-                                                            هویت سنجی دو مرحله ای
+                                                            احراز هویت دو مرحله ای
                                                         </a>
                                                         </li>
                                                         <li>
                                                             <a href="#">
-                                                            {   currentUser &&  currentUser.account && currentUser.account.firstDeposit?
+                                                            {   currentUser &&  currentUser && currentUser.firstDeposit?
                                                                  <span className="verified">
                                                                     <i className="icofont-check-alt"></i>
                                                                 </span>
@@ -209,8 +212,8 @@ function Dashboard() {
                                         <div className="card-body p-0">
                                             <div className="row">
                                                 <div className="col-xl-12 col-xxl-6 col-lg-6 px-0">
-                                                    <RadialChart currentUser={currentUser}/>
-                                                    <h4 className="mt-5">موجودی کل : <strong>${currentUser.dollarCredit }</strong></h4>
+                                                    {currentUser && <RadialChart currentUser={currentUser}/>}
+                                                    <h4 className="mt-5">موجودی کل : <strong>${currentUser && currentUser.dollarCredit }</strong></h4>
                                                 </div>
                                                 <div className="col-xl-12 col-xxl-6 col-lg-6">
 
@@ -255,7 +258,7 @@ function Dashboard() {
 
                                 </div>
 
-                                <div className="col-xl-12 col-xxl-6">
+                                <div className="d-none col-xl-12 col-xxl-6">
                                     <div className="card acc_balance">
                                         <div className="card-header">
                                             <h4 className="card-title">کیف پول</h4>
@@ -368,7 +371,8 @@ function Dashboard() {
                 </div>
             </div>
 
-
+            
+            
         </>
     )
 }

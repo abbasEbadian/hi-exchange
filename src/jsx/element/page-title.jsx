@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import { UserContext } from '../UserContext';
+import { useSelector } from 'react-redux';
 
 
 
 function PageTitle() {
-    const {user: currentUser } = useContext(UserContext);
+    const currentUser = useSelector(state=>state.session.user)
     return (
         <>
             <div className="page_title">
@@ -13,14 +14,13 @@ function PageTitle() {
                         <div className="col-xl-12">
                             <div className="page_title-content">
                                 <p>خوش آمدید ،
-                                <span> {currentUser.name} </span>
+                                <span> {(currentUser.first_name||'') + " " + currentUser.last_name} </span>
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </>
     )
 }

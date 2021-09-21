@@ -1,5 +1,5 @@
 import React, { Component, useContext, useEffect, useState } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import Dashboard from './pages/index';
 import BuySell from './pages/buy-sell';
 import Accounts from './pages/accounts';
@@ -26,115 +26,69 @@ import VerifyStep6 from './pages/verify-step-6';
 import History from './pages/history';
 import Demo from './pages/demo';
 import Landing from './pages/landing';
-import {UserContext} from './UserContext';
-import axios from  'axios';
-import { useDispatch } from 'react-redux'
-import { update_convert_rates, update_currencies } from '../redux/actions'
-
-function convertToRates(cl){
-    /* 
-    *   @param cl : currencyList fetched from server api/v2/service/list/
-    *   @type : object
-    * 
-    *   @retruns rates: object
-    *   containing two way rates
-    *   {"BTC/ETH" : 50, "ETH/BTH": 1/50 }
-    */
-
-    let rates = {}
-    for(let i=0; i<cl.length ; i++)
-        for(let j=i; j< cl.length; j++){
-            let cur1 = cl[i], cur2 = cl[j];
-            let key1 = cur1["small_name_slug"] + "/" + cur2["small_name_slug"]
-            let key2 = cur2["small_name_slug"] + "/" + cur1["small_name_slug"]
-            let rate1 = cur1["fix_buy_price"] / cur2["fix_buy_price"];
-
-            rates[key1] = rate1; 
-            rates[key2] = 1/rate1; 
-        }
-    return rates
-}
-function getCurrentUser() {
-    return {
-        name: "میلاد عبادی",
-        dollarCredit: 10000,
-        account:{
-            accountVerified: true,
-            twoStepVerification: false,
-            firstDeposit: false
-        },
-        currencies:{
-            BTC: 10.56,
-            LTC: 5.6,
-            WTC: 10.899,
-        },
-    }
-}
-function  getKarmozd(){
-    return 0.01;
-}
-
+import { useDispatch, useSelector } from 'react-redux'
+import { fetch_currencies } from '../redux/actions'
+import AuthRoute from './routes/AuthRoute'
+import BasicRoute from './routes/BasicRoute'
 
 const Index = ()=> {
-    const [user, setUser] = useState({});
     const dispatch = useDispatch();
-    const [ karmozd , setKarmozd ] = useState(0);
-    const [userID, setUserID] = useState("");
-    const [OTP, setOTP] = useState(0);
-
-    const updateUser= e=>{
-        setUser( getCurrentUser());
-    }
-    useEffect( ()=>{
-        axios.get("https://hi-exchange.com/api/v2/service/list/", {}).then(data=>{
-            dispatch(update_currencies(data.data))
-            dispatch(update_convert_rates(convertToRates(data.data)));
-        })
-        updateUser();
-        
-        setKarmozd( getKarmozd() );
-    }, []);
+    const checked = useSelector(state => state.session.checked);
     
+    useEffect( ()=>{
+        
+        dispatch(fetch_currencies());
+    }, []);
+    // if(!currencies || !currencies.currecyList || currencies.currecyList.length==0)
     return (
-        <>
-            <BrowserRouter basename={'/cheerio-react/'}>
+        <>  
+             {/* <BrowserRouter forceRefresh={true}  basename={'/cheerio-react/'} history={history}> */}
+            {checked?
+            
+            <BrowserRouter  >
                 <div id="main-wrapper">
                     <Switch>
-                        <UserContext.Provider value={{karmozd, user, OTP, setOTP, userID, setUserID}}> 
-                        <Route path='/' exact component={Dashboard} />
-                        <Route path='/buy-sell' component={BuySell} />
-                        <Route path='/accounts' component={Accounts} />
-                        <Route path='/settings' component={Settings} />
-                        <Route path='/settings-preferences' component={Preferences} />
-                        <Route path='/settings-security' component={SettingsSecurity} />
-                        <Route path='/settings-account' component={SettingsAccount} />
-                        <Route path='/add-bank-acc' component={AddBankAccount} />
-                        <Route path='/add-debit-card' component={AddDebitCard} />
-                        <Route path='/lock' component={Locked} />
-                        <Route path='/otp-1' component={Otp1} />
-                        <Route path='/otp-2' component={Otp2} />
-                        <Route path='/privacy-policy' component={PrivacyPolicy} />
-                        <Route path='/reset' component={Reset} />
-                        <Route path='/signin' component={Signin} />
-                        <Route path='/signup' component={Signup} />
-                        <Route path='/terms-condition' component={TermsCondition} />
-                        <Route path='/verify-step-1' component={VerifyStep1} />
-                        <Route path='/verify-step-2' component={VerifyStep2} />
-                        <Route path='/verify-step-3' component={VerifyStep3} />
-                        <Route path='/verify-step-4' component={VerifyStep4} />
-                        <Route path='/verify-step-5' component={VerifyStep5} />
-                        <Route path='/verify-step-6' component={VerifyStep6} />
-                        <Route path='/history' component={History} />
-                        <Route path='/demo' component={Demo} />
-                        <Route path='/landing' component={Landing} />
-                        </UserContext.Provider>
+                        <AuthRoute  exact path='/buy-sell'> <BuySell/> </AuthRoute>
+                        <AuthRoute  exact path='/accounts'> <Accounts/> </AuthRoute>
+                        <AuthRoute  exact path='/settings'> <Settings/> </AuthRoute>
+                        <AuthRoute  exact path='/settings-preference'> <Preferences/> </AuthRoute>
+                        <AuthRoute  exact path='/settings-security'> <SettingsSecurity/> </AuthRoute>
+                        <AuthRoute  exact path='/settings-account'> <SettingsAccount/> </AuthRoute>
+                        <AuthRoute  exact path='/add-bank-acc'> <AddBankAccount/> </AuthRoute>
+                        <AuthRoute  exact path='/add-debit-card'> <AddDebitCard/> </AuthRoute>
+                        <AuthRoute  exact path='/lock'> <Locked/> </AuthRoute>
+                        <AuthRoute  exact path='/privacy-policy'> <PrivacyPolicy/> </AuthRoute>
+                        <AuthRoute  exact path='/reset'> <Reset/> </AuthRoute>
+                        <AuthRoute  exact path='/terms-condition'> <TermsCondition/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-1'> <VerifyStep1/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-2'> <VerifyStep2/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-3'> <VerifyStep3/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-4'> <VerifyStep4/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-5'> <VerifyStep5/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-6'> <VerifyStep6/> </AuthRoute>
+                        <AuthRoute  exact path='/history'> <History/> </AuthRoute>
+                        <AuthRoute  exact path='/landing'> <Landing/> </AuthRoute>
+                        <AuthRoute  exact path='/demo'> <Demo/> </AuthRoute>
+                        <AuthRoute  exact path='/'><Dashboard></Dashboard></AuthRoute>
+                        <BasicRoute exact path='/signin'> <Signin/> </BasicRoute>
+                        <BasicRoute exact path='/signup'> <Signup/> </BasicRoute>
+                        <BasicRoute exact path='/otp-1'> <Otp1/> </BasicRoute>
+                        <BasicRoute exact path='/otp-2'> <Otp2/> </BasicRoute>
+                        <Route render={()=>
+                            <h1>404</h1>
+                        
+                        }></Route>
                     </Switch>
                 </div>
             </BrowserRouter>
-
+           :
+            <section></section> 
+           }
         </>
     );
     
 }
-
+// const mapStateToProps = ({session}) =>({
+//     checked : session.checked
+// })
 export default Index;

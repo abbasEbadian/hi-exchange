@@ -1,14 +1,18 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { DropdownButton } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { UserContext } from '../UserContext';
+import { Link, useHistory} from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { userLogout } from '../../redux/actions';
 
 
 
 function Header2() {
-    const {user:currentUser } = useContext(UserContext)
+    const currentUser = useSelector(state=>state.session.user);
+    const dispatch = useDispatch()
+    const history = useHistory()
     return (
         <>
+        
             <div className="header dashboard">
                 <div className="container-fluid">
                     <div className="row">
@@ -35,7 +39,7 @@ function Header2() {
                                     <div className="d-flex align-items-center">
                                         <DropdownButton
                                             alignRight
-                                            title={ currentUser.name }
+                                            title={ currentUser.first_name + " " + currentUser.last_name }
                                             className="profile_log"
                                         >
                                             <Link to={'./accounts'} className="dropdown-item">
@@ -50,9 +54,10 @@ function Header2() {
                                             <Link to={'./lock'} className="dropdown-item">
                                                 <i className="la la-lock"></i> قفل 
                                             </Link>
-                                            <Link to={'./signin'} className="dropdown-item logout">
-                                                <i className="la la-sign-out"></i> خروج
-                                            </Link>
+                                            <button onClick={()=>dispatch(userLogout(history))} className="dropdown-item logout">
+                                            <i className="la la-sign-out"></i> خروج
+                                            </button>
+
                                         </DropdownButton>
                                     </div>
                                 </div>
@@ -61,6 +66,7 @@ function Header2() {
                     </div>
                 </div>
             </div>
+        
         </>
     )
 }

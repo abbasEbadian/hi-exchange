@@ -14,25 +14,32 @@ function Convert() {
     const dispatch = useDispatch();
     const indexConverter = useSelector(state=>state.indexConverter);
     const currencies = useSelector(state=>state.currencies);
+    const user = useSelector(state => state.userManagar)
 
     const { currencyList, convertRates } = currencies;
     const {convertAmount, currencyTo, currencyFrom, currencyAvailable, showDetailModal} = indexConverter
-    const { karmozd, user } = useContext(UserContext);
     const handleDetailModalClose = () => dispatch(update_detail_modal(false));
     const handleDetailModalShow = () => dispatch(update_detail_modal(true));;
-
+    const karmozd = 0.01;
     let karmozdAmount = 0;
     let conversionResult = 0;
     let endPrice = 0;
     let convertInvalid = true;
+    let lowCredit = false;
 
 
 
     const computePrices = e=>{
-        if(convertAmount && currencyFrom.small_name_slug )
-            convertInvalid =  convertAmount > currencyAvailable ;
+        if(convertAmount && currencyFrom.small_name_slug ){
+            lowCredit =  convertAmount > currencyAvailable ;
+            if(lowCredit) convertInvalid = true;
+        }
 
-        if(!currencyFrom.small_name_slug || !currencyTo.small_name_slug || !convertAmount) return;
+        if(!currencyFrom.small_name_slug || !currencyTo.small_name_slug || !convertAmount || lowCredit){
+            convertInvalid = true;
+            return;
+        } 
+        convertInvalid = false;
         let key = `${currencyFrom.small_name_slug}/${currencyTo.small_name_slug}`
         let rate = convertRates[key];
         const RR = Math.pow(10,Math.max(currencyFrom.decimal, currencyTo.decimal)) || 3
@@ -80,7 +87,7 @@ function Convert() {
                                 <label className="form-label" htmlFor="currency_amount">مقدار</label>
                                 <input type="number"  name="currency_amount" className="form-control" value={convertAmount} onChange={(e)=> dispatch(update_convert_amount(e.target.value)) }
                                     placeholder="100" /> 
-                                {convertInvalid && <a href="wallet" className="form-text text-muted text-nowrap">
+                                {lowCredit && <a href="wallet" className="form-text text-muted text-nowrap">
                                     <small className="text-danger">اعتبار ناکافی ! </small>
                                     <small className="text-success me-2">شارژ کیف پول</small></a>}         
                             </div>

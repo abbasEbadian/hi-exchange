@@ -1,10 +1,12 @@
 import React, { } from 'react';
-import { Link } from 'react-router-dom';
-
+import { Link, useHistory} from 'react-router-dom';
+import { userLogout } from '../../redux/actions'
+import { useDispatch } from 'react-redux';
 
 
 function Sidebar() {
-
+    const dispatch = useDispatch();
+    const history = useHistory();
     return (
         <>
             <div className="sidebar">
@@ -30,15 +32,14 @@ function Sidebar() {
                             <span><i className="icofont-ui-settings"></i></span>
                         </Link>
                         </li>
-                        <li className="logout"><Link to={"/signin"} data-toggle="tooltip" data-placement="right"
-                            title="Signout">
+                        <li className="logout">
+                            <button className="border-0 bg-transparent text-white fs-3" onClick={()=>dispatch(userLogout(history))} data-toggle="tooltip" data-placement="right"
+                                title="Signout">
                             <span><i className="icofont-power"></i></span>
-                        </Link>
+                        </button>
                         </li>
                     </ul>
-                    <div className="copyright">
-                        © Quixlab
-                    </div>
+                    
                 </div>
             </div>
         </>

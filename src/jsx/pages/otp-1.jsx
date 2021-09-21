@@ -1,29 +1,51 @@
 
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
-import { UserContext } from "../UserContext";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+// import { useDispatch } from "react-redux";
+import Loader from 'react-loader-spinner'
 function Otp1() {
     const [phone, setPhone] = useState("");
-    const {userID, setUserId } = useContext(UserContext);
-    const history = useHistory();
+    // const dispatch = useDispatch()
+    const [isSubmitting, setIsSubmitting] = useState(false); 
+    const history = useHistory()
+    const toastOpt = {
+        position: "bottom-left",
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        autoClose: 5000,
+    }
+    const phone_valid = phone.length == 11; 
     const changePhone = e=>{
         setPhone(e.target.value)
     }
     const sendCode = e=>{
-        if (phone.length == 11){
+        if (phone_valid){
+            setIsSubmitting(true);
             axios.post("https://hi-exchange.com/api/v2/token/otp/", {
                 mobile: phone
             }).then(data=>{
-                console.log(data);
-                if(data.data.id){
-                    setUserId(data.data.id);
-                    history.push("opt-2");
+                
+                if(Object.keys(data).includes("data")){
+                    toast.success('کد یک بار مصرف ارسال شد.', {
+                        ...toastOpt,
+                        autoClose: 2000,
+                        onClose: ()=>{
+                            localStorage.setItem("hiexchange_authID",data.data.id )
+                            history.push('/otp-2')
+                        }
+                    });
+                }else{
+                    toast.warn(' برای این شماره همراه ، حسابی وجود ندارد.', toastOpt);
                 }
-            }).catch(e=>{
-                console.log(e);
-            });
+            }).catch(error=>{
+                toast.error(' برای این شماره همراه ، حسابی وجود ندارد.', toastOpt);
+            }).finally(e=>{ 
+                setIsSubmitting(false) 
+            })
         }
     }
     
@@ -61,7 +83,7 @@ function Otp1() {
                                     </p>
                                     <form action="#">
                                         <div className="mb-3">
-                                            <label>شماره همراه</label>
+                                            <label className="form-label">شماره همراه</label>
                                             <div className="input-group mb-3">
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text ps-4 pe-4">
@@ -69,27 +91,46 @@ function Otp1() {
                                                     </span>
                                                 </div>
                                                 <input
-                                                    type="text"
+                                                    type="number"
                                                     className="form-control"
                                                     placeholder="09...."
+                                                    maxLength="11"
                                                     value={phone}
                                                     onChange={ changePhone}
                                                 />
                                             </div>
                                         </div>
                                         <div className="text-center mt-4">
-                                            <button className="btn btn-success w-100" onClick={sendCode}>ارسال</button>
+                                            {!isSubmitting ? 
+                                                <button type="button" className="btn btn-success w-100 bg-transparent text-primary" disabled={ !phone_valid } onClick={sendCode}>ارسال</button>
+                                                :
+                                                <Loader
+                                                    type="ThreeDots"
+                                                    height={48}
+                                                ></Loader>
+                                            }
                                            
                                         </div>
                                     </form>
-                                    <div className="new-account mt-3 d-flex justify-content-between">
+                                    <ToastContainer
+                                        position="top-right"
+                                        autoClose={5000}
+                                        hideProgressBar={false}
+                                        newestOnTop={false}
+                                        closeOnClick
+                                        rtl={true}
+                                        pauseOnFocusLoss
+                                        draggable
+                                        pauseOnHover
+                                        />
+                                    <div className="new-account mt-3">
                                         <p>
-                                            دریافت نکردید؟?{" "}
+                                            حساب جدید نیاز دارید؟{" "}
                                             <Link
                                                 className="text-primary"
-                                                to={"./otp-1"}
+                                                to={"./signup"}
                                             >
-                                                ارسال دوباره
+                                                ثبت نام
                                             </Link>
                                         </p>
                                     </div>

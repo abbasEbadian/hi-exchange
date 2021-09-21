@@ -7876,6 +7876,9 @@ strong {
   .container-xl {
     max-width: 95%; } }
 
+.Toastify__close-button {
+  min-width: unset; }
+
 i.cc {
   line-height: 19px; }
 
@@ -8320,7 +8323,7 @@ i.cc {
   top: 0px;
   left: 95px;
   right: 0;
-  z-index: 02;
+  z-index: 1000;
   transition: all 0.3s ease-in;
   background: #000000; }
 
@@ -9031,7 +9034,6 @@ button,
   padding: 5px 30px;
   display: inline-block;
   border-radius: 50px;
-  min-width: 130px;
   font-size: 16px;
   font-weight: 500;
   padding: 12px; }
