@@ -1,20 +1,20 @@
 .section-padding {
-    padding: 100px 0;
+    padding: 70px 0;
 
     @include respond('tab-land') {
-        padding: 80px 0;
-    }
-
-    @include respond('tab-port') {
-        padding: 75px 0;
-    }
-
-    @include respond('phone-land') {
         padding: 60px 0;
     }
 
+    @include respond('tab-port') {
+        padding: 55px 0;
+    }
+
+    @include respond('phone-land') {
+        padding: 45px 0;
+    }
+
     @include respond('phone') {
-        padding: 50px 0;
+        padding: 30px 0;
     }
 }
 

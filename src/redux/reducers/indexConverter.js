@@ -4,14 +4,16 @@ import {
     UPDATE_CURRENCY_TO,
     UPDATE_AVAILABLE_CURRENCY,
     UPDATE_DETAIL_MODAL,
+    UPDATE_NEXT_REFRESH,
 } from '../actionTypes';
 
 const initial_state = {
     convertAmount: 0,
-    currencyTo: {},
-    currencyFrom: {},
+    currencyTo: {small_name_slug:undefined},
+    currencyFrom: {small_name_slug:undefined},
     currencyAvailable: 0,
-    showDetailModal: false
+    showDetailModal: false,
+    nextRefreshTime: "00:00:00"
 }
 export const indexConverter = (state=initial_state, action)=>{
     switch (action.type) {
@@ -39,6 +41,11 @@ export const indexConverter = (state=initial_state, action)=>{
             return {
                 ...state,
                 showDetailModal: action.payload
+            }
+        case UPDATE_NEXT_REFRESH:
+            return {
+                ...state,
+                nextRefreshTime: action.payload
             }
     
         default: return state

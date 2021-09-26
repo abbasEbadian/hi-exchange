@@ -2,30 +2,52 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { userLogin } from '../../redux/actions'
+import { userLogin,userRegister, userSignup } from '../../redux/actions'
 import Loader from 'react-loader-spinner'
-import { connect } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 function Otp2({userLogin}) {
+    const dispatch = useDispatch()
     const [code, setCode]= useState("");
     const [authID, setAuthID] = useState("")
+    const [registerMobileID, setRegisterMobileID] = useState("")
+    const [timer, setTimer] = useState(60)
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const history = useHistory()
-
+    
     useEffect(()=>{
         setAuthID(localStorage.getItem('hiexchange_authID'))
+        setRegisterMobileID(localStorage.getItem('hiexchange_register_mobile'))
     }, [authID])
+    
+    setTimeout(e=>{
+        if(timer > 0 ) 
+        setTimer(timer-1)
+    }, 1000)
+    
+
     const resetAuth = e=>{
         localStorage.clear("hiexchange_authID");
-        history.push('/')
+        localStorage.clear("hiexchange_register_mobile");
+        if(authID)
+            history.push('/')
+        else
+            history.push("/signup")
     }
     const verifyCode = e=>{
         if(code.length !== 5) return
         setIsSubmitting(true);
-        userLogin( {
-            id: authID,
-            otp: code,
-        }, history, setIsSubmitting )
-        
+        if (authID) {
+            userLogin( {
+                id: authID,
+                otp: code,
+            }, history, setIsSubmitting )    
+        }
+        else{
+            dispatch(userSignup({
+                mobile: registerMobileID, 
+                code: code
+            }, history, setIsSubmitting))
+        }
     }
 
     return (
@@ -44,15 +66,6 @@ function Otp2({userLogin}) {
                             </div>
                             <div className="auth-form card">
                                 <div className="card-body">
-                                    <Link
-                                        className="page-back text-muted"
-                                        to={"./otp-1"}
-                                    >
-                                        <span>
-                                            <i className="fa fa-angle-left"></i>
-                                        </span>{" "}
-                                        بازگشت
-                                    </Link>
                                     <h3 className="text-center">
                                         احراز هویت با رمز یکبار مصرف
                                     </h3>
@@ -82,16 +95,18 @@ function Otp2({userLogin}) {
                                         </div>
                                     </form>
                                     <div className="new-account mt-3 d-flex justify-content-between">
-                                        <p>
-                                            دریافت نکردید؟{" "}
-                                            <Link
-                                                className="text-primary"
-                                                to={"./otp-1"}
-                                            >
-                                                <button 
-                                                onClick={resetAuth}>ارسال دوباره</button>
-                                            </Link>
-                                        </p>
+                                        {timer > 0?
+                                            <small>امکان ارسال دوباره بعد از 
+                                                <span className="text-primary px-2">{timer}</span>    
+                                            ثانیه</small>
+                                            :
+                                            <p>
+                                                دریافت نکردید؟{" "}
+                                            
+                                                <button  className="text-primary bg-transparent border-0"
+                                                    onClick={resetAuth}>ارسال دوباره</button>
+                                            </p>    
+                                        }
                                     </div>
                                     <ToastContainer
                                         position="top-right"

@@ -12,11 +12,11 @@ function convertToRates(cl){
 
     let rates = {}
     for(let i=0; i<cl.length ; i++)
-        for(let j=i; j< cl.length; j++){
+        for(let j=i+1; j< cl.length; j++){
             let cur1 = cl[i], cur2 = cl[j];
             let key1 = cur1["small_name_slug"] + "/" + cur2["small_name_slug"]
             let key2 = cur2["small_name_slug"] + "/" + cur1["small_name_slug"]
-            let rate1 = cur1["fix_buy_price"] / cur2["fix_buy_price"];
+            let rate1 = cur1["buyPrice"] / cur2["buyPrice"];
 
             rates[key1] = rate1; 
             rates[key2] = 1/rate1; 
@@ -41,6 +41,8 @@ export const fetch_currencies = ()=>{
         .then(data=>{
             dispatch(update_currencies(data.data))
             dispatch(update_convert_rates(convertToRates(data.data)));
+        }).catch(error=>{
+            console.log(error);
         })
     }
 }

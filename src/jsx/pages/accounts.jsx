@@ -63,66 +63,7 @@ function Accounts() {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-xl-4 col-lg-4 col-md-6">
-                            <div className="card acc_balance">
-                                <div className="card-header">
-                                    <h4 className="card-title">کیف پول</h4>
-                                </div>
-                                <div className="card-body">
-                                    <span>بیت کوین در دسترس</span>
-                                    <h3>0.0230145 BTC</h3>
-
-                                    <div className="d-flex justify-content-between my-4">
-                                        <div>
-                                            <p className="mb-1">خرید این ماه</p>
-                                            <h4>3.0215485 BTC</h4>
-                                        </div>
-                                        <div>
-                                            <p className="mb-1">فروش این ماه</p>
-                                            <h4>3.0215485 BTC</h4>
-                                        </div>
-                                    </div>
-
-                                    <div className="btn-group mb-3">
-                                        <button className="btn btn-success">خرید</button>
-                                        <button className="btn btn-redish">فروش</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xl-4 col-lg-4">
-                            <div className="card">
-                                <div className="card-header">
-                                    <h4 className="card-title">برداشت</h4>
-                                </div>
-                                <div className="card-body">
-                                    <form action="#">
-                                        <div className="mb-3">
-                                            <div className="input-group mb-3">
-                                                <div className="input-group-prepend">
-                                                    <label className="input-group-text"><i className="fa fa-money"></i></label>
-                                                </div>
-                                                <input type="text" className="form-control" placeholder="5000 USD" />
-                                            </div>
-                                        </div>
-                                        <div className="mb-3">
-                                            <div className="input-group mb-3">
-                                                <div className="input-group-prepend">
-                                                    <label className="input-group-text"><i className="fa fa-bank"></i></label>
-                                                </div>
-                                                <select className="form-control">
-                                                    <option>کارت پاسارگاد ********45845</option>
-                                                    <option>کارت ملت ***********5458</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <button className="btn btn-redish w-100">برداشت</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                       </div>
                     <div className="row">
                         <div className="col-xl-12">
                             <div className="card">

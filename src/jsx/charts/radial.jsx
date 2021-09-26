@@ -1,17 +1,14 @@
 
-import React, { Component, useState, useContext, useEffect } from "react";
+import React from "react";
 import ReactApexChart from "react-apexcharts";
-import { UserContext } from "../UserContext";
+import { Link } from 'react-router-dom'
 
 
-
-const RadialChart = props =>{
-    const [series, setSeries] = useState([]);
-    const [labels, setLabels] = useState([]);
+const RadialChart = ({ balances, names }) =>{
+    console.log(balances, names);
     
-    const  currentUser  = props.currentUser;
     const chart_details = {
-        series: series,
+        series: balances, 
         options: {
             chart: {
                 height: 300,
@@ -91,7 +88,11 @@ const RadialChart = props =>{
                 'rgba(137, 22, 255,0.3)',
                 'rgba(137, 22, 255,0.1)'
             ],
-            labels: labels,
+
+            
+            labels: names, // ["ETH", "BTC"]
+
+
             legend: {
                 show: false,
                 floating: true,
@@ -124,20 +125,15 @@ const RadialChart = props =>{
 
 
     }
-    if (currentUser && currentUser.currencies && !series.length){
-        setLabels(Object.keys(currentUser.currencies));
-        setSeries(Object.values(currentUser.currencies));
-    }
 
     return (
-        <>
-        {
-            series.length ?
-            <ReactApexChart options={chart_details.options} series={series} type="radialBar" height={360} />
-            :
+        <> 
+            {names.length ?
+            <ReactApexChart options={chart_details.options} series={balances} type="radialBar" height={360} />:
+            
             <span></span>
-        }
-        </>
+            }
+            </>
 
 
 

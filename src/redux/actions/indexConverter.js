@@ -3,7 +3,8 @@ import {
     UPDATE_CURRENCY_FROM,
     UPDATE_CURRENCY_TO,
     UPDATE_AVAILABLE_CURRENCY,
-    UPDATE_DETAIL_MODAL
+    UPDATE_DETAIL_MODAL,
+    UPDATE_NEXT_REFRESH
 } from '../actionTypes';
 
 export const update_convert_amount = (value)=>{
@@ -34,5 +35,11 @@ export const update_detail_modal = (modal_state)=>{
     return {
         type:UPDATE_DETAIL_MODAL,
         payload: modal_state 
+    }
+}
+export const update_next_refresh = (time)=>{
+    return {
+        type: UPDATE_NEXT_REFRESH,
+        payload: time 
     }
 }

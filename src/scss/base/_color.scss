@@ -13,3 +13,19 @@
 
     }
 }
+
+.btn-danger{
+    color: white !important;
+    background: linear-gradient(160deg, #cc0e0e 0%, rgb(197, 51, 51) 100%) !important;
+    border: none !important;
+    transition: 0.2s;
+    &:disabled{
+        color: white;
+        filter: grayscale(50%);
+    }
+    &:hover{
+        color: white;
+        background: linear-gradient(160deg, rgb(194, 29, 62), #bb3550);
+
+    }
+}

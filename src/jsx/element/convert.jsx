@@ -1,22 +1,27 @@
-import React, { useContext } from 'react';
-import { Row, Col, Card, Modal, Button } from 'react-bootstrap'
-import { UserContext } from '../UserContext';
+import React, { useState, useEffect } from 'react';
+import {  Card, Modal, Button } from 'react-bootstrap'
+import { fetch_currencies, update_next_refresh } from '../../redux/actions'
 
 import { update_available_currency,
          update_convert_amount,
          update_currency_from,
          update_currency_to,
-        update_detail_modal} from '../../redux/actions/indexConverter'
+        update_detail_modal
+    } from '../../redux/actions/indexConverter'
 import { useSelector, useDispatch } from 'react-redux'
-
+import Timer from './Timer';
+import axios from 'axios';
+import qs from 'qs'
 
 function Convert() {
     const dispatch = useDispatch();
     const indexConverter = useSelector(state=>state.indexConverter);
     const currencies = useSelector(state=>state.currencies);
-    const user = useSelector(state => state.userManagar)
+    const user = useSelector(state => state.session.user)
+    const wallet = useSelector(state => state.wallet.wallet)
+    const [interval, setInterval2] = useState(false) 
 
-    const { currencyList, convertRates } = currencies;
+    let { currencyList, convertRates } = currencies;
     const {convertAmount, currencyTo, currencyFrom, currencyAvailable, showDetailModal} = indexConverter
     const handleDetailModalClose = () => dispatch(update_detail_modal(false));
     const handleDetailModalShow = () => dispatch(update_detail_modal(true));;
@@ -26,8 +31,51 @@ function Convert() {
     let endPrice = 0;
     let convertInvalid = true;
     let lowCredit = false;
+    let convertErrorMessage = ""
+    useEffect(() => {
+        const currentTime = new Date()  
+        const currentTimeUnix = currentTime.getTime();//current unix timestamp
+        const execTime = new Date()
+        execTime.setMinutes(currentTime.getMinutes()+1)
+        execTime.setSeconds(2)
+        
+        let timeLeft = execTime - currentTimeUnix;
+        setTimeout(function() {
 
+            if(!interval){
+                setInterval(function() {
+                    dispatch(update_next_refresh(new Date().getTime()))
+                    dispatch(fetch_currencies());
+                }, 60000)  
+                setInterval2(true)
+            }
+    
+            dispatch(update_next_refresh(new Date().getTime()))
+            dispatch(fetch_currencies());
+        }, timeLeft); 
+        dispatch(fetch_currencies());
+        dispatch(update_next_refresh(execTime.getTime()))
+    }, [])
+   
 
+    //  set next refresh time on store
+    
+
+   
+
+    const get_available = (symbol)=>{
+        
+        const target = wallet.filter((item, i)=>{
+            return item["service"]["small_name_slug"] === symbol
+        })
+        
+        if (target.length > 0){
+            return target[0]["balance"]
+        }else{
+            return 0
+        }
+    }
+   
 
     const computePrices = e=>{
         if(convertAmount && currencyFrom.small_name_slug ){
@@ -40,32 +88,71 @@ function Convert() {
             return;
         } 
         convertInvalid = false;
+        convertErrorMessage = ""
+        
+        // ?source=20&destination=0&changed=source &source-price=154   &destination-price=0.01869&_=1632553442488
+        // ؟source=20&destination=28&changed=source&source-price=153.7&destination-price=7.061  &_=1632553983347
+        var data = qs.stringify({
+            'source': '14',
+            'destination': '13',
+            'chaned': 'destination',
+            'changed': 'destination',
+            'source-price': '10',
+            'destination-price': '10' ,
+            '_': String(new Date().getTime())
+           });
+           var config = {
+             method: 'get',
+             url: 'https://hi-exchange.com/api/v1/order/calculator/',
+             headers: { 
+               'Content-Type': 'application/x-www-form-urlencoded'
+             },
+             data : data
+           };
+        axios(config).then(response=>{
+            const {data} = response
+            if(data.error === 1){
+                convertErrorMessage = data.error
+                convertInvalid = true;
+                return;
+            }
+
+        })
         let key = `${currencyFrom.small_name_slug}/${currencyTo.small_name_slug}`
         let rate = convertRates[key];
-        const RR = Math.pow(10,Math.max(currencyFrom.decimal, currencyTo.decimal)) || 3
+        const RR = Math.pow(10,Math.max(currencyFrom.decimal, currencyTo.decimal) || 3)
+        const CR = Math.pow(10, 8)
         
         
         conversionResult = Math.round(RR*(rate * convertAmount) || 0)/RR;
         karmozdAmount =  Math.round(RR* karmozd * conversionResult)/ RR || 0;
-        endPrice = Math.round(RR * convertAmount/conversionResult)/ RR ;
+        endPrice = Math.round(CR * convertAmount/conversionResult)/ CR || 0;
     }
     const changeCurrencyFrom = (e)=>{
         let selectedCurrency = e.target.value;
-        if (!selectedCurrency) return;
+        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.small_name_slug==selectedCurrency)[0];
         let sym = selectedCurrency.small_name_slug;
-        let av = Object.keys(user.currencies).includes(sym) && user.currencies[sym] || 0;
+        let av = get_available(sym)
         dispatch(update_currency_from(selectedCurrency));
         dispatch(update_available_currency(av));   
 
     }
     const changeCurrencyTo = (e)=>{
         let selectedCurrency = e.target.value;
-        if (!selectedCurrency) return;
+        console.log(selectedCurrency);
+        
+        if (!selectedCurrency|| selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.small_name_slug==selectedCurrency)[0];
         dispatch(update_currency_to(selectedCurrency));
     }
     computePrices();
+
+    useEffect(() => {
+        convertRates  = currencies.convertRates;
+        currencyList  = currencies.currencyList;
+        
+    }, [currencies])
     return (
         <>
             <style type="text/css">
@@ -78,7 +165,12 @@ function Convert() {
             
             <Card>
                 <Card.Header >
-                    <Card.Title>تبدیل</Card.Title>
+                    <Card.Title className="w-100">
+                        <div className="d-flex justify-content-between align-items-center">
+                            <span>تبدیل</span>
+                            <Timer></Timer>
+                        </div>
+                    </Card.Title>
                 </Card.Header>
                 <Card.Body>
                     <div className="buy-sell-widget convert-widget">
@@ -166,6 +258,12 @@ function Convert() {
                                     
                                    
                                 </div>}
+                                {convertErrorMessage !== "" ?
+                                <div className="border-danger border1">
+                                    <small className="fs-6"></small>
+                                </div>
+                                :undefined
+                                }
                                 <div className=" col-12 row flex-column p-0 mt-3">
                                     <div className="d-flex  align-items-end p-0 me-auto col-6">
                                         <button type="button" name="submit" onClick={handleDetailModalShow}

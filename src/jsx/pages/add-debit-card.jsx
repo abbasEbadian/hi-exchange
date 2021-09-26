@@ -1,14 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
-
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import { add_credit_card } from '../../redux/actions';
+import { useDispatch } from 'react-redux'
 
 
 
 function AddDebitCard() {
+    const [ card, setCard ] = useState("")
+    const [ shaba, setShaba ] = useState("")
+    const [ bank, setBank ] = useState("")
+    const dispatch = useDispatch()
 
+    const onsubmit = e=>{
+        e.preventDefault()
+        e.stopPropagation()
+        if(!card || !shaba || !bank){
+            toast.warn("تمامی فیلد ها الزامی است")
+            return
+        }
+        dispatch(add_credit_card({card, bank , shaba}, toast))
+    }
     return (
         <>
             <Header2 />
@@ -21,34 +37,28 @@ function AddDebitCard() {
                         <div className="col-xl-5 col-md-6">
                             <div className="auth-form card">
                                 <div className="card-header">
-                                    <h4 className="card-title">Link a debit card</h4>
+                                    <h4 className="card-title">افزودن کارت اعتباری</h4>
                                 </div>
                                 <div className="card-body">
-                                    <form action="#" className="identity-upload">
+                                    <form action="#" className="identity-upload" onSubmit={onsubmit}>
                                         <div className="row">
                                             <div className="mb-3 col-xl-12">
-                                                <label className="form-label">Name on card </label>
-                                                <input type="text" className="form-control" placeholder="Maria Pascle" />
+                                                <label className="form-label">شماره کارت</label>
+                                                <input type="text" className="form-control"  value={card} onChange={e=>setCard(e.target.value)}
+                                                placeholder="6037***********" />
                                             </div>
                                             <div className="mb-3 col-xl-12">
-                                                <label className="form-label">Card number </label>
-                                                <input type="text" className="form-control" placeholder="5658 4258 6358 4756" />
+                                                <label className="form-label">شماره شبا </label>
+                                                <input type="text" className="form-control" value={shaba} onChange={e=>setShaba(e.target.value)}
+                                                placeholder="IR85***********" />
                                             </div>
-                                            <div className="mb-3 col-xl-4">
-                                                <label className="form-label">Expiration </label>
-                                                <input type="text" className="form-control" placeholder="10/22" />
+                                            <div className="mb-4 col-xl-12">
+                                                <label className="form-label">نام بانک</label>
+                                                <input type="text" className="form-control f"  value={bank} onChange={e=>setBank(e.target.value)}
+                                                placeholder="ملی" />
                                             </div>
-                                            <div className="mb-3 col-xl-4">
-                                                <label className="form-label">CVC </label>
-                                                <input type="text" className="form-control" placeholder="125" />
-                                            </div>
-                                            <div className="mb-4 col-xl-4">
-                                                <label className="form-label">Postal code </label>
-                                                <input type="text" className="form-control" placeholder="2368" />
-                                            </div>
-
                                             <div className="text-center col-12">
-                                                <Link to={'./verify-step-6'} type="submit" className="btn btn-success w-100">Save</Link>
+                                                <button type="submit" className="btn btn-success w-100">افزودن</button>
                                             </div>
                                         </div>
                                     </form>
@@ -57,6 +67,17 @@ function AddDebitCard() {
                         </div>
                     </div>
                 </div>
+                <ToastContainer
+                    position="bottom-left"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={true}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    />
             </div>
 
             

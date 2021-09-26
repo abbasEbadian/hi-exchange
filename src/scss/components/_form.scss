@@ -41,7 +41,10 @@
     }
 
     &::placeholder {
-        color: $body-color;
+        color: #777;
+    }
+    &.f::placeholder{
+        font-size: 13px;
     }
 
     &:hover {
@@ -54,10 +57,11 @@
 
     &:focus,
     &:active,
-    &.active {
+    &.active,
+    &[readonly]{
         box-shadow  : none !important;
         outline     : none;
-        border-color: $primary;
+        border-color: rgba(255, 255, 255, 0.15);
         color       : $body-color;
         background  : $body-bg;
     }
@@ -77,25 +81,32 @@ input:-internal-autofill-selected {
 //     display    : inline-block;
 // }
 .input-group-text {
-    font-size    : 20px !important;
-    padding      : 12px 15px;
-    background   : #2f333c;
+    font-size    : 13px !important;
+    padding      : 12px 6px;
+     background   : $body-bg;
     margin-bottom: 0px !important;
     color        : $white;
     border-color : $border-color;
+    
+    height: 45px;
+    span{
+        min-width: 32px;
+    }
 }
 
 .input-group-append {
+    padding: 0;
     .input-group-text {
-        border-top-right-radius   : 5px;
-        border-bottom-right-radius: 5px;
+        border-top-left-radius   : 5px;
+        border-bottom-left-radius: 5px;
     }
 }
 
 .input-group-prepend {
+    padding: 0;
     .input-group-text {
-        border-top-left-radius   : 5px;
-        border-bottom-left-radius: 5px;
+        border-top-right-radius   : 5px;
+        border-bottom-right-radius: 5px;
     }
 }
 

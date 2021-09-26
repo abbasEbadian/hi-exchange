@@ -1,0 +1,6 @@
+.chart-selector .widget-card{
+    cursor: pointer;
+    &.active{
+        border: 1px solid #54824d;
+    }
+}

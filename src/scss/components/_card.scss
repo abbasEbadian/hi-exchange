@@ -3,14 +3,14 @@
   margin-bottom: 30px;
   border-radius: 15px;
   box-shadow   : 0px 10px 20px rgba(55, 55, 89, 0.08);
-  background   : #2f333c;
+  background   : $body-sub-bg;
 
   &-header {
     display        : flex;
     justify-content: space-between;
     align-items    : center;
     border-bottom  : 1px solid $border-color;
-    background     : #2f333c;
+    background     : $body-sub-bg;
     padding        : 20px;
 
     border-top-left-radius : 15px !important;
@@ -54,7 +54,7 @@
 
   .card-body {
     padding      : 20px;
-    background   : #2f333c;
+    background   : $body-sub-bg;
     border-radius: 15px;
 
     // @include respond("desktop") {

@@ -3,14 +3,12 @@ import PageTitle from '../element/page-title';
 import SettingsNav from '../element/settings-nav';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
-import ProfileImage from '../element/profile-image.jsx'
+import PersonalInfo from '../element/personal-info.jsx'
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { sessionService } from 'redux-react-session'
-import { updateUserImage, userUpdateImage } from '../../redux/actions'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { totalmem } from 'os';
+import { userUpdateImage } from '../../redux/actions'
+import {  toast } from 'react-toastify';
 
 
 function Settings() {
@@ -50,7 +48,7 @@ function Settings() {
                 {headers: {Authorization: "Bearer "+ token }}
             ).then(res=>{
                 const {data} = res;
-                if (data.error == 1)
+                if (data.error === 1)
                 toast.error(data.message)
                 else {
                     axios.get("https://hi-exchange.com/api/v2/account/details/", {
@@ -73,6 +71,7 @@ function Settings() {
         }
         return false;
     }
+    
     return (
         <>
             <Header2 />
@@ -153,23 +152,13 @@ function Settings() {
                                     </div>
                                 </div>
                                 <div className="col-xl-12">
-                                    <ProfileImage></ProfileImage>
+                                    <PersonalInfo></PersonalInfo>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <ToastContainer
-                position="bottom-left"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={true}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                />           
+                    
             </div>
                                                        
             

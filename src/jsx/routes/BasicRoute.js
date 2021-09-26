@@ -4,8 +4,6 @@ import {Route, Redirect} from 'react-router-dom';
 import { useSelector } from "react-redux" 
 const BasicRoute = ({children, ...rest}) =>{
     const authenticated = useSelector(state=>state.session.authenticated)
-    console.log(authenticated)
-
     return (
         <Route
             {...rest}

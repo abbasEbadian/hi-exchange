@@ -10,6 +10,7 @@ function Otp1() {
     const [phone, setPhone] = useState("");
     // const dispatch = useDispatch()
     const [isSubmitting, setIsSubmitting] = useState(false); 
+    const [submitted, setSubmitted] = useState(false); 
     const history = useHistory()
     const toastOpt = {
         position: "bottom-left",
@@ -18,7 +19,7 @@ function Otp1() {
         draggable: true,
         autoClose: 5000,
     }
-    const phone_valid = phone.length == 11; 
+    const phone_valid = phone.length === 11; 
     const changePhone = e=>{
         setPhone(e.target.value)
     }
@@ -28,8 +29,8 @@ function Otp1() {
             axios.post("https://hi-exchange.com/api/v2/token/otp/", {
                 mobile: phone
             }).then(data=>{
-                
                 if(Object.keys(data).includes("data")){
+                    setSubmitted(true)
                     toast.success('کد یک بار مصرف ارسال شد.', {
                         ...toastOpt,
                         autoClose: 2000,
@@ -66,7 +67,7 @@ function Otp1() {
                             </div>
                             <div className="auth-form card">
                                 <div className="card-body">
-                                    <Link
+                                    {/* <Link
                                         className="page-back text-muted"
                                         to={"./signin"}
                                     >
@@ -74,7 +75,7 @@ function Otp1() {
                                             <i className="fa fa-angle-left"></i>
                                         </span>{" "}
                                         بازگشت
-                                    </Link>
+                                    </Link> */}
                                     <h3 className="text-center">
                                         احراز هویت با رمز یکبار مصرف
                                     </h3>
@@ -102,7 +103,10 @@ function Otp1() {
                                         </div>
                                         <div className="text-center mt-4">
                                             {!isSubmitting ? 
-                                                <button type="button" className="btn btn-success w-100 bg-transparent text-primary" disabled={ !phone_valid } onClick={sendCode}>ارسال</button>
+                                                <button type="button" className="btn btn-success w-100 bg-transparent text-primary" disabled={ !phone_valid || submitted } onClick={sendCode}>
+                                                    
+                                                    {submitted ? "ارسال شد" : "ارسال"}
+                                                    </button>
                                                 :
                                                 <Loader
                                                     type="ThreeDots"

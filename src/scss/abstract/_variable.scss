@@ -11,10 +11,13 @@ $warning   : #f1b44c !default;
 $danger    : #f46a6a !default;
 $light     : #eff2f7 !default;
 $dark      : #343a40;
+$success-gradient :linear-gradient(160deg, #00a04f 0%, rgba(61, 131, 91, 0.5) 100%) !important;
+$danger-gradient: linear-gradient(160deg, crimson, #dd3557);
 
 // Body
-$body-bg    : #000000;
-$body-color : #666;
+$body-bg    : #202e37;
+$body-sub-bg: #1b262d;
+$body-color : #999;
 // Typography
 $font-family-base : 'Rubik',
 sans-serif;

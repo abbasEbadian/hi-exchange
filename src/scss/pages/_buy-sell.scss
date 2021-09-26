@@ -1,4 +1,11 @@
+.buy-sell-page table {
+    *{
+        font-weight: 100;
+    }
+    
+}
 .buy-sell-widget {
+    
     .nav-tabs {
         margin-bottom: 30px;
         border       : 0px;
@@ -7,7 +14,7 @@
         .nav-item {
             width     : 45%;
             text-align: center;
-
+            color: white;
             &.nav-link {
                 padding       : 15px 10px;
                 font-size     : 18px;
@@ -19,8 +26,12 @@
                 border        : 1px solid $border-color;
                 margin        : 0px 15px;
 
-                &.active {
-                    background: $primary;
+                &.active:first-of-type {
+                    background: $success-gradient;
+                    color     : white;
+                }
+                &.active:last-of-type {
+                    background: $danger-gradient;
                     color     : white;
                 }
             }

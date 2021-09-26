@@ -1,9 +1,9 @@
 @font-face {
     font-family: "iransans";
-    src: url("./fonts/IranSansRegular.woff2") format("woff2");
+    src: url("./fonts/irsans.ttf") format("truetype");
 }
 body{
-    font-family: iransans !important;
+    font-family: iransans!important;
 }
 input:not(.f), .L{
     direction: ltr;

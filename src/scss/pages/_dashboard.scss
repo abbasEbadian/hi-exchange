@@ -1,5 +1,5 @@
 .widget-card {
-    background   : #2f333c;
+    background   : $body-sub-bg;
     border-radius: 15px;
     margin-bottom: 30px;
     padding      : 20px;
@@ -104,7 +104,7 @@
 }
 
 .chart-stat {
-    background      : #2f333c;
+    background      : $body-sub-bg;
     border-radius   : 15px;
     padding         : 15px 15px;
     margin-bottom   : 15px;
@@ -211,7 +211,7 @@
             padding          : 18px;
             align-items      : center;
             // border-bottom : 1px solid $border-color;
-            background       : #2f333c;
+            background       : $body-sub-bg;
             border-radius    : 15px;
             margin-bottom    : 20px;
             padding-bottom   : 15px;
@@ -283,7 +283,7 @@
         // background: $primary !important;
 
         img {
-            border       : 4px solid #2f333c;
+            border       : 4px solid $body-sub-bg;
             border-radius: 100px;
             width        : 60px;
         }
@@ -322,7 +322,7 @@
                     transition : all 0.25 ease-in-out;
 
                     span {
-                        background     : #2f333c;
+                        background     : $body-sub-bg;
                         padding        : 5px;
                         border-radius  : 50px;
                         width          : 30px;

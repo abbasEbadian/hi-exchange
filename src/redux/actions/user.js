@@ -9,52 +9,108 @@ import {
 } from '../actionTypes'
 import { sessionService } from 'redux-react-session'
 import axios from 'axios';
+import {toast } from 'react-toastify'
+import { toggle_loader_on, toggle_loader_off } from '../actions'
+
+const toastOpt = {
+    position: "bottom-left",
+    hideProgressBar: false,
+    closeOnClick: true,
+    draggable: true,
+    autoClose: 5000,
+}
+
+
+const BASE = "https://hi-exchange.com"
+
 
 export const userLogout = (_history)=>{
-    return ()=>{
-        sessionService.deleteSession();
-        sessionService.deleteUser();
-        _history.push("/opt-1")
+    return (dispatch)=>{
+        dispatch(toggle_loader_on())
+        sessionService.deleteUser().then(e=>{
+            sessionService.deleteSession().then(e=>{
+                _history.push("/otp-1")
+            }).catch(err=>{
+                console.log(err);
+            });
+        }).catch(err=>{
+            console.log(err)
+        }).finally(e=>{
+            setTimeout(() => {
+                dispatch(toggle_loader_off());
+            }, 2000);
+        });
     }
 }
-export const userUpdateDetail = (token, _history)=>{
+export const userUpdateDetail = ( _history=undefined)=>{
     return dispatch=>{
-
-        axios.get("https://hi-exchange.com/api/v2/account/details/", {
-            headers: {
-            "Authorization": "Bearer "+token,
-        }
-        }).then(data=>{
+        if(_history)
+        dispatch(toggle_loader_on())
+        axios.get(BASE + "/api/v2/account/details/")
+        .then(data=>{
             sessionService.saveUser({ ...data.data }).then(e=>{
                 if(_history)
                     _history.push({pathname: "/"});
+            }).catch(err=>{console.log(err);
             })
         }).catch(err=>{
                 console.log(err);
+        }).finally(e=>{
+            setTimeout(() => {
+                if(_history)
+                dispatch(toggle_loader_off())
+            }, 800);
         })
     }
 }
 export const userLogin = (credentias, _history ,setIsSubmitting)=>{
     return dispatch=>{
-
-        axios.post("https://hi-exchange.com/api/v2/token/verify/", credentias)
+        axios.post(BASE+"/api/v2/token/verify/", credentias)
             .then(response=>{
+                dispatch(toggle_loader_on())
                 const {data} = response
                 const {access:token, refresh} = data;
-                sessionService.saveSession({ token, refresh, time: new Date().getTime() }).then(e=>{
+                sessionService
+                .saveSession({ token, refresh, refresh_time: new Date().getTime() }).then(e=>{
                     dispatch(userUpdateDetail(token, _history))
                 }).catch(err=>{
                     console.log(err);
                 })
             }).catch(err=>{
-                // toast.error("کد وارد شده صحیح نمی باشد.", toastOpt)
+                toast.error("کد وارد شده صحیح نمی باشد.", toastOpt)
             }).finally(e=>{
-                
                 setIsSubmitting(false);
+                setTimeout(() => {
+                    dispatch(toggle_loader_off())
+                }, 800);
             })
     }
 }
-export const userUpdateName =  (name, toast, toastOpt)=>{
+export const userSignup = (credentias, _history ,setIsSubmitting)=>{
+    return dispatch=>{
+        axios.post(BASE+"/api/v2/token/register/verify/", credentias)
+            .then(response=>{
+                if(response.data.error === 1){
+                    toast.error(response.data.message, toastOpt)
+                }else{
+                    toast.success(response.data.message + " در حال انتقال به صفحه ورود...", {
+                        ...toastOpt,
+                        onClose: ()=>{
+                            _history.push("/opt-1")
+                        },
+                    })
+                }
+            }).catch(err=>{
+                toast.error("کد وارد شده صحیح نمی باشد.", toastOpt)
+            }).finally(e=>{
+                setIsSubmitting(false);
+                setTimeout(() => {
+                    dispatch(toggle_loader_off())
+                }, 800);
+            })
+    }
+}
+export const userUpdateName =  (name)=>{
     return dispatch=>{
         sessionService.loadSession().then(session=>{
             axios.post("https://hi-exchange.com/api/v2/account/verify/", {
@@ -69,6 +125,7 @@ export const userUpdateName =  (name, toast, toastOpt)=>{
                 console.log(err);
                 toast.error("با خطا مواجه شد.")
             })
+        }).catch(err=>{console.log(err);
         })
     }
 }
@@ -87,6 +144,33 @@ export const userUpdateImage =  (image, toast, toastOpt)=>{
                 console.log(err);
                 toast.error("با خطا مواجه شد.")
             })
+        }).catch(err=>{console.log(err);
+        })
+    }
+}
+export const userUpdatePersonal = (info)=>{
+    return dispatch=>{
+        
+        sessionService.loadSession().then(session=>{
+            axios.post(BASE+"/api/v2/account/manage/", {
+                action: "profile",
+                ...info
+            },{
+                headers:{
+                    Authorization: "Bearer " + session.token
+                }
+            }).then(response=>{
+                const {data} = response;
+                if (data.error === 1){
+                    toast.warning(data.message, toastOpt);
+                }else{
+                    toast.success(data.message, toastOpt)
+                }
+            }).catch(error=>{
+                toast.error("با خطا مواجه شد.", toastOpt)
+                console.log(error)
+            })
+        }).catch(err=>{console.log(err);
         })
     }
 }
@@ -170,26 +254,4 @@ export const logout = e=>{
         type: USER_LOGOUT
     }
 }
-export const check_user_session = (isLogged)=>{
-    return dispatch => {
-        const token = localStorage.getItem("hiexchange_token");
-        const refresh_time = +localStorage.getItem("hiexchange_refresh_time");
-        const refresh = localStorage.getItem("hiexchange_refresh");
-        if(token && refresh_time && refresh){
-            const now = new Date()
-            if (now.getTime() - refresh_time > 60*30*1000){
-                axios.post("https://hi-exchange.com/api/v2/token/refresh/", {
-                    refresh: refresh
-                }).then(data=>{
-                     dispatch(user_login(data.data.access, refresh));
-                }) 
-            }else{
-                if (!isLogged)
-                dispatch(user_login(token, refresh));
-            }
-        }else{
-            console.log("CAME")
-            dispatch(logout())
-        }
-    }
-}
+

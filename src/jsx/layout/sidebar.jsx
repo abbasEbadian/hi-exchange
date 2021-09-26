@@ -25,6 +25,10 @@ function Sidebar() {
                         </Link>
                         </li>
                         <li><Link to={"/accounts"} data-toggle="tooltip" data-placement="right" title="Accounts">
+                            <span><i className="icofont-user-alt-4"></i></span>
+                        </Link>
+                        </li>
+                        <li><Link to={"/wallet"} data-toggle="tooltip" data-placement="right" title="Accounts">
                             <span><i className="icofont-wallet"></i></span>
                         </Link>
                         </li>
