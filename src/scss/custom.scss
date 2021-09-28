@@ -4,3 +4,21 @@
         border: 1px solid #54824d;
     }
 }
+
+div.modal-dialog.modal-90w{
+    width: 90% ;
+    max-width :unset
+}
+div.modal .close{
+    background: none;
+    border: none;
+    font-size: 32px;
+}
+div.modal-content.dark{
+    & > div{
+        background: $body-bg;
+    }
+}
+div.modal-content .close{
+    color:white;
+}

@@ -13,6 +13,9 @@ function IndexTransactions({visibleTrancactionCount}) {
        axios.get("https://hi-exchange.com/api/v2/transaction/list/").then(res=>{
            const {data} = res
            setTransactions(data)
+       }).catch(e=>{
+           console.log(e);
+           
        })
     }, [])
     return (

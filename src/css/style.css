@@ -15,6 +15,12 @@
     6. Pages
     
 */
+/*!
+ * Bootstrap v5.1.1 (https://getbootstrap.com/)
+ * Copyright 2011-2021 The Bootstrap Authors
+ * Copyright 2011-2021 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
+ */
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;700&display=swap");
 @import url("../icons/icofont/icofont.min.css");
 @import url("../icons/line-awesome/css/line-awesome.min.css");
@@ -22,17 +28,6 @@
 @import url("../icons/material-design-iconic-font/css/materialdesignicons.min.css");
 @import url("../icons/cryptocoins/css/cryptocoins.css");
 @import url("../icons/cryptocoins/css/cryptocoins-colors.css");
-.chart-selector .widget-card {
-  cursor: pointer; }
-  .chart-selector .widget-card.active {
-    border: 1px solid #54824d; }
-
-/*!
- * Bootstrap v5.1.1 (https://getbootstrap.com/)
- * Copyright 2011-2021 The Bootstrap Authors
- * Copyright 2011-2021 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
- */
 :root {
   --bs-primary: #e0aa3e;
   --bs-secondary: #74788d;
@@ -9875,6 +9870,31 @@ input[type=number] {
 .linked_account li .verify .not-verify span {
   background: #f46a6a; }
 
+.swap-thumb {
+  background: #e0aa3e;
+  color: #fff;
+  border-radius: 15px;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  font-size: 18px; }
+
+.badge-success {
+  background: #34c38f; }
+
+.badge-danger {
+  background: crimson; }
+
+.badge-warning {
+  background: #e0aa3e; }
+
+.badge-info {
+  background: #326bd4; }
+
 .terms_condition {
   position: relative; }
 
@@ -9983,5 +10003,25 @@ input[type=number] {
 
 #wallet-page table td, #wallet-page table th {
   text-align: center; }
+
+.chart-selector .widget-card {
+  cursor: pointer; }
+  .chart-selector .widget-card.active {
+    border: 1px solid #54824d; }
+
+div.modal-dialog.modal-90w {
+  width: 90%;
+  max-width: unset; }
+
+div.modal .close {
+  background: none;
+  border: none;
+  font-size: 32px; }
+
+div.modal-content.dark > div {
+  background: #202e37; }
+
+div.modal-content .close {
+  color: white; }
 
 /*# sourceMappingURL=style.css.map */

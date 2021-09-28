@@ -15,10 +15,10 @@
     
 */
 
-@import "./custom.scss";
 @import "./abstract/abstract";
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "./base/base";
 @import "./layout/layout";
 @import "./components/component";
 @import "./pages/pages";
+@import "./custom.scss";

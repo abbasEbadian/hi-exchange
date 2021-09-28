@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Header2 from './../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector } from 'react-redux'
@@ -6,14 +6,17 @@ import { Modal } from 'react-bootstrap'
 import {Constants}  from '../../Constants'
 import { useDispatch } from 'react-redux'
 import Loader from 'react-loader-spinner';
-import { check_transaction, check_withdraw, get_wallet_list } from '../../redux/actions'
+import { check_transaction, check_withdraw, get_wallet_list, fetch_accounts } from '../../redux/actions'
 import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
+import OrderList from '../element/orderList';
+import axios from 'axios';
 function Wallet() {
     const dispatch = useDispatch() 
-
+    
     const {wallet, checking_transaction, is_fetching } = useSelector(state => state.wallet)
     const cards = useSelector(state => state.accounts.cards)
+    const orders = useSelector(state => state.accounts.orders)
     const [validCards, setValidCards] = useState([])
     const [currencyID, setCurrencyID] = useState(undefined)
     const [selectedCurrency, setSelectedCurrency] = useState(undefined)
@@ -21,11 +24,12 @@ function Wallet() {
     const [withdrawCard, setWithdrawCard] = useState(undefined)
     const [depositCard, setDepositCard] = useState(undefined)
     const [depositTxID, setDepositTxID] = useState(undefined)
-    const [depositTxAmount, setDepositTxAmount] = useState(undefined)
+    const [depositTxAmount, setDepositTxAmount] = useState("")
     const [depositModalOpen, setDepositModalOpen] = useState(false)
     const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
     const [nocardsModalOpen, setNocardsModalOpen] = useState(false)
-    
+    const [summaryModalOpen, setSummaryModalOpen] = useState(false)
+    const [historyOrders, setHistoyOrders] = useState([])
 
     const closeNocardsModal = () => setNocardsModalOpen(false)
     const openNocardsModal = () => setNocardsModalOpen(true)
@@ -33,12 +37,37 @@ function Wallet() {
     const closeDepositModal = () => setDepositModalOpen(false)
     const closeWithdrawModal = () => setWithdrawModalOpen(false)
 
+    const closeSummaryModal = () => setSummaryModalOpen(false)
+    const openSummaryModal = (currency_id) => {    
+        const o = orders.filter(item=>{
+            return item.destination_asset === currency_id || item.source_asset === currency_id
+        })
+        setHistoyOrders(o)
+        setSummaryModalOpen(true)
+    }
+
     const openDepositModal = (currency_id) => {
         if(validCards.length === 0){
             openNocardsModal()
             return 
         }
-        setSelectedCurrency(wallet.filter((item)=>{return item.service.id===currency_id})[0])
+        const _wallet = wallet.filter(item=>{
+            return item.service.id === currency_id
+        })
+        if (!_wallet.length) return
+        console.log(_wallet);
+        
+        axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
+            wallet:_wallet[0].id
+        }).then(response=>{
+            if(!response) throw Error
+            const {data} = response 
+            console.log(data);
+            
+        }).catch(err=>{
+            console.log(err);
+        })
+        setSelectedCurrency(_wallet[0])
         setDepositModalOpen(true)
         setCurrencyID(currency_id)
     };
@@ -56,8 +85,10 @@ function Wallet() {
         dispatch(check_withdraw({card_id: withdrawCard.id}, setWithdrawModalOpen, toast))
     }
     const confirmDeposit= ()=>{
-        if(currencyID !== Constants.IRT_CURRENCY_ID)
-        dispatch(check_transaction({depositTxID}, setDepositModalOpen, toast))
+        if(currencyID !== Constants.IRT_CURRENCY_ID){
+           
+            dispatch(check_transaction({depositTxID }, setDepositModalOpen, toast))
+        }
     }
     const changeDepositCard = (e)=>{
         const selected = e.target.value
@@ -73,7 +104,9 @@ function Wallet() {
         })
         setValidCards(vc)
         setWithdrawCard(vc.length ? vc[0]: undefined)
-        dispatch(get_wallet_list())
+        
+        
+        
    }, [cards])
     return (
         <>
@@ -87,7 +120,7 @@ function Wallet() {
                 <div className="card-body pt-0">
                     <div className="transaction-table">
                         <div className="table-responsive">
-                        {wallet.length > 0?
+                        {wallet && wallet.length > 0?
                             <>
                             <table className="table mb-0 table-responsive-sm">
                                 <thead>
@@ -101,8 +134,8 @@ function Wallet() {
                                 </thead>
                                 <tbody>
                                     
-                                    {wallet.map((item, idx)=>{
-                                        return <tr key={idx}>
+                                    {wallet&& wallet.length ? wallet.map((item, idx)=>{
+                                        return item && <tr key={idx}> 
                                                 <td> { item.service.small_name } <i className={"me-2 fs-3 cc "+ item.service.small_name_slug}/></td>
                                                 <td> { item.service.name } </td>
                                                 
@@ -114,11 +147,14 @@ function Wallet() {
                                                     <button className="text-danger  border-0 bg-transparent fs-5 py-0"
                                                         onClick={e=>openWithdrawModal(item.service.id)}
                                                     >برداشت</button>
+                                                    <button className="text-warning  border-0 bg-transparent fs-5 py-0"
+                                                        onClick={e=>openSummaryModal(item.service.id)}
+                                                    >تاریخچه</button>
                                                 </td>
                                                 <td style={{width: 50+"px"}} className="text-center cursor-pointer"><span className="icofont-refresh"></span></td>
                                                 
                                             </tr>
-                                    })}
+                                    }):undefined}
                                     
                                 </tbody>
                             </table>
@@ -157,10 +193,13 @@ function Wallet() {
                         <>
                             <label htmlFor="card-select" className="form-label">انتخاب کارت</label>
                             <select className="form-control" name="card-select" value={depositCard} onChange={changeDepositCard}>
-                                {cards.map((item, idx)=>{
+                                {validCards.map((item, idx)=>{
                                     return <option value={item.id} key={idx}>{item.card} {"-"} {item.bank}</option>
                                 })}
                             </select>
+                            <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مقدار  </label>
+                            <input type="text" className="form-control" value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
+                        
                         </>:
                         <div className="col-12">
                             <label htmlFor="" className="d-flex justify-content-between form-label">
@@ -236,6 +275,20 @@ function Wallet() {
                 </Modal.Body>
                 <Modal.Footer>
                 <button className="text-danger bg-transparent border-0" onClick={closeNocardsModal}>
+                    بستن
+                </button>
+                
+                </Modal.Footer>
+            </Modal>
+            <Modal dialogClassName="modal-90w mx-auto" contentClassName="dark" show={summaryModalOpen} onHide={() => setSummaryModalOpen(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>تاریخچه</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <OrderList orders={historyOrders}></OrderList>
+                </Modal.Body>
+                <Modal.Footer>
+                <button className="text-danger bg-transparent border-0" onClick={closeSummaryModal}>
                     بستن
                 </button>
                 

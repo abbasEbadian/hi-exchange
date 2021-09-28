@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {  Card, Modal, Button } from 'react-bootstrap'
 import { fetch_currencies, update_next_refresh } from '../../redux/actions'
 
@@ -9,27 +9,26 @@ import { update_available_currency,
         update_detail_modal
     } from '../../redux/actions/indexConverter'
 import { useSelector, useDispatch } from 'react-redux'
-import Timer from './Timer';
-import axios from 'axios';
-import qs from 'qs'
+import Timer from './Timer'
+import axios from 'axios'
 
 function Convert() {
     const dispatch = useDispatch();
     const indexConverter = useSelector(state=>state.indexConverter);
-    const currencies = useSelector(state=>state.currencies);
+    const { currencyList, convertRates } = useSelector(state=>state.currencies);
     const user = useSelector(state => state.session.user)
     const wallet = useSelector(state => state.wallet.wallet)
     const [interval, setInterval2] = useState(false) 
-
-    let { currencyList, convertRates } = currencies;
     const {convertAmount, currencyTo, currencyFrom, currencyAvailable, showDetailModal} = indexConverter
     const handleDetailModalClose = () => dispatch(update_detail_modal(false));
-    const handleDetailModalShow = () => dispatch(update_detail_modal(true));;
-    const karmozd = 0.01;
-    let karmozdAmount = 0;
-    let conversionResult = 0;
-    let endPrice = 0;
-    let convertInvalid = true;
+    const handleDetailModalShow = () => dispatch(update_detail_modal(true));
+    // const [conversionResult, setConversionResult] = useState(0)
+    const karmozdAmount = useRef(0)
+    const endPrice = useRef(0)
+    const conversionResult = useRef(0)
+
+    
+    let convertInvalid = true
     let lowCredit = false;
     let convertErrorMessage = ""
     useEffect(() => {
@@ -77,7 +76,7 @@ function Convert() {
     }
    
 
-    const computePrices = e=>{
+    const computePrices = async e=>{
         if(convertAmount && currencyFrom.small_name_slug ){
             lowCredit =  convertAmount > currencyAvailable ;
             if(lowCredit) convertInvalid = true;
@@ -92,13 +91,12 @@ function Convert() {
         
          
         axios.post("https://hi-exchange.com/api/v2/order/calculator/", {
-            'source': '14',
-            'destination': '13',
+            'source': currencyFrom.id,
+            'destination': currencyTo.id,
+            'changed': 'source',
             'chaned': 'source',
-            'changed': 'destination',
-            'source-price': '10',
-            'destination-price': '10' ,
-            '_': String(new Date().getTime())
+            'source-price': convertAmount,
+            'destination-price': '0' ,
            }).then(response=>{
             if (!response) throw Error("no resp")
             const {data} = response
@@ -108,20 +106,16 @@ function Convert() {
                 convertInvalid = true;
                 return;
             }
+            const prec = Math.max(5, +data["source_decimal"] , +data["destination_decimal"])
+            endPrice.current =  Math.round(Math.pow(10, prec) * +data["unit_price"])/Math.pow(10,prec)
+            karmozdAmount.current =  data["total_fee"]
+            conversionResult.current = data["destination_price"]
+            dispatch(update_convert_amount(data["source_price"]))
 
         }).catch(err=>{
             console.log(err);
             
         })
-        let key = `${currencyFrom.small_name_slug}/${currencyTo.small_name_slug}`
-        let rate = convertRates[key];
-        const RR = Math.pow(10,Math.max(currencyFrom.decimal, currencyTo.decimal) || 3)
-        const CR = Math.pow(10, 8)
-        
-        
-        conversionResult = Math.round(RR*(rate * convertAmount) || 0)/RR;
-        karmozdAmount =  Math.round(RR* karmozd * conversionResult)/ RR || 0;
-        endPrice = Math.round(CR * convertAmount/conversionResult)/ CR || 0;
     }
     const changeCurrencyFrom = (e)=>{
         let selectedCurrency = e.target.value;
@@ -135,19 +129,20 @@ function Convert() {
     }
     const changeCurrencyTo = (e)=>{
         let selectedCurrency = e.target.value;
-        console.log(selectedCurrency);
+        
         
         if (!selectedCurrency|| selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.small_name_slug==selectedCurrency)[0];
-        dispatch(update_currency_to(selectedCurrency));
+        console.log(selectedCurrency);
+        
+        dispatch(update_currency_to(selectedCurrency))
+        computePrices()
+    }
+    const changeAmount = (a)=>{
+        dispatch(update_convert_amount(a))
     }
     computePrices();
 
-    useEffect(() => {
-        convertRates  = currencies.convertRates;
-        currencyList  = currencies.currencyList;
-        
-    }, [currencies])
     return (
         <>
             <style type="text/css">
@@ -172,7 +167,7 @@ function Convert() {
                         <form method="post" name="myform" className="currency_validate row">
                             <div className="mb-3 col-xl-4 mb-0">
                                 <label className="form-label" htmlFor="currency_amount">مقدار</label>
-                                <input type="number"  name="currency_amount" className="form-control" value={convertAmount} onChange={(e)=> dispatch(update_convert_amount(e.target.value)) }
+                                <input type="number"  name="currency_amount" className="form-control" value={convertAmount} onChange={(e)=> changeAmount(e.target.value) }
                                     placeholder="100" /> 
                                 {lowCredit && <a href="wallet" className="form-text text-muted text-nowrap">
                                     <small className="text-danger">اعتبار ناکافی ! </small>
@@ -225,7 +220,7 @@ function Convert() {
                                                 { currencyFrom.name }
                                             </span>
                                             <span className="text-nowrap me-auto ms-2">
-                                                <span className="text-success px-1 fs-4">{ conversionResult }</span>
+                                                <span className="text-success px-1 fs-4">{ conversionResult.current }</span>
                                                 <span className="px-1">{ currencyTo.name }</span>
                                             </span>
                                             <span>
@@ -237,7 +232,7 @@ function Convert() {
                                     <div className="col-12 row mb-3 mx-0">
                                         <small className="px-0">
                                             <label>کارمزد :</label>
-                                            <span className="text-success px-2 fs-4">{ karmozdAmount }</span>
+                                            <span className="text-success px-2 fs-4">{ karmozdAmount.current }</span>
                                         </small>
                                     </div>
 
@@ -247,7 +242,7 @@ function Convert() {
                                                 <i className="px-2">{ currencyTo.name }</i>
                                                 :
                                             </label>
-                                            <span > <span className="text-success px-2 fs-4 ">{ endPrice }</span>  <i>{ currencyFrom.name}</i></span>
+                                            <span > <span className="text-success px-2 fs-4 ">{ endPrice.current }</span>  <i>{ currencyFrom.name}</i></span>
                                         </small>
                                     </div>
                                     

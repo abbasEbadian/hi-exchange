@@ -121,3 +121,28 @@
         }
     }
 }
+.swap-thumb {
+	background: #e0aa3e;
+	color: #fff;
+	border-radius: 15px;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+    margin-right: 15px;
+    font-size: 18px
+}
+.badge-success{
+    background:#34c38f; 
+}
+.badge-danger{
+    background:crimson; 
+}
+.badge-warning{
+    background:#e0aa3e; 
+}
+.badge-info{
+    background:#326bd4; 
+}

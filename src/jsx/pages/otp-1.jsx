@@ -43,6 +43,8 @@ function Otp1() {
                     toast.warn(' برای این شماره همراه ، حسابی وجود ندارد.', toastOpt);
                 }
             }).catch(error=>{
+                console.log(error);
+                
                 toast.error(' برای این شماره همراه ، حسابی وجود ندارد.', toastOpt);
             }).finally(e=>{ 
                 setIsSubmitting(false) 

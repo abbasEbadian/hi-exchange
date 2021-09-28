@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import SettingsNav from '../element/settings-nav';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetch_accounts } from '../../redux/actions';
 
 
 
 
 function SettingsAccount() {
     const cards = useSelector(state => state.accounts.cards)
+   
     return (
         <>
             <Header2 />

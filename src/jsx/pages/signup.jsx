@@ -164,7 +164,7 @@ function Signup() {
                                             حساب کاربری دارید؟{" "}
                                             <Link
                                                 className="text-primary"
-                                                to={"opt-1"}
+                                                to={"otp-1"}
                                             >
                                                 ورود
                                             </Link>

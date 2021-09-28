@@ -7,6 +7,7 @@ import Settings from './pages/settings';
 import Preferences from './pages/settings-preferences';
 import SettingsSecurity from './pages/settings-security';
 import SettingsAccount from './pages/settings-account';
+import SettingsInvite from './pages/settings-invite';
 import AddBankAccount from './pages/add-bank-acc';
 import AddDebitCard from './pages/add-debit-card';
 import Locked from './pages/lock';
@@ -32,36 +33,101 @@ import BasicRoute from './routes/BasicRoute'
 import axios from 'axios'
 import { sessionService } from 'redux-react-session' 
 import { useDispatch }from 'react-redux'
-import { fetch_currencies, get_wallet_list, fetch_accounts } from '../redux/actions'
+import { fetch_currencies, get_wallet_list,fetch_accounts, fetch_orders } from '../redux/actions'
+import { Constants } from '../Constants'
 // Set token to axios requestss
-axios.interceptors.request.use(request=>{
-    return new Promise((resolve, reject)=>{
-        sessionService.loadSession().then(session=>{
-            if (!session.token.length 
-                || request.url.indexOf("/api/v2/service/list/")>-1
-                || request.url.indexOf("coinmarketcap")>-1
-                ) return resolve(request)
-            request.headers.Authorization = "Bearer " + session.token
-            return resolve(request)
-        }).catch(err=>{
-            if(String(err).indexOf("Session") > -1)
-             return resolve(request)
-            return reject(request)
-        })
-    })
-})
+
+
+
+
+axios.interceptors.request.use(
+    async config => {
+        try{
+            const session = await sessionService.loadSession()
+            if (session && session.token && config.url.indexOf("service") === -1) {
+                config.headers['Authorization'] = 'Bearer ' + session.token;
+            }
+        }catch(err){
+            console.log(err);
+        }
+        
+        return config
+        
+    },
+    error => {
+        console.log(error);
+        
+        Promise.reject(error) 
+    }
+);
+
+
+axios.interceptors.response.use((response) => {
+    return response
+ }, 
+ async (error)=> {
+     const originalRequest = error.config
+     const session = await sessionService.loadSession()
+    if (error.response && error.response.status === 401 && originalRequest.url
+        .indexOf('refresh') >-1){
+            // window.location.href = ('/otp-1');
+            return Promise.reject(error);
+        }
+    if (error.response.status === 403  && originalRequest._retry ) {
+        return Promise.reject()
+    }
+    if (error.response.status === 401  && !originalRequest._retry ) {
+ 
+        originalRequest._retry = true;
+        
+        return axios.post(Constants.BASE_URL+'/api/v2/token/refresh/',
+            {
+              "refresh": session.refresh
+            })
+            .then(res => {
+                if (res.status === 200) {
+                    // 1) put token to LocalStorage
+                    sessionService.saveSession({
+                        token: res.data.access,
+                        refresh: session.refresh,
+                        refresh_time: new Date().getTime()
+                    }).then(response=>{
+
+                        // 2) Change Authorization header
+                        axios.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.access
+     
+                        // 3) return originalRequest object with Axios.
+                        return axios(originalRequest);
+                    })
+
+ 
+                }
+            }).catch(err=>{
+                return Promise.reject(err)
+            })
+    }
+
+    
+ })
+
+
+
 
 
 
 const Index = ()=> {
-    const checked = useSelector(state => state.session.checked)
+    const {checked, authenticated} = useSelector(state => state.session)
     const dispatch = useDispatch()
     useEffect(() => {
-        dispatch(get_wallet_list())
-        dispatch(fetch_currencies())
-        dispatch(fetch_accounts())
-       
-    }, [])
+        if(authenticated){
+            dispatch(get_wallet_list())
+            dispatch(fetch_accounts())
+            dispatch(fetch_orders())
+            dispatch(fetch_currencies())
+        }
+        console.log("re rendered");
+        
+    }, [authenticated])
 
     return (
         <>  
@@ -78,6 +144,7 @@ const Index = ()=> {
                         <AuthRoute  exact path='/settings-preferences'> <Preferences/> </AuthRoute>
                         <AuthRoute  exact path='/settings-security'> <SettingsSecurity/> </AuthRoute>
                         <AuthRoute  exact path='/settings-account'> <SettingsAccount/> </AuthRoute>
+                        <AuthRoute  exact path='/settings-invite'> <SettingsInvite/> </AuthRoute>
                         <AuthRoute  exact path='/add-bank-acc'> <AddBankAccount/> </AuthRoute>
                         <AuthRoute  exact path='/add-debit-card'> <AddDebitCard/> </AuthRoute>
                         <AuthRoute  exact path='/lock'> <Locked/> </AuthRoute>

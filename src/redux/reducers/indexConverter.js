@@ -8,14 +8,23 @@ import {
 } from '../actionTypes';
 
 const initial_state = {
+   
     convertAmount: 0,
     currencyTo: {small_name_slug:undefined},
     currencyFrom: {small_name_slug:undefined},
     currencyAvailable: 0,
     showDetailModal: false,
-    nextRefreshTime: "00:00:00"
+    nextRefreshTime: "00:00:00",
+    details: { convertInvalid:true,
+        karmozdAmount: 0,
+        fixedKarmozd: 0,
+        endPrice: 0,
+        convertResult: 0,
+
+    }
 }
 export const indexConverter = (state=initial_state, action)=>{
+    
     switch (action.type) {
         case UPDATE_CONVERT_AMOUNT:
             return {
@@ -46,6 +55,15 @@ export const indexConverter = (state=initial_state, action)=>{
             return {
                 ...state,
                 nextRefreshTime: action.payload
+            }
+        case "UPDATE_DETAILS":
+            
+            return {
+                ...state,
+                details: {
+                    ...state.details,
+                    ...action.payload
+                }
             }
     
         default: return state

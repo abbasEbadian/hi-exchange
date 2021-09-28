@@ -38,6 +38,12 @@ function SettingsNav() {
                                 <span>حساب های متصل</span>
                             </Link>
                         </li>
+                        <li className="nav-item">
+                            <Link to={'./settings-invite'} className="nav-link">
+                                <i className="la la-user-friends"></i>
+                                <span>دعوت دوستان</span>
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -10,7 +10,7 @@ import IndexChart from "../layout/index-chart";
 import "react-toastify/dist/ReactToastify.css";
 function Dashboard() {
   const currentUser = useSelector(state => state.session.user);
-
+  const wallet = useSelector(state=>state.wallet.wallet)
   return (
     <>
       <Header2 />
@@ -46,8 +46,8 @@ function Dashboard() {
                             <li>
                               <a href="#">
                                 {currentUser &&
-                                currentUser.authentication_status !==
-                                  "unverified" ? (
+                                currentUser.authentication_status ===
+                                  "accepted" ? (
                                   <span className="verified">
                                     <i className="icofont-check-alt"></i>
                                   </span>
@@ -59,11 +59,10 @@ function Dashboard() {
                                 تایید حساب
                               </a>
                             </li>
+                            
                             <li>
                               <a href="#">
-                                {currentUser &&
-                                currentUser &&
-                                currentUser.twoStepVerification ? (
+                                {wallet && wallet.length && wallet.filter(item=>{return item.balance>0}).length ? (
                                   <span className="verified">
                                     <i className="icofont-check-alt"></i>
                                   </span>
@@ -72,23 +71,7 @@ function Dashboard() {
                                     <i className="icofont-close-line"></i>
                                   </span>
                                 )}
-                                احراز هویت دو مرحله ای
-                              </a>
-                            </li>
-                            <li>
-                              <a href="#">
-                                {currentUser &&
-                                currentUser &&
-                                currentUser.firstDeposit ? (
-                                  <span className="verified">
-                                    <i className="icofont-check-alt"></i>
-                                  </span>
-                                ) : (
-                                  <span className="not-verified">
-                                    <i className="icofont-close-line"></i>
-                                  </span>
-                                )}
-                                افزایش موجودی
+                                شارژ کیف پول
                               </a>
                             </li>
                           </ul>
