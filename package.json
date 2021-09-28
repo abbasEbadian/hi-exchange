@@ -46,6 +46,10 @@
     "websocket": "^1.0.34",
     "yup": "^0.32.9"
   },
+  "engines": {
+    "node": "14.17.4",
+    "npm": "6.14.14"
+},
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
