@@ -30,7 +30,7 @@ function ProfileChart({ selectedChart}) {
                     locale="fa_IR"
                     width={"100%"}
                     height={400}
-                    hide_top_toolbar={true}
+                    hide_top_toolbar={false}
                     allow_symbol_change={false}
                     withdateranges={true}
                     />
