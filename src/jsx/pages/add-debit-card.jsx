@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { add_credit_card } from '../../redux/actions';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector} from 'react-redux'
 
 
 
@@ -15,6 +15,8 @@ function AddDebitCard() {
     const [ shaba, setShaba ] = useState("")
     const [ bank, setBank ] = useState("")
     const dispatch = useDispatch()
+
+    const user = useSelector(state => state.session.user)
 
     const onsubmit = e=>{
         e.preventDefault()
@@ -25,8 +27,12 @@ function AddDebitCard() {
         }
         dispatch(add_credit_card({card, bank , shaba}, toast))
     }
+  
     return (
         <>
+       {user && user.authentication_status !== "accepted"?
+            <Redirect to={"/accounts"}></Redirect>:undefined
+        }
             <Header2 />
             <Sidebar />
             <PageTitle />

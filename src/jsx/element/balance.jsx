@@ -61,7 +61,7 @@ function Balance() {
                                     <li className="list-unstyled">
                                         در حال حاضر ارزی در کیف پول خود ندارید.
                                         <br/><br/>
-                                        <button className="text-secondary border-0 bg-transparent">شارژ کیف پول</button>
+                                        <Link to="/wallet"className="text-secondary border-0 bg-transparent">شارژ کیف پول</Link>
                                     </li>
                                     :
                                     wallet.map((item, idx)=>{

@@ -47,7 +47,7 @@ function ProfileChart({ selectedChart}) {
                                 <div className="chart-stat">
                                     <p className="mb-1 fs-6">{item[1]}</p>
                                     { Object.keys(info).includes(selectedChart) ? 
-                                        <strong dir="ltr">{Number(info[selectedChart]["quote"]["USD"][item[0]]).toLocaleString()} {" "} {item[2]}</strong>
+                                        <span dir="ltr">{Number(info[selectedChart]["quote"]["USD"][item[0]]).toLocaleString()} {" "} {item[2]}</span>
                                         :<Loader type="TailSpin" color="#00BFFF" height={20} width={80} />
                                     }
                                 </div>

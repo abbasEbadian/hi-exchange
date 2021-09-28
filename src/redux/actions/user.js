@@ -11,6 +11,7 @@ import { sessionService } from 'redux-react-session'
 import axios from 'axios';
 import {toast } from 'react-toastify'
 import { toggle_loader_on, toggle_loader_off } from '../actions'
+import { generate_wallet } from './wallet';
 
 const toastOpt = {
     position: "bottom-left",
@@ -73,6 +74,7 @@ export const userLogin = (credentias, _history ,setIsSubmitting)=>{
                 sessionService
                 .saveSession({ token, refresh, refresh_time: new Date().getTime() }).then(e=>{
                     dispatch(userUpdateDetail(token, _history))
+                    
                 }).catch(err=>{
                     console.log(err);
                 })
@@ -96,7 +98,7 @@ export const userSignup = (credentias, _history ,setIsSubmitting)=>{
                     toast.success(response.data.message + " در حال انتقال به صفحه ورود...", {
                         ...toastOpt,
                         onClose: ()=>{
-                            _history.push("/opt-1")
+                            _history.push("/otp-1")
                         },
                     })
                 }
@@ -129,22 +131,23 @@ export const userUpdateName =  (name)=>{
         })
     }
 }
-export const userUpdateImage =  (image, toast, toastOpt)=>{
+export const userUpdateImage =  (image, toast=0, toastOpt=0)=>{
     return dispatch=>{
-        sessionService.loadSession().then(session=>{
+        return new Promise((resolve, reject)=>{
             axios.post("https://hi-exchange.com/api/v2/account/verify/", {
                 image
             },
-            {headers:{
-                Authorization: "Bearer " + session.token
-            }}
             ).then(data=>{
-                toast.success(data.data.message, toastOpt);  
+                if(toast) toast.success(data.data.message, toastOpt); 
+                return resolve(200) 
             }).catch(err=>{
                 console.log(err);
-                toast.error("با خطا مواجه شد.")
+                if(toast) toast.error("با خطا مواجه شد.")
+                return reject(400)
+            }).catch(err=>{
+                console.log(err)
+                return reject(400)
             })
-        }).catch(err=>{console.log(err);
         })
     }
 }

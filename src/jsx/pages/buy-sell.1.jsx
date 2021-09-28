@@ -36,8 +36,8 @@ function BuySell() {
     const [buyConvertInvalid, setBuyConvertInvalid] = useState(true)
     const [sellConvertInvalid, setSellConvertInvalid] = useState(true)
     
-    const [buyLowCredit, setBuyLowCredit] = useState(false);
-    const [sellLowCredit, setSellLowCredit] = useState(false);
+    const buyLowCredit = useRef(false);
+    const sellLowCredit = useRef(false);
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
 
@@ -152,7 +152,7 @@ function BuySell() {
             let binvalid = false 
             
     
-            if(!buySourceP.id || !buySourceP.id || !buyConvertAmountP || buyLowCredit){
+            if(!buySourceP.id || !buySourceP.id || !buyConvertAmountP || buyLowCredit.current){
                 binvalid = true;
             } 
             if(binvalid) {
@@ -197,10 +197,9 @@ function BuySell() {
                 console.log(d.buyConversionResult > +buyAvailableCurrencyP);
                 
                 if(d.buyConversionResult > +buyAvailableCurrencyP){
-                    setBuyLowCredit(true)
+                    buyLowCredit.current = true
                     setBuyConvertInvalid(true)
                 }else{
-                    setBuyLowCredit(false)
                     setBuyConvertInvalid(false)
                 }
            }).catch(error=>{
@@ -213,7 +212,7 @@ function BuySell() {
         }else{
             let binvalid = false 
         
-            if(!sellSourceP.id || !sellSourceP.id || !sellConvertAmountP || sellLowCredit){
+            if(!sellSourceP.id || !sellSourceP.id || !sellConvertAmountP || sellLowCredit.current){
                 binvalid = true;
             } 
             if(binvalid) {
@@ -236,7 +235,7 @@ function BuySell() {
                 if (!response) throw Error("no resp")
                 const {data} = response
                 if(data.message){
-                    sellConvertErrorMessage.current = data.message
+                    buyConvertErrorMessage.current = data.message
                 }
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
@@ -256,10 +255,9 @@ function BuySell() {
 
                 dispatch({type: "UPDATE_BSDETAILS", payload: d})
                 if(d.sellConversionResult > +sellAvailableCurrencyP){
-                    setSellLowCredit(true)
+                    sellLowCredit.current = true
                     setSellConvertInvalid(true)
                 }else{
-                    setSellLowCredit(false)
                     setSellConvertInvalid(false)
                 }
            }).catch(error=>{
@@ -300,7 +298,8 @@ function BuySell() {
                                                                 }):undefined
                                                                 }
                                                         </select>
-                                                        {buyLowCredit ? <Link to="/wallet" className="form-text text-muted text-nowrap">
+                                                        {!buyLowCredit.current? "TEST":undefined}
+                                                        {buyLowCredit.current ? <Link to="/wallet" className="form-text text-muted text-nowrap">
                                                             <small className="text-danger">اعتبار ناکافی ! </small>
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>:undefined}   
                                                     </div>
@@ -311,7 +310,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== buySource.id) && <option key={idx} value={c.id}> {c.name}</option>
+                                                                    return  (c.id !== buySource.id)  &&<option key={idx} value={c.id}> {c.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -363,11 +362,11 @@ function BuySell() {
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== sellDestination.id) &&<option key={idx} value={c.id}> {c.name}</option>
+                                                                        return  <option key={idx} value={c.id}> {c.name}</option>
                                                                     })
                                                                 }
                                                         </select>
-                                                        {sellLowCredit && <Link to="/wallet" className="form-text text-muted text-nowrap">
+                                                        {sellLowCredit.current && <Link to="/wallet" className="form-text text-muted text-nowrap">
                                                             <small className="text-danger">اعتبار ناکافی ! </small>
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>} 
                                                         
@@ -380,7 +379,7 @@ function BuySell() {
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return  [12, 14].includes(c.id) && (c.id !== sellSource.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
+                                                                        return  [12, 14].includes(c.id) ? <option key={idx} value={c.id}> {c.name}</option>:undefined
                                                                     })
                                                                 }
                                                             </select>
@@ -540,7 +539,7 @@ function BuySell() {
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
-                                                        <td>{sellConvertAmount.toLocaleString()} {" "} {sellSource.name}</td>
+                                                        <td>{sellConvertAmount.toLocaleString()} {" "} {sellDestination.name}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>وت</td>

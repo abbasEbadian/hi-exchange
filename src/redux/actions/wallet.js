@@ -16,7 +16,7 @@ export const get_wallet_list = ()=>{
         return new Promise((resolve, reject)=>{
             sessionService.loadSession().then(session=>{
                 axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
-                    
+                    if(!res) throw Error(401)
                     
                     const d = res.data                
                     const newData = [

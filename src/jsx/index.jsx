@@ -33,7 +33,7 @@ import BasicRoute from './routes/BasicRoute'
 import axios from 'axios'
 import { sessionService } from 'redux-react-session' 
 import { useDispatch }from 'react-redux'
-import { fetch_currencies, get_wallet_list,fetch_accounts, fetch_orders } from '../redux/actions'
+import { fetch_currencies, get_wallet_list,fetch_accounts, fetch_orders, fetch_user_all_data } from '../redux/actions'
 import { Constants } from '../Constants'
 // Set token to axios requestss
 
@@ -120,9 +120,7 @@ const Index = ()=> {
     const dispatch = useDispatch()
     useEffect(() => {
         if(authenticated){
-            dispatch(get_wallet_list())
-            dispatch(fetch_accounts())
-            dispatch(fetch_orders())
+            dispatch(fetch_user_all_data())
             dispatch(fetch_currencies())
         }
         console.log("re rendered");
@@ -153,10 +151,10 @@ const Index = ()=> {
                         <AuthRoute  exact path='/terms-condition'> <TermsCondition/> </AuthRoute>
                         <AuthRoute  exact path='/verify-step-1'> <VerifyStep1/> </AuthRoute>
                         <AuthRoute  exact path='/verify-step-2'> <VerifyStep2/> </AuthRoute>
-                        <AuthRoute  exact path='/verify-step-3'> <VerifyStep3/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-3'> <Redirect to="/verify-step-2"/> </AuthRoute>
                         <AuthRoute  exact path='/verify-step-4'> <VerifyStep4/> </AuthRoute>
-                        <AuthRoute  exact path='/verify-step-5'> <VerifyStep5/> </AuthRoute>
-                        <AuthRoute  exact path='/verify-step-6'> <VerifyStep6/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-5'> <Redirect to="/verify-step-2"/> </AuthRoute>
+                        <AuthRoute  exact path='/verify-step-6'> <Redirect to="/verify-step-2"/> </AuthRoute>
                         <AuthRoute  exact path='/history'> <History/> </AuthRoute>
                         <AuthRoute  exact path='/landing'> <Landing/> </AuthRoute>
                         <AuthRoute  exact path='/demo'> <Demo/> </AuthRoute>

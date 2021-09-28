@@ -8,6 +8,7 @@ import Balance from "../element/balance";
 import { useSelector } from "react-redux";
 import IndexChart from "../layout/index-chart";
 import "react-toastify/dist/ReactToastify.css";
+import {Link } from 'react-router-dom'
 function Dashboard() {
   const currentUser = useSelector(state => state.session.user);
   const wallet = useSelector(state=>state.wallet.wallet)
@@ -61,8 +62,8 @@ function Dashboard() {
                             </li>
                             
                             <li>
-                              <a href="#">
-                                {wallet && wallet.length && wallet.filter(item=>{return item.balance>0}).length ? (
+                              <Link to="/wallet">
+                                {wallet && wallet.length && wallet.filter(item=>{return item&&item.balance>0}).length ? (
                                   <span className="verified">
                                     <i className="icofont-check-alt"></i>
                                   </span>
@@ -72,7 +73,7 @@ function Dashboard() {
                                   </span>
                                 )}
                                 شارژ کیف پول
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>

@@ -20,11 +20,11 @@ function Header2() {
                             <nav className="navbar navbar-expand-lg navbar-light px-0 justify-content-between">
                                 <Link className="navbar-brand" to={'/'}><img src={require('./../../images/logo.png')} alt="" /></Link>
 
-                                <div className="d-flex   align-items-center justify-contetn-center mx-auto">
+                                <div className="d-md-flex d-none   align-items-center justify-contetn-center mx-auto">
                                     <a className="ms-4 text-white" href="https://hi-exchange.com">صفحه اصلی</a>
                                     <Link to="/" className="ms-4 text-white">تبدیل</Link>
                                     <Link to="/buy-sell" className="ms-4 text-white">خرید و فروش</Link>
-                                    <Link to="/buy-sell" className="text-white">معرفی دوستان</Link>
+                                    <Link to="/settings-invite" className="text-white">معرفی دوستان</Link>
                                 </div>
                                 <div className="dashboard_log">
                                     <div className="d-flex align-items-center">

@@ -23,22 +23,20 @@ function VerifyStep4() {
                                             <span className="icon">
                                                 <i className="fa fa-check"></i>
                                             </span>
-                                            <h4>Identity Verified</h4>
+                                            <h4>تصویر با موفقیت  بارگذاری شد</h4>
                                             <p>
-                                                Congrats! your identity has been
-                                                successfully verified and your
-                                                investment limit has been
-                                                increased.
+                                                کارشناسان ما در اسرع وقت وضعیت حساب کاربری شما را بررسی خواهند نمود.
+                                                با تشکر از شکیبای شما
                                             </p>
                                         </div>
 
                                         <div className="text-center mb-4">
                                             <Link
-                                                to={"./add-debit-card"}
+                                                to={"./settings-account"}
                                                 type="submit"
                                                 className="btn btn-success ps-5 pe-5"
                                             >
-                                                Continue
+                                                ادامه
                                             </Link>
                                         </div>
                                     </form>

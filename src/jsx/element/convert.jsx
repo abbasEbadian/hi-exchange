@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {  Card, Modal, Button } from 'react-bootstrap'
 import { fetch_currencies, update_next_refresh, creating_order, create_order } from '../../redux/actions'
-
+import {Link} from 'react-router-dom'
 import {toast, ToastContainer} from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux'
 import Timer from './Timer'
@@ -28,7 +28,20 @@ function Convert() {
     const [orderMessage, setOrderMessage] = useState("")
     
 
-    
+    const get_available = (symbolid)=>{
+        if (!wallet || wallet.length===0 )return 0
+        const target = wallet.filter((item, i)=>{
+            return item&& item["service"]&&item["service"]["id"] === symbolid
+        })
+         return target.length > 0 ? target[0]["balance"] : 0
+    }
+    const convertFeeToIrt=(id, amount)=>{
+        if(!currencyList || !currencyList.length) return 0;
+        else{
+            const c = currencyList.filter((item)=>{return item&&item.id===id})
+            return c && c.length ?amount * (+c[0].show_price_irt): 0
+        }
+    }
     useEffect(() => {
         const currentTime = new Date()  
         const currentTimeUnix = currentTime.getTime();//current unix timestamp
@@ -58,32 +71,21 @@ function Convert() {
     const handleDetailModalConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item.service.id === currencyTo.id).lenght?
-                wallet.filter(item=>item.service.id === currencyTo.id)[0].id:undefined:undefined
+                wallet.filter(item=>item&&item.service.id === currencyTo.id).length?
+                wallet.filter(item=>item&&item.service.id === currencyTo.id)[0].id:undefined:undefined
         const data= {
             source_price: convertAmount,
             destination_price: convertDetails.convertResult,
             source_asset: currencyFrom.id,
             destination_asset: currencyTo.id,
             wallet: _wallet,
-            description: orderMessage 
+            description: orderMessage,
+            type:"swap" 
         }
         dispatch(create_order(data, toast, setShowDetailModal))
     }
 
-    const get_available = (symbolid)=>{
-        
-        if (!wallet || !wallet.length ) return 0;
-        const target = wallet.filter((item, i)=>{
-            return item["service"]["id"] === symbolid
-        })
-        
-        if (target.length > 0){
-            return target[0]["balance"]
-        }else{
-            return 0
-        }
-    }
+
    
     
     const computePrices =  ({
@@ -139,6 +141,7 @@ function Convert() {
                 endPrice: Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2),
                 karmozdAmount: data["total_fee"],
                 fixedKarmozd: data["fix_fee"],
+                karmozd:data["fee"],
                 convertResult: Number(data["destination_price"]).toLocaleString()
             }
             setConvertInvalid(false)
@@ -172,7 +175,6 @@ function Convert() {
     }
     const changeAmount = (a)=>{
         setConvertAmount(a)
-        console.log(a)
         computePrices({convertAmountP: +a});
     }
     
@@ -203,9 +205,9 @@ function Convert() {
                                 <label className="form-label" htmlFor="currency_amount">مقدار</label>
                                 <input type="number"  name="currency_amount" className="form-control" value={convertAmount} onChange={(e)=> changeAmount(e.target.value) }
                                     placeholder="100" /> 
-                                {lowCredit.current && <a href="wallet" className="form-text text-muted text-nowrap">
+                                {lowCredit.current && <Link to="/wallet" className="form-text text-muted text-nowrap">
                                     <small className="text-danger">اعتبار ناکافی ! </small>
-                                    <small className="text-success me-2">شارژ کیف پول</small></a>}         
+                                    <small className="text-success me-2">شارژ کیف پول</small></Link>}         
                             </div>
 
                             <div className="mb-3 col-xl-4 mb-0">
@@ -238,7 +240,7 @@ function Convert() {
                             <div className="col-12 row mx-0">
                                 <div className=" col-xl-12 mb-3 d-flex align-items-center p-0">
                                     <small  htmlFor="currency_amount_available">موجودی :</small>
-                                    <span className="text-success px-2 fs-4 pt-1" dir="ltr">{ currencyAvailable } {" "} { currencyFrom.small_name_slug  }</span>
+                                    <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(currencyAvailable).toLocaleString() } {" "} { currencyFrom.small_name_slug  }</span>
                                     { currencyFrom.small_name_slug &&
                                         <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeAmount(currencyAvailable)}}>$</div>
                                     }
@@ -250,7 +252,7 @@ function Convert() {
                                         <small className="d-flex justify-content-between w-100 px-0">
                                             <span>با پرداخت</span>
                                             <span className="text-nowrap me-2">
-                                                <span className="text-success px-1 fs-4">{ convertAmount}</span>
+                                                <span className="text-success px-1 fs-4">{ Number(convertAmount).toLocaleString()}</span>
                                                 { currencyFrom.name }
                                             </span>
                                             <span className="text-nowrap me-auto ms-2">
@@ -318,31 +320,32 @@ function Convert() {
                         <div className="detail-row">
                             <span>رمز ارز و میزان</span>
                             <span dir="ltr">
-                            <span className="text-success fs-5">{convertAmount}</span>  {currencyFrom.small_name_slug}
+                            <span className="text-success fs-5">{convertAmount}</span>  {currencyFrom.name}
                             </span>  
                         </div>
                         <div className="detail-row">
-                            <span>کارمزد انجام تراکنش</span>
+                        <span>کارمزد انتقال</span>
                             <span>
-                                {convertDetails.karmozdAmount - convertDetails.fixedKarmozd} {" تومان "} 
+                                {convertDetails.karmozd} {" "} { currencyTo.name }
                             </span>  
                         </div>
                         <div className="detail-row">
-                            <span>کارمزد انتقال</span>
+                        <span>کارمزد انجام تراکنش</span>
+
                             <span>
-                                { convertDetails.fixedKarmozd } {" تومان "} 
+                                { convertDetails.fixedKarmozd } {" "} { currencyTo.name }  
                             </span>  
                         </div>
                         <div className="detail-row">
                             <span>مبلغ نهایی سفارش</span>
                             <span>
-                                { +convertDetails.karmozdAmount + +convertAmount  } {" تومان "} 
+                                { Number(convertFeeToIrt(currencyTo.id , +convertDetails.karmozdAmount) + (+convertAmount)).toLocaleString()  } {" "} { currencyFrom.name } 
                             </span>  
                         </div>
                         <div className="col-12 mt-4">
-                            <label class="form-label">توضیحات برای کارشناسان:</label>
+                            <label className="form-label">توضیحات برای کارشناسان:</label>
                             <input type="text" className="form-control f" value={orderMessage} onChange={e=>setOrderMessage(e.target.value)}/> 
-                            <small class="form-text" style={{fontSize: "11px"}}><i>الزامی نیست</i></small>
+                            <small className="form-text" style={{fontSize: "11px"}}><i>الزامی نیست</i></small>
                         </div>
                     </div>
                 </Modal.Body>

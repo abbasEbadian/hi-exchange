@@ -63,16 +63,15 @@ function OrderList({orders}) {
                                                 <td>
                                                     {order.bank_account || "-"}
                                                 </td>
-                                                <td>{order.source_amount} {" "} {cu2name}</td>
-                                                <td className="text-success">{order.destination_amount} {" "} {cuname}</td>
+                                                <td>{Number(order.source_amount).toLocaleString()} {" "} {cu2name}</td>
+                                                <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {cuname}</td>
                                             </>
                                         :order.type ==="sell"?
                                             <>
                                             <td><span className="sold-thumb"><i className="la la-arrow-down"></i>
                                                 </span>
                                             </td>
-                                            <td><span className="sold-thumb"><i className="la la-arrow-down"></i></span>
-                                                        </td>
+                                            
 
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
@@ -83,8 +82,8 @@ function OrderList({orders}) {
                                             <td>
                                                 {order.bank_account || "-"}
                                             </td>
-                                            <td className="text-danger">{order.source_amount} {" "} {cuname}</td>
-                                            <td>{order.destination_amount} {" "} {cu2name}</td>
+                                            <td className="text-danger">{Number(order.source_amount).toLocaleString()} {" "} {cuname}</td>
+                                            <td>{Number(order.destination_amount).toLocaleString()} {" "} {cu2name}</td>
                                             </>
                                         :
                                             <>
@@ -100,8 +99,8 @@ function OrderList({orders}) {
                                             <td>
                                                 {order.bank_account || "-"}
                                             </td>
-                                            <td>{order.source_amount} {" "} {cu2name}</td>
-                                            <td className="text-warning">{order.destination_amount} {" "} {cuname}</td>
+                                            <td>{Number(order.source_amount).toLocaleString()} {" "} {cu2name}</td>
+                                            <td className="text-warning">{Number(order.destination_amount).toLocaleString()} {" "} {cuname}</td>
                                             </>
                                         
                                         }

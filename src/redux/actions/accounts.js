@@ -1,7 +1,7 @@
 import axios from "axios";
 import {Constants} from '../../Constants'
 import generate from "@babel/generator";
-import { generate_wallet } from "./wallet";
+import { generate_wallet, get_wallet_list } from "./wallet";
 import { assertTSExpressionWithTypeArguments } from "@babel/types";
 
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
@@ -9,29 +9,59 @@ export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
 export const UPDATE_ORDERS =  "UPDATE_ORDERS"
 export const GETTING_ORDERS =  "GETTING_ORDERS"
 export const CREATING_ORDER =  "CREATING_ORDER"
+export const UPDATE_TRANSACTIONS =  "UPDATE_TRANSACTIONS"
 
 
 const BASE = Constants.BASE_URL
+
+export const fetch_user_all_data = ()=>{
+    return dispatch=>{
+        dispatch(get_wallet_list())
+        dispatch(fetch_accounts())
+        dispatch(fetch_orders())
+        dispatch(fetch_transactions())
+        dispatch(get_wallet_list()).then(wallet=>{
+            if(!wallet || wallet.length == 0 || wallet.filter(item=>item&&item.id===12).length===0){
+                dispatch(generate_wallet(Constants.IRT_CURRENCY_ID))
+                dispatch(generate_wallet(Constants.USDT_CURRENCY_ID))
+                dispatch(get_wallet_list())
+            }
+        })
+    }
+}
 export const fetch_accounts = ()=>{
     return dispatch =>{
         axios.get(BASE+ "/api/v2/bank/list/").then(response=>{
             
-            if(!response) throw Error
+            if(!response) throw Error(401)
             const {data} = response
             dispatch(update_accounts(data))
         }).catch(error=>{
-            console.log(error);
+            console.log("fetch accounts", 401);
         })
+    }
+}
+export const fetch_transactions = ()=>{
+    return dispatch =>{
+        axios.get("https://hi-exchange.com/api/v2/transaction/list/").then(res=>{
+        if (!res) throw Error(401)   
+        const {data} = res
+
+           dispatch(update_transactions(data))
+       }).catch(e=>{
+           console.log("Err");
+       })
     }
 }
 export const fetch_orders = ()=>{
     return dispatch =>{
         dispatch(getting_orders(true))
         axios.get(BASE+ "/api/v2/order/list/").then(response=>{
+            if(!response) throw Error(401)
             const {data} = response
             dispatch(update_orders(data))
         }).catch(error=>{
-            console.log(error);
+            console.log("fetch ord", 401);
         }).finally(f=>{
             dispatch(getting_orders(false))
         })
@@ -72,6 +102,12 @@ export const update_orders = (orders)=>{
         payload: orders
     }
 }
+export const update_transactions = (trans)=>{
+    return {
+        type: UPDATE_TRANSACTIONS,
+        payload: trans
+    }
+}
 export const getting_orders = (status)=>{
     return {
         type: GETTING_ORDERS,
@@ -89,7 +125,8 @@ export const create_order = ({
         wallet="",
         description="",
         pmethod="wallet",
-        changed="destination"}, toast, setShowDetailModal)=>{
+        changed="destination",
+        type="swap"}, toast, setShowDetailModal=undefined)=>{
             return async (dispatch)=>{
 
                if(!wallet){
@@ -104,15 +141,18 @@ export const create_order = ({
                     wallet,
                     description,
                     pmethod,
-                    changed
+                    changed,
+                    type
                 }).then(response=>{
                     const {data} = response
                     toast.success("درخواست شما ثبت شد.بعد از تایید کارشناسان ، اعمال خواهد شد.")
+                    dispatch(fetch_user_all_data())
                 }).catch(err=>{
                     toast.error("با خطا مواجه شد لطفا بعدا تلاش کنید")
 
                 }).finally(f=>{
                     dispatch(creating_order(false))
+                    if(setShowDetailModal)
                     setShowDetailModal(false)
                 })
             }

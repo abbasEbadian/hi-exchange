@@ -18,8 +18,28 @@ const initial_state = {
     details: { convertInvalid:true,
         karmozdAmount: 0,
         fixedKarmozd: 0,
+        karmozd:0,
         endPrice: 0,
         convertResult: 0,
+
+    },
+    bsdetails:{
+        buyConversionResult: 0,
+        buyConversionResultStr: 0,
+        buyEndPrice:0,
+        buyKarmozdAmount: 0,
+        buyFixedKarmozd: 0,
+        buyTotal:0,
+        sellConversionResult: 0,
+        sellConversionResultStr: 0,
+        sellEndPrice:0,
+        sellKarmozdAmount: 0,
+        sellFixedKarmozd: 0,
+        sellTotal:0,
+
+       
+
+
 
     }
 }
@@ -62,6 +82,15 @@ export const indexConverter = (state=initial_state, action)=>{
                 ...state,
                 details: {
                     ...state.details,
+                    ...action.payload
+                }
+            }
+        case "UPDATE_BSDETAILS":
+
+            return {
+                ...state,
+                bsdetails: {
+                    ...state.bsdetails,
                     ...action.payload
                 }
             }

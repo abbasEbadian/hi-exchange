@@ -23,15 +23,12 @@ function VerifyStep1() {
                                             <span className="icon">
                                                 <i className="fa fa-shield"></i>
                                             </span>
-                                            <h4>
-                                                Please verify your identity
-                                                before adding your card
+                                            <h4 className="my-4">
+                                                برای احراز هویت لطفا تصویر 
+                                                3x4
+                                                خود را آپلود کنید
                                             </h4>
-                                            <p>
-                                                Uploading your ID helps as
-                                                ensure the safety and security
-                                                of your founds
-                                            </p>
+                                           
                                         </div>
 
                                         <div className="text-center">
@@ -40,7 +37,7 @@ function VerifyStep1() {
                                                 type="submit"
                                                 className="btn btn-success ps-5 pe-5"
                                             >
-                                                Upload ID
+                                                بارگذاری
                                             </Link>
                                         </div>
                                     </form>

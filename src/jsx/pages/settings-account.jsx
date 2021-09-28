@@ -12,6 +12,7 @@ import { fetch_accounts } from '../../redux/actions';
 
 function SettingsAccount() {
     const cards = useSelector(state => state.accounts.cards)
+    const user = useSelector(state => state.session.user)
    
     return (
         <>
@@ -82,8 +83,15 @@ function SettingsAccount() {
                                     </ul>
 
                                     <div className="mt-5">
-                                        {/* <Link to={'./verify-step-5'} className="btn btn-primary px-4 ms-3">افزودن شماره حساب</Link> */}
-                                        <Link to={'/add-debit-card'} className="btn btn-success px-4">افزودن کارت اعتباری</Link>
+                                        {user&& user.authentication_status !=="accepted"?
+                                        <>
+                                        <Link to={'/add-debit-card'} className="btn btn-success px-4 disabled" disabled>افزودن کارت اعتباری</Link>
+                                        <small className="mx-3 text-danger">برای افزودن کارت باید حساب شما تایید شده باشد.
+                                            <Link className="mx-2 text-warning" to="/verify-step-1">احراز هویت</Link>
+                                        </small>
+                                        </>
+                                        :<Link to={'/add-debit-card'} className="btn btn-success px-4">افزودن کارت اعتباری</Link>
+                                    }
                                     </div>
                                 </div>
                             </div>

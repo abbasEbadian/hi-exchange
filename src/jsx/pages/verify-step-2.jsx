@@ -1,9 +1,60 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React , {useState } from "react";
+import { Link, useHistory} from "react-router-dom";
 import Header2 from "../layout/header2";
 import Sidebar from "../layout/sidebar";
+import {useDispatch } from 'react-redux'
+import {userUpdateImage} from '../../redux/actions'
+import Loader from 'react-loader-spinner'
+import { toast, ToastContainer  } from "react-toastify";
 
 function VerifyStep2() {
+    const dispatch = useDispatch()
+    const history = useHistory()
+
+    const [filename, setFilename] = useState("انتخاب فایل...")
+    const [file, setFile] = useState(undefined)
+    const [ uploading, setUploading ] = useState(false)
+
+    const handleFile = (e)=>{
+        
+        e.preventDefault()
+        e.stopPropagation()
+        console.log(e.target);
+        
+        if(!e || !e.target || !e.target.files || !e.target.files.length>0) return false;
+        let reader = new FileReader();
+        let filee = e.target.files[0]
+        reader.readAsDataURL(filee);
+        reader.onload = function () {
+            setFile(reader.result);
+            setFilename(filee.name)
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    }
+        
+
+    const handleSubmit = (e)=>{
+        setUploading(true)
+        e.preventDefault()
+        e.stopPropagation()
+        const data = new FormData() 
+        data.append('image', file)
+        dispatch(userUpdateImage(file)).then(status=>{
+            if(status === 200){
+                setTimeout(() => {
+                    setUploading(false)
+                    history.push("/verify-step-4")
+                }, 1000);
+
+            }else{
+                toast.error("خطا هنگام ارتباط")
+            }
+        })
+        return false
+        
+    }
     return (
         <>
             <Header2 />
@@ -18,66 +69,46 @@ function VerifyStep2() {
                                     <form
                                         action="#"
                                         className="identity-upload"
+                                        onSubmit={handleSubmit}
                                     >
                                         <div className="identity-content">
-                                            <h4>Upload your ID card</h4>
-                                            <span>
-                                                (Driving License or Government
-                                                ID card)
-                                            </span>
+                                            <h4>آپلود تصویر </h4>
+                                            
 
                                             <p>
-                                                Uploading your ID helps as
-                                                ensure the safety and security
-                                                of your founds
+                                             لطفا تصویر 
+                                                3x4
+                                                خود را آپلود کنید
                                             </p>
                                         </div>
 
-                                        <div className="mb-3">
-                                            <label className="form-label">
-                                                Upload Front ID{" "}
-                                            </label>
-                                            <span className="float-right">
-                                                Maximum file size is 2mb
-                                            </span>
+                                        <div className="my-5">
+                                           
                                             <div
                                                 className="file-upload-wrapper"
-                                                data-text="front.jpg"
+                                                data-text={filename}
                                             >
                                                 <input
                                                     name="file-upload-field"
                                                     type="file"
+                                                    accept="image/*"
                                                     className="file-upload-field"
+                                                    onChange={handleFile}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="mb-5">
-                                            <label className="form-label">
-                                                Upload Back ID{" "}
-                                            </label>
-                                            <span className="float-right">
-                                                Maximum file size is 2mb
-                                            </span>
-                                            <div
-                                                className="file-upload-wrapper"
-                                                data-text="back.jpg"
-                                            >
-                                                <input
-                                                    name="file-upload-field"
-                                                    type="file"
-                                                    className="file-upload-field"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="text-center">
-                                            <Link
-                                                to={"./verify-step-3"}
+                                       
+                                        <div className="text-center mt-5">
+                                            <button
                                                 type="submit"
-                                                className="btn btn-success w-100"
+                                                className={"btn btn-success w-100 d-flex justify-content-center align-items-center " + (!file?"disabled":undefined)}
+                                                disabled={!file?"disabled":undefined}
                                             >
-                                                Submit
-                                            </Link>
+                                                ارسال
+                                                {uploading?
+                                                    <Loader className="mx-2" type="ThreeDots" width={25} height={25} color="#fff"></Loader>
+                                                    :undefined }
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -85,6 +116,17 @@ function VerifyStep2() {
                         </div>
                     </div>
                 </div>
+                <ToastContainer
+                    position="bottom-left"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={true}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    />
             </div>
         </>
     );
