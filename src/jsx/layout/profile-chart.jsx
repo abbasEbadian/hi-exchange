@@ -25,7 +25,7 @@ function ProfileChart({ selectedChart}) {
                 <div style={{minHeight: 400+"px"}}>
 
                 <TradingViewWidget 
-                    symbol={selectedChart}
+                    symbol={selectedChart+"1!"}
                     theme={Themes.DARK}
                     locale="fa_IR"
                     width={"100%"}
