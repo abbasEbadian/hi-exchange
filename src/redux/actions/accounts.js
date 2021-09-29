@@ -1,8 +1,7 @@
 import axios from "axios";
 import {Constants} from '../../Constants'
-import { generate_wallet, get_wallet_list } from "./wallet";
+import { generate_wallet, get_wallet_list, update_fetching_state } from "./wallet";
 import { userUpdateDetail } from "./user";
-
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
 export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
 export const UPDATE_ORDERS =  "UPDATE_ORDERS"
@@ -20,11 +19,17 @@ export const fetch_user_all_data = ()=>{
         dispatch(fetch_orders())
         dispatch(fetch_transactions())
         dispatch(userUpdateDetail())
+
+        // Generate wallets if not aleady have them
         dispatch(get_wallet_list()).then(wallet=>{
-            if(!wallet || wallet.length === 0 || wallet.filter(item=>item&&item.id===12).length===0){
-                dispatch(generate_wallet(Constants.IRT_CURRENCY_ID))
-                dispatch(generate_wallet(Constants.USDT_CURRENCY_ID))
+            if(!wallet || wallet.length === 0 ){
+                dispatch(update_fetching_state(true))
+                for(let service_id of Constants.CURRENCIES)     
+                    dispatch(generate_wallet(service_id))
+
+
                 dispatch(get_wallet_list())
+                dispatch(update_fetching_state(false))
             }
         })
     }
