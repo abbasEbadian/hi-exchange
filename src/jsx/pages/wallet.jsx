@@ -30,6 +30,7 @@ function Wallet() {
     const [withdrawCard, setWithdrawCard] = useState(0)
     const [withdrawWalletText, setWithdrawWalletText] = useState("")
     const [depositCard, setDepositCard] = useState(undefined)
+    const [depositWallet, setDepositWallet] = useState(undefined)
     const [depositTxID, setDepositTxID] = useState("")
     const [depositTxAmount, setDepositTxAmount] = useState("")
     const [depositModalOpen, setDepositModalOpen] = useState(false)
@@ -56,6 +57,7 @@ function Wallet() {
             openDepositModal(currency_id)
             return
         }
+        setDepositWallet(_wallet[0])
         setPreDepositModalOpen(true)
         setFetchingAddress(true)
         axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
@@ -416,9 +418,12 @@ function Wallet() {
                             را به کیف پول  
                             </p>
                             <p className="px-2 text-success my-5">{address}</p>
-                                در وبسایت
-                            <a className="px-2 fs-5 text-warning" href="https://www.binance.com/">بایننس</a>
-                            واریز نموده سپس  دکمه «واریز کردم» را  کلیک کنید.
+                                در شبکه
+                                {depositWallet.service && depositWallet.service.network && depositWallet.service.network.realName?
+                                <span className="px-2 fs-5 text-warning" >{depositWallet.service.network.realName} {"("}{depositWallet.service.network.name}{")"}</span>
+                                :undefined}
+                                    
+                                <span>واریز نموده سپس  دکمه «واریز کردم» را  کلیک کنید.</span>
 
                         </>:
                             <>

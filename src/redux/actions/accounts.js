@@ -23,7 +23,7 @@ export const fetch_user_all_data = ()=>{
 
         // Generate wallets if not aleady have them
         dispatch(get_wallet_list()).then(wallet=>{
-            if(!wallet || wallet.length === 0 ){
+            if(!wallet || wallet.length !== Constants.CURRENCIES.length ){
                 dispatch(update_fetching_state(true))
                 for(let service_id of Constants.CURRENCIES)     
                     dispatch(generate_wallet(service_id))
