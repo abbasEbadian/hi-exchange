@@ -18,7 +18,6 @@ function Dashboard() {
       <Sidebar />
       <PageTitle />
 
-      {currentUser.first_name ? (
         <div className="content-body">
           <div className="container-fluid">
             <div className="row">
@@ -99,9 +98,9 @@ function Dashboard() {
           </div>
         </div>
         </div>
-      ) : (
+      
         <span></span>
-      )}
+      
     </>
   );
 }
