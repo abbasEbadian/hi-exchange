@@ -11,6 +11,7 @@ import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
 import axios from 'axios';
+
 function Wallet() {
     const dispatch = useDispatch() 
     
@@ -18,13 +19,15 @@ function Wallet() {
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
     const [address, setAddress] = useState("")
+    const [fetchingAddress, setFetchingAddress] = useState(false)
+    const [transactionResult, setTransactionResult] = useState({status:undefined, text: undefined})
     const [validCards, setValidCards] = useState([])
     const [currencyID, setCurrencyID] = useState(undefined)
     const [selectedCurrency, setSelectedCurrency] = useState(undefined)
-    const [withdrawAmount, setWithdrawAmount] = useState(undefined)
+    const [withdrawAmount, setWithdrawAmount] = useState(0)
     const [withdrawCard, setWithdrawCard] = useState(undefined)
     const [depositCard, setDepositCard] = useState(undefined)
-    const [depositTxID, setDepositTxID] = useState(undefined)
+    const [depositTxID, setDepositTxID] = useState("")
     const [depositTxAmount, setDepositTxAmount] = useState("")
     const [depositModalOpen, setDepositModalOpen] = useState(false)
     const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
@@ -48,10 +51,13 @@ function Wallet() {
             return item && item.service.id === currency_id
         })
         if (!_wallet.length) return
-        if(_wallet[0].id == Constants.IRT_CURRENCY_ID){
+        setCurrencyID(currency_id)
+        if(currency_id === Constants.IRT_CURRENCY_ID){
             openDepositModal(currency_id)
             return
         }
+        setPreDepositModalOpen(true)
+        setFetchingAddress(true)
         axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
             wallet:_wallet[0].id
         }).then(response=>{
@@ -59,12 +65,10 @@ function Wallet() {
             const {data} = response 
             setAddress(data.address)
             setSelectedCurrency(_wallet[0])
-            setPreDepositModalOpen(true)
-            setCurrencyID(currency_id)
-        
         }).catch(err=>{
         }).finally(f=>{
-            setPreDepositModalOpen(true)
+            setFetchingAddress(false)
+
         })
 
     }
@@ -87,8 +91,12 @@ function Wallet() {
 
     }
     const openDepositModal = (currency_id) => {
-        
+        if(preDepositModalOpen) closePreDepositModal()
+        setDepositModalOpen(true)
     };
+
+
+
     const openWithdrawModal = (currency_id) => {
         if(validCards.length === 0){
             openNocardsModal()
@@ -99,23 +107,31 @@ function Wallet() {
         setCurrencyID(currency_id)
     };
     
+
     const confirmWithdraw= ()=>{
         dispatch(check_withdraw({card_id: withdrawCard.id}, setWithdrawModalOpen, toast))
     }
+
+
     const confirmDeposit= ()=>{
         if(currencyID !== Constants.IRT_CURRENCY_ID){
-           
-            dispatch(check_transaction({depositTxID }, setDepositModalOpen, toast))
+            const _wallet = wallet.filter(item=>{
+                return item && item.service.id === currencyID
+            })
+            dispatch(check_transaction({depositTxID, wallet: _wallet[0].id }, setTransactionResult))
         }
     }
+
     const changeDepositCard = (e)=>{
         const selected = e.target.value
         setDepositCard(cards.filter(item=>item.id === selected))
     }
+
     const changeWithdrawCard = (e)=>{
         const selected = e.target.value
         setWithdrawCard(cards.filter(item=>item.id === selected))
     }
+
    useEffect(() => {
         const vc = cards.filter((item, idx)=>{
            return item.status === "confirmed"
@@ -220,6 +236,7 @@ function Wallet() {
                         
                         </>:
                         <div className="col-12">
+                            <p>لطفا شماره تراکنش واریز را به همراه مبلغ تراکنش وارد نمایید</p>
                             <label htmlFor="" className="d-flex justify-content-between form-label">
                                 <span>شماره تراکنش</span>
                                 <span>tx_id</span>
@@ -228,6 +245,15 @@ function Wallet() {
 
                             <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مبلغ تراکنش </label>
                             <input type="text" className="form-control" value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
+
+
+                            {transactionResult.status?
+                                transactionResult.status === 200?
+                                   <p className="text-success my-3">{transactionResult.text}</p>
+                                :
+                                   <p className="text-danger my-3">{transactionResult.text}</p>
+                            :undefined 
+                        }
                         </div>
                     }
                     
@@ -319,32 +345,46 @@ function Wallet() {
 
             <Modal contentClassName="dark" show={preDepositModalOpen} onHide={() => setPreDepositModalOpen(false)}>
                 <Modal.Header closeButton>
-                <Modal.Title>تاریخچه</Modal.Title>
+                <Modal.Title>واریز</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {selectedCurrency && selectedCurrency.service && address?(
-                        <p>
-                        کاربر گرامی ، لطفا ابتدا میزان مورد نظر ارز 
-                        <span className="px-2 text-success">{selectedCurrency.service.name}</span>
-                        را به کیف پول  
-                        <p className="px-2 text-success my-5">{address}</p>
-                            در وبسایت
-                        <a className="px-2 fs-5 text-warning" href="https://www.binance.com/">بایننس</a>
-                        واریز نموده سپس  دکمه «واریز کردم» را  کلیک کنید.
-                        </p>
+                    {fetchingAddress && !address?
+                        <>
+                            <p>در حال دریافت اطلاعات ...</p>
+                        </>
+                    :
+                    selectedCurrency && selectedCurrency.service && address?
+                        <>
+                            <p>
+                            کاربر گرامی ، لطفا ابتدا میزان مورد نظر ارز 
+                            <span className="px-2 text-success">{selectedCurrency.service.name}</span>
+                            را به کیف پول  
+                            </p>
+                            <p className="px-2 text-success my-5">{address}</p>
+                                در وبسایت
+                            <a className="px-2 fs-5 text-warning" href="https://www.binance.com/">بایننس</a>
+                            واریز نموده سپس  دکمه «واریز کردم» را  کلیک کنید.
 
-                    ):<>
-                        <p>مشکلی در دریافت آدرس کیف پول مربوطه پیش آمد.</p> 
-                      <button className="btn-simple text-warning">تلاش دوباره </button>
-                    </>
+                        </>:
+                            <>
+                            <p>مشکلی در دریافت آدرس کیف پول مربوطه پیش آمد.</p> 
+                          <button onClick={e=>openPreDepositModal(selectedCurrency)} className="btn-simple text-warning d-flex justify-content-center">
+                              تلاش دوباره 
+                                {fetchingAddress? <Loader className="mx-3" type="Oval" color="#fff" width={25} height={25}></Loader>:undefined}
+                                </button>
+                            </>
                     }
                 </Modal.Body>
                 <Modal.Footer>
                 <button className="text-danger bg-transparent border-0" onClick={closePreDepositModal}>
                     بستن
                 </button>
-                <button className="btn btn-sm btn-success " onClick={confirmDeposit}>
-                    واریز کردم
+                <button className="btn btn-sm btn-success " disabled={!address} onClick={openDepositModal}>
+                {fetchingAddress && !address?
+                    <Loader type="Oval" color="#fff" height={25} width={25}></Loader> 
+                    :
+                    "واریز کردم"
+                }
                 </button>
                 
                 </Modal.Footer>

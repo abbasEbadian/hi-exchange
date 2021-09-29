@@ -52,32 +52,30 @@ export const update_fetching_state = (is_fetching)=>{
 }
 
 
-export const check_transaction = ({depositTxID, wallet}, setDepositModalOpen, toast)=>{
+export const check_transaction = ({depositTxID, wallet}, setTransactionResult)=>{
     return async dispatch=>{
         dispatch(checking_transaction(true))
-        axios.post(Constants.BASE_URL + "/api/v2/wallet/deposit/address/", {
-            wallet
-        }).then(resp=>{
-            const {data} = resp
-            if (data.error === 1) throw Error("wallet not found")
-            axios.post(Constants.BASE_URL + "/api/v2/wallet/deposit/", {
-                tx_id: depositTxID,
-                wallet: data.wallet
-            }).then(response=>{
-                const {data} = response
-                if (data.error === 1)
-                    toast.error(data.message)
-                else{
-                    toast.success("تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد.")
-                    setDepositModalOpen(false)
-                }
-            }).catch(err=>{
-                console.log(err);
-            })
+        let status, text;
+        axios.post(Constants.BASE_URL + "/api/v2/wallet/deposit/", {
+            tx_id: depositTxID,
+            wallet: wallet
+        }).then(response=>{
+            const {data} = response
+            if (data.error === 1){
+                text = data.message
+                status = 400
+            }
+            else{
+                let text = "تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد."
+                text = text
+                status = 200
+            }
         }).catch(err=>{
             console.log(err);
-            
+            text = 'بررسی با خطا مواجه شد'
+            status = 400
         }).finally(fn=>{
+            setTransactionResult({status: 200, text})
             dispatch(checking_transaction(false))
         })
         

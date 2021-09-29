@@ -10028,4 +10028,7 @@ button.btn-simple {
   border: none;
   background: none; }
 
+.Toastify {
+  z-index: 1051; }
+
 /*# sourceMappingURL=style.css.map */
