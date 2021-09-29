@@ -7,6 +7,8 @@ export const UPDATE_FETCHING_STATE = "UPDATE_FETCHING_STATE"
 export const UPDATE_NETWORK_LIST = "UPDATE_NETWORK_LIST"
 export const CHECKING_TRANSACTION = "CHECKING_TRANSACTION"
 export const CHECKING_WITHDRAW = "CHECKING_WITHDRAW"
+export const CHECKING_IRT_DEPOSIT = "CHECKING_IRT_DEPOSIT"
+export const GENERATING_IRT_DEPOSIT_LINK = "GENERATING_IRT_DEPOSIT_LINK"
 
 
 
@@ -69,8 +71,58 @@ export const update_fetching_state = (is_fetching)=>{
         payload: is_fetching
     }
 }
+export const update_checking_irt_deposit = (is_checking)=>{
+    return {
+        type: UPDATE_FETCHING_STATE,
+        payload: is_checking
+    }
+}
+export const generating_irt_deposit_link = (is_generating)=>{
+    return {
+        type: GENERATING_IRT_DEPOSIT_LINK,
+        payload: is_generating
+    }
+}
 
-
+export const check_irt_deposit = ({bank_id, order_id, id})=>{
+    return dispatch=>{
+        return new Promise((resolve, reject)=>{
+            dispatch(update_checking_irt_deposit(true))
+            axios.post("https://api.idpay.ir/v1.1/payment/verify", {
+                    id,
+                    order_id
+                }).then(response=>{
+                    const {data} = response
+                    const amount = data.amount
+                    if(data.status === 200){
+                        axios.post(Constants.BASE_URL+"/api/v2/wallet/manage/", {
+                            amount,
+                            bank_id,
+                            type:"1"
+                        }).then(response=>{
+                            const {data} = response
+                            if(data.error === 1){
+                                return reject({result: "fail", cause: "خطا در قبت تراکنش در سیستم"})
+                            }else{
+                                return resolve({result: "success"})
+                            }
+                        }).catch(error=>{
+                            return reject({result:"fail", cause: error})
+                        })
+                        
+                    }else{
+                        return reject({result: "fail", cause: "خطا در تایید تراکنش"})
+                    }
+                }).catch(error=>{
+                    return reject({result:"fail", cause: "خطا در تایید تراکنش "})
+                }).finally(e=>{
+                    dispatch(update_checking_irt_deposit(false))
+                })
+            
+           
+        })
+    }
+}
 export const check_transaction = ({depositTxID, wallet}, setTransactionResult)=>{
     return async dispatch=>{
         dispatch(checking_transaction(true))
@@ -94,7 +146,7 @@ export const check_transaction = ({depositTxID, wallet}, setTransactionResult)=>
             text = 'بررسی با خطا مواجه شد'
             status = 400
         }).finally(fn=>{
-            setTransactionResult({status: 200, text})
+            setTransactionResult({status: status, text})
             dispatch(checking_transaction(false))
         })
         

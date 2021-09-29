@@ -20,7 +20,7 @@ function VerifyStep4() {
                                         className="identity-upload"
                                     >
                                         <div className="identity-content">
-                                            <span className="icon">
+                                            <span className="icon icon-success">
                                                 <i className="fa fa-check"></i>
                                             </span>
                                             <h4>تصویر با موفقیت  بارگذاری شد</h4>

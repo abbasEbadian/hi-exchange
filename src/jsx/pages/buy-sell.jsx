@@ -98,6 +98,7 @@ function BuySell() {
         let av = get_available(selectedCurrency.id)
         setBuySource(selectedCurrency);
         setBuyAvailableCurrency(av)
+        setBuyConvertAmount(0)
         setBuyLowCredit(false)
         computePrices({buySourceP:selectedCurrency, buyAvailableCurrencyP:av})
     }
@@ -107,6 +108,7 @@ function BuySell() {
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         setBuyDestination(selectedCurrency);
         setBuyLowCredit(false)
+        setBuyConvertAmount(0)
         computePrices({buyDestinationP:selectedCurrency})
 
     }
@@ -115,8 +117,9 @@ function BuySell() {
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         setSellDestination(selectedCurrency);
-        computePrices({sellDestinationP: selectedCurrency})
         setSellLowCredit(false)
+        setSellConvertAmount(0)
+        computePrices({sellDestinationP: selectedCurrency})
 
         
     }
@@ -128,6 +131,7 @@ function BuySell() {
         setSellSource(selectedCurrency);
         setSellAvailableCurrency(av)
         setSellLowCredit(false)
+        setSellConvertAmount(0)
         computePrices({
             sellSourceP:selectedCurrency,
             sellAvailableCurrencyP: av
@@ -153,17 +157,8 @@ function BuySell() {
     })=>{
         
         if(tab === "buy"){
-            let binvalid = false 
             
     
-            // if(!buySourceP.id || !buySourceP.id || !buyConvertAmountP || buyLowCredit){
-            //     binvalid = true;
-            // } 
-            // if(binvalid) {
-            //     setBuyConvertInvalid(true)
-            //     return
-            // }
-            
             const data = qs.stringify({
                 'source': String(buySourceP.id), 
                 'destination': String(buyDestinationP.id),

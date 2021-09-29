@@ -6,22 +6,26 @@ import { Modal } from 'react-bootstrap'
 import {Constants}  from '../../Constants'
 import { useDispatch } from 'react-redux'
 import Loader from 'react-loader-spinner';
-import { check_transaction, check_withdraw, check_withdraw_irt, get_wallet_list } from '../../redux/actions'
+import { check_transaction, check_withdraw, check_withdraw_irt, get_wallet_list, check_irt_deposit } from '../../redux/actions'
 import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
 import axios from 'axios';
+import {useLocation} from 'react-router-dom'
 
-function Wallet() {
-    const dispatch = useDispatch() 
+function Wallet(props) {
     
-    const {wallet, checking_transaction, is_fetching } = useSelector(state => state.wallet)
+    const dispatch = useDispatch() 
+    const params = useLocation()
+    const {wallet, checking_transaction, is_fetching, checking_irt_deposit } = useSelector(state => state.wallet)
     const user = useSelector(state => state.session.user)
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
     const [address, setAddress] = useState("")
+    const [generatingWallet, setGeneratingWallet] = useState(false)
     const [fetchingAddress, setFetchingAddress] = useState(false)
     const [transactionResult, setTransactionResult] = useState({status:undefined, text: undefined})
+    const [validateModalDetails, setValidateModalDetails] = useState({status_text:undefined, track_id: undefined})
     const [validCards, setValidCards] = useState([])
     const [currencyID, setCurrencyID] = useState(undefined)
     const [selectedCurrency, setSelectedCurrency] = useState(undefined)
@@ -38,7 +42,7 @@ function Wallet() {
     const [nocardsModalOpen, setNocardsModalOpen] = useState(false)
     const [summaryModalOpen, setSummaryModalOpen] = useState(false)
     const [preDepositModalOpen, setPreDepositModalOpen] = useState(false)
-    
+    const [validateModalOpen, setValidateModalOpen] = useState(false)
     
     const [historyOrders, setHistoyOrders] = useState([])
 
@@ -90,9 +94,16 @@ function Wallet() {
         setSummaryModalOpen(true)
     }
 
+    const openInNewTab = (url) => {
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+        if (newWindow) newWindow.opener = null
+        // if(!newWindow || newWindow.closed || typeof newWindow.closed=='undefined') {
+        //     toast.info("پنجره های پاپ آپ مرورگر غیر فعال شده است.لطفا ابتدا آن را فعال کنید.")
+        // }
 
+      }
     const confirmIRTDeposit = ()=>{
-       
+        setGeneratingWallet(true)
         axios.post("http://127.0.0.1:5000/create_payment_link", {
             order_id: "HiEx-"+Math.round(100000*(Math.random())),
             amount: depositTxAmount,
@@ -101,10 +112,16 @@ function Wallet() {
             mail: user.email || "",
             desc: "شارژ کیف پول تومانی"
         }).then(response=>{
+            
             const {data} = response
-            console.log(data);
+            if(data.link){
+                openInNewTab(data.link)
+            }
         }).catch(error=>{
-            console.log(error)
+            toast.error("با خطا مواجه شد")
+        }).finally(f=>{
+            setGeneratingWallet(false)
+            closeDepositModal(false)
         })
     }
 
@@ -170,15 +187,53 @@ function Wallet() {
         setWithdrawCard(cards.filter(item=>item.id === selected))
     }
 
+    const statusMessage = {
+        "1": "پرداخت انجام نشده است",
+        "2": `  پردا خت ناموفق  بوده است `,
+        "3":  "خطا رخ داده است",
+        "4": " 	بلوکه شده",
+        "5":" 	برگشت به پرداخت کننده",
+        "6":" 	برگشت خورده سیستمی",
+        "7":" 	انصراف از پرداخت",
+        "8":" 	به درگاه پرداخت منتقل شد",
+        "10": 	"در انتظار تایید پرداخت",
+        "100": 	"پرداخت تایید شده است",
+        "101": 	"پرداخت قبلا تایید شده است",
+        "200": 	"به دریافت کننده واریز شد",
+    }
 
-
-   useEffect(() => {
+    const validateIRTDeposit = (params)=>{
+    
+        const id = params.get("id")
+        const status = params.get("status")
+        const order_id = params.get("order_id")
+        const track_id = params.get("track_id")
+        const status_text = statusMessage[String(status)]
+        if(+status === 200 )
+            dispatch(check_irt_deposit({
+                bank_id: depositCard.id,
+                order_id,
+                id
+            })).then(response=>{
+                setValidateModalDetails({status, status_text, track_id, order_id})
+            }).catch(error=>{
+                toast.error(error.cause)
+            })
+        else{
+            setValidateModalDetails({status, status_text, track_id, order_id})
+        }
+        setValidateModalOpen(true)
+    }
+    useEffect(() => {
         const vc = cards.filter((item, idx)=>{
            return item.status === "confirmed"
         })
         setValidCards(vc)
         dispatch(get_wallet_list())
-        
+        if(params.search){
+            validateIRTDeposit(new URLSearchParams(params.search))
+        }
+
    }, [cards])
     return (
         <>
@@ -300,11 +355,14 @@ function Wallet() {
                 <button className="text-danger bg-transparent border-0"  onClick={closeDepositModal}>
                     لغو
                 </button>
-                { currencyID === Constants.IRT_CURRENCY_ID ?
+                { currencyID === Constants.IRT_CURRENCY_ID ?<>
                     <button className="btn-success btn-sm"  onClick={confirmIRTDeposit} disabled={checking_transaction || !depositTxAmount}>
                         <span>پرداخت</span>
+                        
                     </button>
-                :<button className="btn-success btn-sm"  onClick={confirmDeposit} disabled={checking_transaction}>
+                    {generatingWallet? 
+                        <Loader type="Oval" color="#fff" width={25} height={25}></Loader>:undefined }
+                </>:<button className="btn-success btn-sm"  onClick={confirmDeposit} disabled={checking_transaction}>
                     <span>بررسی تراکنش</span>
                 </button>}
 
@@ -394,6 +452,63 @@ function Wallet() {
                 </Modal.Body>
                 <Modal.Footer>
                 <button className="text-danger bg-transparent border-0" onClick={closeSummaryModal}>
+                    بستن
+                </button>
+                
+                </Modal.Footer>
+            </Modal>
+            <Modal dialogClassName="modal-90w mx-auto" contentClassName="dark" show={summaryModalOpen} onHide={() => setSummaryModalOpen(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>تاریخچه</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <OrderList orders={historyOrders}></OrderList>
+                </Modal.Body>
+                <Modal.Footer>
+                <button className="text-danger bg-transparent border-0" onClick={closeSummaryModal}>
+                    بستن
+                </button>
+                
+                </Modal.Footer>
+            </Modal>
+            <Modal  contentClassName="dark" show={validateModalOpen} onHide={() => setValidateModalOpen(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>تاریخچه</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {checking_irt_deposit? 
+                        <Loader type="Circles" height={70} width={70} color="#fff"/>
+                        :
+                        validateModalDetails.status && validateModalDetails.status === 200 ?
+                            <div className="identity-content">
+                                <span className="icon icon-primary">
+                                    <i className="fa fa-check"></i>
+                                </span>
+                                <h4>پرداخت با موفقیت انجام شد</h4>
+                                <p className="mt5">
+                                    با تشکر از حسن اعتماد شما
+                                    <br/>
+                                    مبلغ واریز شده در کمترین زمان به کیف پول شما افزوده خواهد شد.
+                                </p>
+                                <p>شماره پیگیری:</p>
+                                <h2 className="text-warning">{validateModalDetails.track_id}</h2>
+                            </div>
+    
+                        :
+                            <div className="identity-content">
+                                <span className="icon icon-warning">
+                                    <i className="fa fa-exclamation"></i>
+                                </span>
+                                <h4>{validateModalDetails.status_text}</h4>
+                                <p>شماره پیگیری:</p>
+                                <h2 className="text-warning">{validateModalDetails.track_id}</h2>
+                            </div>
+                        }
+                    
+                    
+                </Modal.Body>
+                <Modal.Footer>
+                <button className="text-danger bg-transparent border-0" onClick={()=>setValidateModalOpen(false)}>
                     بستن
                 </button>
                 

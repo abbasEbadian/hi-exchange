@@ -9957,13 +9957,17 @@ input[type=number] {
     height: 75px;
     border-radius: 100px;
     margin: 0 auto;
-    background: #34c38f;
-    color: #1f7254;
     font-size: 30px;
     padding: 10px;
     align-items: center;
     justify-content: center;
     margin-bottom: 30px; }
+    .identity-content .icon.icon-success {
+      background: #34c38f;
+      color: #1f7254; }
+    .identity-content .icon.icon-warning {
+      background: #e0aa3e;
+      color: #9f7219; }
   .identity-content h4, .identity-content .h4 {
     max-width: 350px;
     margin: 0 auto 15px; }
