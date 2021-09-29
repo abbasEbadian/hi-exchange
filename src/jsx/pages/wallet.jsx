@@ -46,10 +46,7 @@ function Wallet() {
         setPreDepositModalOpen(false)
     }
     const openPreDepositModal = (currency_id) => {
-        if(validCards.length === 0){
-            openNocardsModal()
-            return 
-        }
+        
         const _wallet = wallet.filter(item=>{
             return item && item.service.id === currency_id
         })
@@ -111,6 +108,10 @@ function Wallet() {
 
 
     const openDepositModal = (currency_id) => {
+        if(validCards.length === 0 && currency_id === Constants.IRT_CURRENCY_ID){
+            openNocardsModal()
+            return 
+        }
         setDepositTxAmount(0)
         if(preDepositModalOpen) closePreDepositModal()
         setDepositModalOpen(true)
@@ -119,7 +120,7 @@ function Wallet() {
 
 
     const openWithdrawModal = (currency_id) => {
-        if(validCards.length === 0){
+        if(validCards.length === 0 && currency_id === Constants.IRT_CURRENCY_ID){
             openNocardsModal()
             return 
         }
