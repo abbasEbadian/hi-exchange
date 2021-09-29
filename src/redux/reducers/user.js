@@ -5,7 +5,8 @@ import {
     UPDATE_LOG_STATUS,
     UPDATE_LOG_INFO,
     UPDATE_USER_WALLET,
-    USER_LOGOUT
+    USER_LOGOUT,
+    UPDATING_USER_AVATAR
 } from '../actionTypes'
 
 const initial_state = {
@@ -14,6 +15,7 @@ const initial_state = {
     profile: {},
     wallet: {},
     authID: undefined,
+    updating_avatar: false,
     login:{
         access: "",
         refresh: ""
@@ -50,6 +52,11 @@ export const userManager = (state= initial_state, action)=>{
             return {
                 ...state, 
                 login: action.payload
+            }
+        case UPDATING_USER_AVATAR:
+            return {
+                ...state, 
+                updating_avatar: action.payload
             }
         case USER_LOGOUT:
             return initial_state

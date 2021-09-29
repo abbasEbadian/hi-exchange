@@ -212,7 +212,7 @@ function BuySell() {
         }else{
             let binvalid = false 
         
-            if(!sellSourceP.id || !sellSourceP.id || !sellConvertAmountP || sellLowCredit){
+            if(!sellSourceP.id || !sellSourceP.id || !sellConvertAmountP || sellLowCredit.current){
                 binvalid = true;
             } 
             if(binvalid) {
@@ -438,7 +438,7 @@ function BuySell() {
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={buyDestination.small_name_slug}
+                                                    symbol={buyDestination.small_name_slug+"1!"}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}

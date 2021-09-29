@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PageTitle from '../element/page-title';
 import SettingsNav from '../element/settings-nav';
 import Header2 from '../layout/header2';
@@ -7,15 +7,20 @@ import PersonalInfo from '../element/personal-info.jsx'
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { sessionService } from 'redux-react-session'
-import { userUpdateImage } from '../../redux/actions'
+import { userUpdateAvatar } from '../../redux/actions'
 import {  toast } from 'react-toastify';
+import Loader from 'react-loader-spinner';
+import UserAvatar from '../element/userAvatar';
 
 
 function Settings() {
     const [name, setName] = useState("");
-    const [image, setImage ] = useState("")
     const currentUser = useSelector(state=>state.session.user)
+    const {updaing_avatar} = useSelector(state=>state.userManager)
     const dispatch = useDispatch()
+    const avatarRef = useRef(undefined)
+
+    
     let token = ""
     sessionService.loadSession()
     .then(currentSession => token=currentSession.token)
@@ -27,16 +32,7 @@ function Settings() {
         draggable: true,
         autoClose: 5000,
     }
-    const changeImage =  e=>{
-    let reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
-        reader.onload = function () {
-            setImage(reader.result);
-        };
-        reader.onerror = function (error) {
-            console.log('Error: ', error);
-        };
-    }
+    
     const submitName =async  e=>{
         e.preventDefault();
         e.stopPropagation();
@@ -66,8 +62,8 @@ function Settings() {
             })
         
         }
-        if (image){
-            dispatch(userUpdateImage(image, toast, toastOpt)); 
+        if (avatarRef.current.files.length>0){
+            dispatch(userUpdateAvatar(avatarRef.current.files[0], toast, toastOpt)); ;
         }
         return false;
     }
@@ -97,8 +93,7 @@ function Settings() {
                                                     
                                                     <div className="mb-3 col-xl-12">
                                                          <div className="d-flex align-items-center mb-3">
-                                                            <img className="rounded-circle ms-0 ms-sm-3"
-                                                                src={require('./../../images/profile/2.png')} width="55" height="55" alt="" />
+                                                            <UserAvatar></UserAvatar>
                                                             <div className="d-flex w-100">
                                                                 {currentUser && <h4 className="mb-0">{currentUser.first_name} {" "}  {currentUser.last_name}</h4>}
                                                                 
@@ -109,15 +104,16 @@ function Settings() {
                                                             <input type="text" className="form-control f" placeholder="نام" value={name} onChange={e=>setName(e.target.value)} />
                                                         </div>
                                                        
-                                                        <div className="file-upload-wrapper" data-text="تغییر تصویر">
-                                                            <input name="file-upload-field" type="file" onChange={changeImage}
+                                                        <div className="file-upload-wrapper" data-text={avatarRef.current&&avatarRef.current.files.length>0?avatarRef.current.files[0].name:"اپلود تصویر"}>
+                                                            <input name="file-upload-field" type="file" ref={avatarRef}
                                                                 className="file-upload-field position-relative"  aria-describedby="imagedHelpBlock"></input>
                                                             <small id="imagedHelpBlock" className="form-text" style={{fontSize:0.7+'em'}}>حداکثر سایز مجاز برای فایل 20mb
                                                             </small>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 text-start">
+                                                    <div className="col-12 text-start mt-3">
                                                         <button className="btn btn-success waves-effect">ذخیره</button>
+                                                        {updaing_avatar?<Loader type="Oval" color="#fff" width={25} height={25}></Loader>:undefined}
                                                     </div>
                                                 </div>
                                             </form>

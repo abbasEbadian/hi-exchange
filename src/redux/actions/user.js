@@ -6,12 +6,16 @@ import {
     UPDATE_LOG_INFO,
     UPDATE_USER_WALLET,
     USER_LOGOUT,
+    UPDATING_USER_AVATAR
 } from '../actionTypes'
+
 import { sessionService } from 'redux-react-session'
 import axios from 'axios';
 import {toast } from 'react-toastify'
 import { toggle_loader_on, toggle_loader_off } from '../actions'
+import {Constants} from '../../Constants'
 
+var fs = require('fs');
 const toastOpt = {
     position: "bottom-left",
     hideProgressBar: false,
@@ -21,7 +25,7 @@ const toastOpt = {
 }
 
 
-const BASE = "https://hi-exchange.com"
+const BASE = Constants.BASE_URL
 
 
 export const userLogout = (_history)=>{
@@ -134,7 +138,7 @@ export const userUpdateName =  (name)=>{
 export const userUpdateImage =  (image, toast=0, toastOpt=0)=>{
     return dispatch=>{
         return new Promise((resolve, reject)=>{
-            axios.post("https://hi-exchange.com/api/v2/account/verify/", {
+            axios.post(BASE+"/api/v2/account/verify/", {
                 image
             },
             ).then(data=>{
@@ -151,6 +155,38 @@ export const userUpdateImage =  (image, toast=0, toastOpt=0)=>{
         })
     }
 }
+export const userUpdateAvatar =  (image, toast=0, toastOpt=0)=>{
+   const data = new  FormData()
+   data.append('file', image);
+    
+    return dispatch=>{
+
+        return new Promise((resolve, reject)=>{
+            dispatch(uploading_avatar(true))
+            axios.post(BASE+"/api/v2/account/avatar/", data,{
+                header:{
+                    "Content-Type": "application/form-data"
+                }
+            }
+            ).then(data=>{
+                if(data.data.error === 1){
+                    if(toast) toast.error(data.data.message, toastOpt); 
+                }else{
+                    if(toast) toast.success(data.data.message, toastOpt); 
+                    dispatch(userUpdateDetail())
+                }
+                return resolve(200) 
+            }).catch(err=>{
+                console.log(err);
+                if(toast) toast.error("با خطا مواجه شد.")
+                return reject(400)
+            }).finally(f=>{
+                dispatch(uploading_avatar(false))
+            })
+        })
+    }
+}
+
 export const userUpdatePersonal = (info)=>{
     return dispatch=>{
         
@@ -178,6 +214,12 @@ export const userUpdatePersonal = (info)=>{
     }
 }
 
+export const uploading_avatar = (is_updating)=>{
+    return {
+        type: UPDATING_USER_AVATAR,
+        payload: is_updating
+    }
+}
 export const udpate_user_detail = (user)=>{
     return {
         type: UPDATE_USER_DETAIL,

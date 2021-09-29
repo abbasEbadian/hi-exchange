@@ -6,7 +6,7 @@ import { Modal } from 'react-bootstrap'
 import {Constants}  from '../../Constants'
 import { useDispatch } from 'react-redux'
 import Loader from 'react-loader-spinner';
-import { check_transaction, check_withdraw, check_withdraw_irt } from '../../redux/actions'
+import { check_transaction, check_withdraw, check_withdraw_irt, get_wallet_list } from '../../redux/actions'
 import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
@@ -177,9 +177,7 @@ function Wallet() {
            return item.status === "confirmed"
         })
         setValidCards(vc)
-        
-        
-        
+        dispatch(get_wallet_list())
         
    }, [cards])
     return (
@@ -330,7 +328,9 @@ function Wallet() {
                                 <span className="text-danger">توجه : </span>
                                 <span>کیف پول وارد شده الزاما باید در شبکه </span>
                                 <span className="text-success px-2">{withdrawWallet.service.network.realName} {"("}{withdrawWallet.service.network.name}{")"}</span>
-                                <span>باشد.در غیر اینصورت ، امکان از بین رفتن دارایی شما وجود دارد.</span>
+                                <span>باشد.</span>
+                                <br/>
+                                در غیر اینصورت ، امکان از بین رفتن دارایی شما وجود دارد.
                             </small>:undefined}
                         </div>
                     :

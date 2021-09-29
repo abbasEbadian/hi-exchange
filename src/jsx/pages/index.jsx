@@ -1,17 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PageTitle from "../element/page-title";
 import Convert from "../element/convert";
 import Header2 from "../layout/header2";
 import Sidebar from "../layout/sidebar";
 import IndexTransactions from "../layout/index-transactions";
 import Balance from "../element/balance";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import IndexChart from "../layout/index-chart";
 import "react-toastify/dist/ReactToastify.css";
 import {Link } from 'react-router-dom'
+import { get_wallet_list } from "../../redux/actions";
+import UserAvatar from "../element/userAvatar";
 function Dashboard() {
   const currentUser = useSelector(state => state.session.user);
   const wallet = useSelector(state=>state.wallet.wallet)
+  const dispatch = useDispatch()
+  useEffect(()=>{
+    dispatch(get_wallet_list())
+  }, [])
   return (
     <>
       <Header2 />
@@ -27,10 +33,7 @@ function Dashboard() {
                     <div className="col-12 col-lg-4">
                       <div className="card welcome-profile transparent">
                         <div className="card-body">
-                          <img
-                            src={require("../../images/profile/2.png")}
-                            alt=""
-                          />
+                          <UserAvatar></UserAvatar>
 
                           {currentUser &&
                             currentUser.authentication_status ===
