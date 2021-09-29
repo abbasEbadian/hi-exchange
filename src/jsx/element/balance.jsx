@@ -61,8 +61,9 @@ function Balance() {
                                         <Link to="/wallet"className="text-secondary border-0 bg-transparent">شارژ کیف پول</Link>
                                     </li>
                                     :
-                                    wallet.map((item, idx)=>{
-                                        return <li key={idx} className="d-flex">
+                                    <>
+                                    {wallet.map((item, idx)=>{
+                                        return idx <5 && <li key={idx} className="d-flex">
                                             <i className={"cc "+ item.service.small_name_slug + " ms-3"}></i>
                                             <div className="flex-grow-1">
                                                 <h5 className="m-0">{item.service.small_name_slug}</h5>
@@ -72,7 +73,9 @@ function Balance() {
                                                 <span className="w-100 text-left">{(item.balance * item.service.show_price_irt).toLocaleString()} ت</span>
                                             </div>
                                         </li>
-                                    })
+                                    })}
+                                    <Link to="/wallet">نمایش همه</Link>
+                                    </>
                                 }
                                 </ul>
                             </div>
