@@ -1,14 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import OrderList  from '../element/orderList'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { fetch_user_all_data } from '../../redux/actions';
 
 
 function Accounts() {
     const orders = useSelector(state=>state.accounts.orders)
     const user = useSelector(state=>state.session.user)
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(fetch_user_all_data())
+    }, [])
+    
     return (
         <>
             <Header2 />

@@ -98,6 +98,7 @@ function BuySell() {
         let av = get_available(selectedCurrency.id)
         setBuySource(selectedCurrency);
         setBuyAvailableCurrency(av)
+        setBuyLowCredit(false)
         computePrices({buySourceP:selectedCurrency, buyAvailableCurrencyP:av})
     }
     const changeBuyDestination = (e)=>{
@@ -105,6 +106,7 @@ function BuySell() {
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         setBuyDestination(selectedCurrency);
+        setBuyLowCredit(false)
         computePrices({buyDestinationP:selectedCurrency})
 
     }
@@ -114,6 +116,8 @@ function BuySell() {
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         setSellDestination(selectedCurrency);
         computePrices({sellDestinationP: selectedCurrency})
+        setSellLowCredit(false)
+
         
     }
     const changeSellSource = (e)=>{
@@ -123,6 +127,7 @@ function BuySell() {
         let av = get_available(selectedCurrency.id)
         setSellSource(selectedCurrency);
         setSellAvailableCurrency(av)
+        setSellLowCredit(false)
         computePrices({
             sellSourceP:selectedCurrency,
             sellAvailableCurrencyP: av
@@ -151,20 +156,20 @@ function BuySell() {
             let binvalid = false 
             
     
-            if(!buySourceP.id || !buySourceP.id || !buyConvertAmountP || buyLowCredit){
-                binvalid = true;
-            } 
-            if(binvalid) {
-                setBuyConvertInvalid(true)
-                return
-            }
+            // if(!buySourceP.id || !buySourceP.id || !buyConvertAmountP || buyLowCredit){
+            //     binvalid = true;
+            // } 
+            // if(binvalid) {
+            //     setBuyConvertInvalid(true)
+            //     return
+            // }
             
             const data = qs.stringify({
                 'source': String(buySourceP.id), 
                 'destination': String(buyDestinationP.id),
                 'changed': 'destination',
                 'source-price': '0',
-                'destination-price': buyConvertAmountP
+                'destination-price': buyConvertAmountP 
             })
             axios.post("https://hi-exchange.com/api/v2/order/calculator/", data, {
                headers:{
@@ -182,8 +187,8 @@ function BuySell() {
                     buyEndPrice: Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2),
                     buyKarmozdAmount: +data["total_fee"],
                     buyFixedKarmozd: +data["fix_fee"],
-                    buyConversionResult: +data["source_price"],
-                    buyConversionResultStr: data["source_price_str"],
+                    buyConversionResult: buyConvertAmountP? +data["source_price"]: 0,
+                    buyConversionResultStr: buyConvertAmountP? data["source_price_str"]: 0,
                 }
                 const a = d.buyConversionResult
                 const a2 = convertFeeToIrt(buyDestination.id, d.buyKarmozdAmount)
@@ -210,16 +215,7 @@ function BuySell() {
             
             
         }else{
-            let binvalid = false 
         
-            if(!sellSourceP.id || !sellSourceP.id || !sellConvertAmountP || sellLowCredit.current){
-                binvalid = true;
-            } 
-            if(binvalid) {
-                setSellConvertInvalid(true)
-                return
-            }
-            
             const data = qs.stringify({
                 'source': String(sellSourceP.id), 
                 'destination': String(sellDestinationP.id),
@@ -243,8 +239,8 @@ function BuySell() {
                     sellEndPrice: Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2),
                     sellKarmozdAmount: +data["total_fee"],
                     sellFixedKarmozd: +data["fix_fee"],
-                    sellConversionResult: +data["destination_price"],
-                    sellConversionResultStr: data["destination_price_str"],
+                    sellConversionResult: sellConvertAmountP?+data["destination_price"]:0,
+                    sellConversionResultStr: sellConvertAmountP?data["destination_price_str"]:0,
                 }
                 const a = d.sellConversionResult
                 const a2 = convertFeeToIrt(sellDestination.id, d.sellKarmozdAmount)

@@ -48,7 +48,7 @@ function Dashboard() {
                           <ul>
                             <li>
                             {currentUser &&
-                                currentUser.authentication_status ===
+                                currentUser.authentication_status !==
                                   "accepted" ?
                                 <Link to="/verify-step-1">
                                     <span className="not-verified">
