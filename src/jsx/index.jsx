@@ -115,10 +115,17 @@ axios.interceptors.response.use((response) => {
 const Index = ()=> {
     const {checked, authenticated} = useSelector(state => state.session)
     const dispatch = useDispatch()
+    const wallet = useSelector(state => state.wallet.wallet)
     useEffect(() => {
         if(authenticated){
             dispatch(fetch_user_all_data())
             dispatch(fetch_currencies())
+        }
+        if(!wallet || !wallet.length){
+            setTimeout(() => {
+                if(!wallet)
+                dispatch(fetch_user_all_data())
+            }, 1000);
         }
         
     }, [authenticated, dispatch])

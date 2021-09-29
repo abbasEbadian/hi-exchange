@@ -102,7 +102,7 @@ function Wallet() {
             openNocardsModal()
             return 
         }
-        setSelectedCurrency(wallet.filter((item)=>{return item.service.id===currency_id})[0])
+        setSelectedCurrency(wallet.filter((item)=>{return item&&item.service.id===currency_id})[0])
         setWithdrawModalOpen(true)
         setCurrencyID(currency_id)
     };

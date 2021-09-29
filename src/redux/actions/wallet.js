@@ -91,21 +91,22 @@ export const checking_transaction = (is_checking)=>{
 export const check_withdraw = ({card_id, amount=0}, setWithdrawModalOpen, toast)=>{
     return dispatch=>{
         dispatch(checking_transaction(true))
-        axios.get(Constants.BASE_URL + "/api/v2/wallet/manage/", {
-            bank_id: card_id,
-            amount,
-            type: "withdraw"
+        axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", {
+            bank_id: String(card_id),
+            amount: String(amount),
+            type: "2"
         }).then(response=>{
             const {data} = response
             if (data.error === 1)
                 toast.error(data.message)
             else{
                 toast.success("تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد.")
-                setWithdrawModalOpen(false)
             }
         }).catch(err=>{
             console.log(err);
+            toast.error("خطا هنگام ثبت درخواست .لطفا بعدا تلاش نمایید.")
         }).finally(fn=>{
+            setWithdrawModalOpen(false)
             dispatch(checking_transaction(false))
         })
     }
