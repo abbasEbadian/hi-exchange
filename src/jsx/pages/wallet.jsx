@@ -48,7 +48,10 @@ function Wallet() {
             return item && item.service.id === currency_id
         })
         if (!_wallet.length) return
-        
+        if(_wallet[0].id == Constants.IRT_CURRENCY_ID){
+            openDepositModal(currency_id)
+            return
+        }
         axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
             wallet:_wallet[0].id
         }).then(response=>{
@@ -59,10 +62,9 @@ function Wallet() {
             setPreDepositModalOpen(true)
             setCurrencyID(currency_id)
         
-        
-            setPreDepositModalOpen(true)
-            
         }).catch(err=>{
+        }).finally(f=>{
+            setPreDepositModalOpen(true)
         })
 
     }
@@ -81,7 +83,9 @@ function Wallet() {
         setHistoyOrders(o)
         setSummaryModalOpen(true)
     }
+    const confirmIRTDeposit = ()=>{
 
+    }
     const openDepositModal = (currency_id) => {
         
     };
@@ -232,11 +236,15 @@ function Wallet() {
                 <button className="text-danger bg-transparent border-0"  onClick={closeDepositModal}>
                     لغو
                 </button>
-                
-                <button className="btn-success btn-sm"  onClick={confirmDeposit} disabled={checking_transaction}>
+                { currencyID === Constants.IRT_CURRENCY_ID ?
+                    <button className="btn-success btn-sm"  onClick={confirmIRTDeposit} disabled={checking_transaction}>
+                        <span>پرداخت</span>
+                    </button>
+                :<button className="btn-success btn-sm"  onClick={confirmDeposit} disabled={checking_transaction}>
                     <span>بررسی تراکنش</span>
-                    
-                </button>
+                </button>}
+
+
                 {checking_transaction  &&
                         <Loader type="Oval" color="#999" height={25} width={25} />
                     }
@@ -327,7 +335,7 @@ function Wallet() {
 
                     ):<>
                         <p>مشکلی در دریافت آدرس کیف پول مربوطه پیش آمد.</p> 
-                      <button className="btn-simple text-warning">نلاش دوباره </button>
+                      <button className="btn-simple text-warning">تلاش دوباره </button>
                     </>
                     }
                 </Modal.Body>

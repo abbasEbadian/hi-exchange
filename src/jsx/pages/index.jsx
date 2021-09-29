@@ -68,7 +68,7 @@ function Dashboard() {
                               <Link to="/wallet">
                                 {wallet && wallet.length && wallet.filter(item=>{return item&&item.balance>0}).length ? (
                                   <span className="verified">
-                                    <i className="icofont-check-alt"></i>
+                                    <i className="icofont-check-alt" ></i>
                                   </span>
                                 ) : (
                                   <span className="not-verified">
