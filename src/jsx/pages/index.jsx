@@ -85,14 +85,6 @@ function Dashboard() {
                   <div className="col-12 row">
                     <IndexChart></IndexChart>
                   </div>
-                  {/* <div className="col-xl-4 col-lg-12 col-xxl-4">
-                                    
-                                </div>
-
-                                <div className="col-xl-8 col-lg-12 col-xxl-8">
-                                    
-                                    
-                                </div> */}
                 </div>
               </div>
 
