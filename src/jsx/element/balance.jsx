@@ -31,7 +31,7 @@ function Balance() {
         }).catch(err=>{
             console.log("Err");
         })
-    }, [])
+    }, [dispatch])
    
 
     return (
@@ -49,10 +49,7 @@ function Balance() {
                                 {balances.length ? <RadialChart balances={balances} names={names} />: undefined}
                                 <h4 className="mt-5">موجودی کل : <strong > {(+totalBalance).toLocaleString()} تومان</strong></h4> 
                                 <br/>
-                                {/* {totalBalance===0? 
-                                    <Link to="/buy-sell" className="text-secondary border-0 bg-transparent">شارژ</Link>:
-                                    undefined
-                                } */}
+                              
                             </div>
                             <div className="col-xl-12 col-xxl-6 col-lg-6">
                             <div className="balance-widget">

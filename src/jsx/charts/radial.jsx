@@ -1,7 +1,6 @@
 
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import { Link } from 'react-router-dom'
 
 
 const RadialChart = ({ balances, names }) =>{

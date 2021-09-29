@@ -11,7 +11,6 @@ import { sessionService } from 'redux-react-session'
 import axios from 'axios';
 import {toast } from 'react-toastify'
 import { toggle_loader_on, toggle_loader_off } from '../actions'
-import { generate_wallet } from './wallet';
 
 const toastOpt = {
     position: "bottom-left",
@@ -49,13 +48,14 @@ export const userUpdateDetail = ( _history=undefined)=>{
         dispatch(toggle_loader_on())
         axios.get(BASE + "/api/v2/account/details/")
         .then(data=>{
+            if (!data) throw Error("401")
             sessionService.saveUser({ ...data.data }).then(e=>{
                 if(_history)
                     _history.push({pathname: "/"});
             }).catch(err=>{console.log(err);
             })
         }).catch(err=>{
-                console.log(err);
+            console.log(err);
         }).finally(e=>{
             setTimeout(() => {
                 if(_history)

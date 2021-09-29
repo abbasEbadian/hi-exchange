@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import PageTitle from "../element/page-title";
 import SettingsNav from "../element/settings-nav";
 import Header2 from "../layout/header2";

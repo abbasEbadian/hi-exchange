@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState} from 'react';
 import Header2 from './../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector } from 'react-redux'
@@ -6,7 +6,7 @@ import { Modal } from 'react-bootstrap'
 import {Constants}  from '../../Constants'
 import { useDispatch } from 'react-redux'
 import Loader from 'react-loader-spinner';
-import { check_transaction, check_withdraw, get_wallet_list, fetch_accounts } from '../../redux/actions'
+import { check_transaction, check_withdraw } from '../../redux/actions'
 import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';

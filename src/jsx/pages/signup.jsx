@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useHistory} from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 // import {userSignup} from '../../redux/actions'
 import axios from "axios";
@@ -13,7 +12,6 @@ function Signup() {
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
     
-    // const dispatch = useDispatch()
     const history = useHistory();
     const handleSignup =(e)=>{
         e.preventDefault();

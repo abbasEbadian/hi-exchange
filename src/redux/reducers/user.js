@@ -5,7 +5,6 @@ import {
     UPDATE_LOG_STATUS,
     UPDATE_LOG_INFO,
     UPDATE_USER_WALLET,
-    USER_LOGIN,
     USER_LOGOUT
 } from '../actionTypes'
 

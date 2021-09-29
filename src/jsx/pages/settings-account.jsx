@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import SettingsNav from '../element/settings-nav';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetch_accounts } from '../../redux/actions';
+import { useSelector } from 'react-redux';
 
 
 
@@ -45,11 +44,7 @@ function SettingsAccount() {
                                                                 <h5 className="mt-0 mb-1">بانک{" "}{card.bank}</h5>
                                                                 <p dir="ltr" className="mb-0"> {card.card.slice(0,4)}{"*".repeat(12)} کارت</p>
                                                             </div>
-                                                            {/* <div className="edit-option">
-                                                                <Link to={'#'}><i className="fa fa-eye"></i></Link>
-                                                                <Link to={'#'}><i className="fa fa-pencil"></i></Link>
-                                                                <Link to={'#'}><i className="fa fa-trash"></i></Link>
-                                                            </div> */}
+                                                           
                                                         </div>
                                                     </div>
                                                     <div className="col-3">
@@ -57,18 +52,18 @@ function SettingsAccount() {
                                                             {card.status==="confirmed" ?
                                                                 <div className="verified">
                                                                     <span><i className="la la-check"></i></span>
-                                                                    <a>تایید شده</a>
+                                                                    <Link>تایید شده</Link>
                                                                 </div>
                                                                 : 
                                                                 (
                                                                 card.status==="pending"? 
                                                                 <div className="not-verify">
                                                                     <span><i className="icofont-info"></i></span>
-                                                                    <a>در انتظار تایید</a>
+                                                                    <Link>در انتظار تایید</Link>
                                                                 </div>:
                                                                 <div className="not-verify">
                                                                     <span><i className="icofont-close-line"></i></span>
-                                                                    <a>تایید نشده</a>
+                                                                    <Link>تایید نشده</Link>
                                                                 </div>
                                                                 )
                                                             }

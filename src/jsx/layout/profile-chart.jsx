@@ -31,6 +31,10 @@ function ProfileChart({ selectedChart}) {
                     width={"100%"}
                     height={400}
                     hide_top_toolbar={false}
+<<<<<<< HEAD
+=======
+                    hide_side_toolbar={false}
+>>>>>>> bfde6a73 (suppresed warning)
                     allow_symbol_change={false}
                     withdateranges={true}
                     />

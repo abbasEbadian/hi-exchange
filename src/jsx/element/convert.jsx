@@ -10,8 +10,7 @@ import qs from 'qs'
 function Convert() {
     const dispatch = useDispatch();
     const convertDetails = useSelector(state=>state.indexConverter.details);
-    const { currencyList, convertRates } = useSelector(state=>state.currencies);
-    const user = useSelector(state => state.session.user)
+    const { currencyList } = useSelector(state=>state.currencies);
     const wallet = useSelector(state => state.wallet.wallet)
     const [interval, setInterval2] = useState(false) 
     // const {convertAmount, currencyTo, currencyFrom, currencyAvailable, showDetailModal} = indexConverter
@@ -65,7 +64,7 @@ function Convert() {
         }, timeLeft); 
         dispatch(fetch_currencies());
         dispatch(update_next_refresh(execTime.getTime()))
-    }, [])
+    }, [dispatch, interval])
    
 
     const handleDetailModalConfirm = ()=>{

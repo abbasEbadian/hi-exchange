@@ -45,20 +45,19 @@ function Dashboard() {
 
                           <ul>
                             <li>
-                              <a href="#">
-                                {currentUser &&
+                            {currentUser &&
                                 currentUser.authentication_status ===
-                                  "accepted" ? (
+                                  "accepted" ?
+                                <Link to="/verify-step-1">
+                                    <span className="not-verified">
+                                      <i className="icofont-close-line"></i>
+                                    </span>
+                                  تایید حساب
+                                </Link>:(
                                   <span className="verified">
-                                    <i className="icofont-check-alt"></i>
-                                  </span>
-                                ) : (
-                                  <span className="not-verified">
-                                    <i className="icofont-close-line"></i>
-                                  </span>
+                                  <i className="icofont-check-alt"></i>
+                                </span>
                                 )}
-                                تایید حساب
-                              </a>
                             </li>
                             
                             <li>

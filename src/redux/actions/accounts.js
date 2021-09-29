@@ -1,8 +1,7 @@
 import axios from "axios";
 import {Constants} from '../../Constants'
-import generate from "@babel/generator";
 import { generate_wallet, get_wallet_list } from "./wallet";
-import { assertTSExpressionWithTypeArguments } from "@babel/types";
+import { userUpdateDetail } from "./user";
 
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
 export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
@@ -20,8 +19,9 @@ export const fetch_user_all_data = ()=>{
         dispatch(fetch_accounts())
         dispatch(fetch_orders())
         dispatch(fetch_transactions())
+        dispatch(userUpdateDetail())
         dispatch(get_wallet_list()).then(wallet=>{
-            if(!wallet || wallet.length == 0 || wallet.filter(item=>item&&item.id===12).length===0){
+            if(!wallet || wallet.length === 0 || wallet.filter(item=>item&&item.id===12).length===0){
                 dispatch(generate_wallet(Constants.IRT_CURRENCY_ID))
                 dispatch(generate_wallet(Constants.USDT_CURRENCY_ID))
                 dispatch(get_wallet_list())
@@ -144,11 +144,16 @@ export const create_order = ({
                     changed,
                     type
                 }).then(response=>{
-                    const {data} = response
+                    if(!response) throw Error(401)
+                    
                     toast.success("درخواست شما ثبت شد.بعد از تایید کارشناسان ، اعمال خواهد شد.")
                     dispatch(fetch_user_all_data())
                 }).catch(err=>{
-                    toast.error("با خطا مواجه شد لطفا بعدا تلاش کنید")
+                    if (err === 401){
+                        console.log(401);
+                    }else{
+                        toast.error("با خطا مواجه شد لطفا بعدا تلاش کنید")
+                    }
 
                 }).finally(f=>{
                     dispatch(creating_order(false))

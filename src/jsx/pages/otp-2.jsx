@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { userLogin,userRegister, userSignup } from '../../redux/actions'
+import { userLogin, userSignup } from '../../redux/actions'
 import Loader from 'react-loader-spinner'
 import { connect, useDispatch } from 'react-redux'
 function Otp2({userLogin}) {

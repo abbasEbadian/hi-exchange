@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
-import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { add_credit_card } from '../../redux/actions';
 import { useDispatch, useSelector} from 'react-redux'

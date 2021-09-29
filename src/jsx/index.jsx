@@ -19,10 +19,7 @@ import Signup from './pages/signup';
 import TermsCondition from './pages/terms-condition';
 import VerifyStep1 from './pages/verify-step-1';
 import VerifyStep2 from './pages/verify-step-2';
-import VerifyStep3 from './pages/verify-step-3';
 import VerifyStep4 from './pages/verify-step-4';
-import VerifyStep5 from './pages/verify-step-5';
-import VerifyStep6 from './pages/verify-step-6';
 import Wallet from './pages/wallet'
 import History from './pages/history';
 import Demo from './pages/demo';
@@ -33,7 +30,7 @@ import BasicRoute from './routes/BasicRoute'
 import axios from 'axios'
 import { sessionService } from 'redux-react-session' 
 import { useDispatch }from 'react-redux'
-import { fetch_currencies, get_wallet_list,fetch_accounts, fetch_orders, fetch_user_all_data } from '../redux/actions'
+import { fetch_currencies,  fetch_user_all_data } from '../redux/actions'
 import { Constants } from '../Constants'
 // Set token to axios requestss
 
@@ -123,9 +120,8 @@ const Index = ()=> {
             dispatch(fetch_user_all_data())
             dispatch(fetch_currencies())
         }
-        console.log("re rendered");
         
-    }, [authenticated])
+    }, [authenticated, dispatch])
 
     return (
         <>  

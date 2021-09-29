@@ -17,13 +17,12 @@ import Loader from 'react-loader-spinner'
 function BuySell() {
     const dispatch = useDispatch()
 
-    const {currencyList, convertRates}  = useSelector(state => state.currencies)
+    const {currencyList}  = useSelector(state => state.currencies)
     const wallet  = useSelector(state => state.wallet.wallet)
     const _creating_order  = useSelector(state => state.accounts.creating_order)
     const details = useSelector(state=>state.indexConverter.bsdetails)
     const [tab, setTab] = useState("buy")
     const [ chartOpen, setChartOpen ] = useState(true)
-    const [buyConvertRate, setBuyConvertRate] = useState(0)
     const [sellAvailableCurrency, setSellAvailableCurrency] = useState(0)
     const [buyAvailableCurrency, setBuyAvailableCurrency] = useState(0)
     const [buyConvertAmount, setBuyConvertAmount] = useState(0)
@@ -270,7 +269,7 @@ function BuySell() {
     }
    useEffect(() => {
     dispatch(fetch_currencies());
-   }, [])
+   }, [dispatch])
    console.log(buyLowCredit);
    
     return (
