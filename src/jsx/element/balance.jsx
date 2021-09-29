@@ -47,7 +47,7 @@ function Balance() {
                         <div className="row">
                             <div className="col-xl-12 col-xxl-6 col-lg-6 px-0">
                                 {balances.length ? <RadialChart balances={balances} names={names} />: undefined}
-                                <h4 className="mt-5">موجودی کل : <strong > {(+totalBalance).toLocaleString()} تومان</strong></h4> 
+                                <h4 className="mt-5">موجودی کل : <strong className="d-block mt-2"> {(+totalBalance).toLocaleString()} تومان</strong></h4> 
                                 <br/>
                               
                             </div>
@@ -74,7 +74,7 @@ function Balance() {
                                             </div>
                                         </li>
                                     })}
-                                    <Link to="/wallet">نمایش همه</Link>
+                                    <Link to="/wallet" className="w-100 text-center">نمایش همه</Link>
                                     </>
                                 }
                                 </ul>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import {Constants} from '../../Constants'
-import { generate_wallet, get_wallet_list, update_fetching_state } from "./wallet";
+import { generate_wallet, get_wallet_list, update_fetching_state, get_network_list } from "./wallet";
 import { userUpdateDetail } from "./user";
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
 export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
@@ -15,6 +15,7 @@ const BASE = Constants.BASE_URL
 export const fetch_user_all_data = ()=>{
     return dispatch=>{
         dispatch(get_wallet_list())
+        dispatch(get_network_list())
         dispatch(fetch_accounts())
         dispatch(fetch_orders())
         dispatch(fetch_transactions())

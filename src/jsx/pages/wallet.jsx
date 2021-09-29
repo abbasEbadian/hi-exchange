@@ -6,7 +6,7 @@ import { Modal } from 'react-bootstrap'
 import {Constants}  from '../../Constants'
 import { useDispatch } from 'react-redux'
 import Loader from 'react-loader-spinner';
-import { check_transaction, check_withdraw } from '../../redux/actions'
+import { check_transaction, check_withdraw, check_withdraw_irt } from '../../redux/actions'
 import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
@@ -16,6 +16,7 @@ function Wallet() {
     const dispatch = useDispatch() 
     
     const {wallet, checking_transaction, is_fetching } = useSelector(state => state.wallet)
+    const user = useSelector(state => state.session.user)
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
     const [address, setAddress] = useState("")
@@ -25,7 +26,9 @@ function Wallet() {
     const [currencyID, setCurrencyID] = useState(undefined)
     const [selectedCurrency, setSelectedCurrency] = useState(undefined)
     const [withdrawAmount, setWithdrawAmount] = useState(0)
-    const [withdrawCard, setWithdrawCard] = useState(undefined)
+    const [withdrawWallet, setWithdrawWallet] = useState(0)
+    const [withdrawCard, setWithdrawCard] = useState(0)
+    const [withdrawWalletText, setWithdrawWalletText] = useState("")
     const [depositCard, setDepositCard] = useState(undefined)
     const [depositTxID, setDepositTxID] = useState("")
     const [depositTxAmount, setDepositTxAmount] = useState("")
@@ -87,10 +90,28 @@ function Wallet() {
         setHistoyOrders(o)
         setSummaryModalOpen(true)
     }
-    const confirmIRTDeposit = ()=>{
 
+
+    const confirmIRTDeposit = ()=>{
+       
+        axios.post("http://127.0.0.1:5000/create_payment_link", {
+            order_id: "HiEx-"+Math.round(100000*(Math.random())),
+            amount: depositTxAmount,
+            name: (user.first_name + " " + user.last_name) || 'کاربر های ایکسچنج',
+            phone: user.phone || user.mobile || "",
+            mail: user.email || "",
+            desc: "شارژ کیف پول تومانی"
+        }).then(response=>{
+            const {data} = response
+            console.log(data);
+        }).catch(error=>{
+            console.log(error)
+        })
     }
+
+
     const openDepositModal = (currency_id) => {
+        setDepositTxAmount(0)
         if(preDepositModalOpen) closePreDepositModal()
         setDepositModalOpen(true)
     };
@@ -102,14 +123,29 @@ function Wallet() {
             openNocardsModal()
             return 
         }
-        setSelectedCurrency(wallet.filter((item)=>{return item&&item.service.id===currency_id})[0])
+        const _wallet = wallet.filter((item)=>{return item&&item.service.id===currency_id})[0]
+        setWithdrawWallet(_wallet)
+        setWithdrawAmount(0)
         setWithdrawModalOpen(true)
         setCurrencyID(currency_id)
     };
     
 
     const confirmWithdraw= ()=>{
-        dispatch(check_withdraw({card_id: withdrawCard.id}, setWithdrawModalOpen, toast))
+        if(currencyID === Constants.IRT_CURRENCY_ID){
+            dispatch(check_withdraw_irt({
+                card_id: withdrawCard.id, 
+                wallet: withdrawWallet.id,
+                amount: withdrawAmount
+            }, setWithdrawModalOpen, toast))
+        }else{
+
+            dispatch(check_withdraw({
+                sourceWallet: withdrawWallet.id,
+                Destwallet: withdrawWalletText, 
+                amount: withdrawAmount
+            }, setWithdrawModalOpen, toast))
+        }
     }
 
 
@@ -126,18 +162,19 @@ function Wallet() {
         const selected = e.target.value
         setDepositCard(cards.filter(item=>item.id === selected))
     }
-
     const changeWithdrawCard = (e)=>{
         const selected = e.target.value
         setWithdrawCard(cards.filter(item=>item.id === selected))
     }
+
+
 
    useEffect(() => {
         const vc = cards.filter((item, idx)=>{
            return item.status === "confirmed"
         })
         setValidCards(vc)
-        setWithdrawCard(vc.length ? vc[0]: undefined)
+        
         
         
         
@@ -170,24 +207,24 @@ function Wallet() {
                                     
                                     {wallet&& wallet.length ? wallet.map((item, idx)=>{
                                         return item && <tr key={idx}> 
-                                                <td> { item.service.small_name } <i className={"me-2 fs-3 cc "+ item.service.small_name_slug}/></td>
-                                                <td> { item.service.name } </td>
-                                                
-                                                <td>{item.balance}</td>
-                                                <td>
-                                                    <button className="text-success  border-0 bg-transparent fs-5 py-0"
-                                                        onClick={e=>openPreDepositModal(item.service.id)}
-                                                    >واریز</button>
-                                                    <button className="text-danger  border-0 bg-transparent fs-5 py-0"
-                                                        onClick={e=>openWithdrawModal(item.service.id)}
-                                                    >برداشت</button>
-                                                    <button className="text-warning  border-0 bg-transparent fs-5 py-0"
-                                                        onClick={e=>openSummaryModal(item.service.id)}
-                                                    >تاریخچه</button>
-                                                </td>
-                                                <td style={{width: 50+"px"}} className="text-center cursor-pointer"><span className="icofont-refresh"></span></td>
-                                                
-                                            </tr>
+                                            <td> { item.service.small_name } <i className={"me-2 fs-3 cc "+ item.service.small_name_slug}/></td>
+                                            <td> { item.service.name } </td>
+                                            
+                                            <td>{item.balance}</td>
+                                            <td>
+                                                <button className="text-success  border-0 bg-transparent fs-5 py-0"
+                                                    onClick={e=>openPreDepositModal(item.service.id)}
+                                                >واریز</button>
+                                                <button className="text-danger  border-0 bg-transparent fs-5 py-0"
+                                                    onClick={e=>openWithdrawModal(item.service.id)}
+                                                >برداشت</button>
+                                                <button className="text-warning  border-0 bg-transparent fs-5 py-0"
+                                                    onClick={e=>openSummaryModal(item.service.id)}
+                                                >تاریخچه</button>
+                                            </td>
+                                            <td style={{width: 50+"px"}} className="text-center cursor-pointer"><span className="icofont-refresh"></span></td>
+                                            
+                                        </tr>
                                     }):undefined}
                                     
                                 </tbody>
@@ -263,7 +300,7 @@ function Wallet() {
                     لغو
                 </button>
                 { currencyID === Constants.IRT_CURRENCY_ID ?
-                    <button className="btn-success btn-sm"  onClick={confirmIRTDeposit} disabled={checking_transaction}>
+                    <button className="btn-success btn-sm"  onClick={confirmIRTDeposit} disabled={checking_transaction || !depositTxAmount}>
                         <span>پرداخت</span>
                     </button>
                 :<button className="btn-success btn-sm"  onClick={confirmDeposit} disabled={checking_transaction}>
@@ -282,28 +319,44 @@ function Wallet() {
                 <Modal.Title>برداشت از کیف پول </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className="col-12 mb-3">
-                        <label htmlFor="card-select" className="form-label">انتخاب کارت</label>
-                        {validCards? <select className="form-control" name="card-select" value={withdrawCard} onChange={changeWithdrawCard}>
-                            {validCards.map((item, idx)=>{
-                                return item.status === "confirmed" ? <option value={item.id} key={idx} >{item.card} {"-"} {item.bank}</option>: undefined
-                            })}
-                        </select>:undefined}
-                    </div>
-                    <div className="col-12">
+                    {currencyID !== Constants.IRT_CURRENCY_ID ?
+                        <div className="col-12 mb-3">
+                            <label htmlFor="card-select" className="form-label">آدرس کیف پول  مقصد</label>
+                            <input type="text" className="form-control mb-2" value={withdrawWalletText} onChange={e=>setWithdrawWalletText(e.target.value)}/>
+                            {withdrawWallet.service && withdrawWallet.service.network && withdrawWallet.service.network.realName? <small className="form-text mt-4 mb-5">
+                                <span className="text-danger">توجه : </span>
+                                <span>کیف پول وارد شده الزاما باید در شبکه </span>
+                                <span className="text-success px-2">{withdrawWallet.service.network.realName} {"("}{withdrawWallet.service.network.name}{")"}</span>
+                                <span>باشد.در غیر اینصورت ، امکان از بین رفتن دارایی شما وجود دارد.</span>
+                            </small>:undefined}
+                        </div>
+                    :
+                        <>
+                            <label htmlFor="card-select" className="form-label">انتخاب کارت</label>
+                            <select className="form-control" name="card-select" value={withdrawCard} onChange={changeWithdrawCard}>
+                                {validCards.map((item, idx)=>{
+                                    return <option value={item.id} key={idx}>{item.card} {"-"} {item.bank}</option>
+                                })}
+                            </select>
+                        </>
+                    }
+                    <div className="col-12 mt-5 pt-4">
                         <label htmlFor="card-select" className="form-label">مقدار برداشت از 
-                        <span className="px-2 text-success fs-5">{selectedCurrency?selectedCurrency.service.name:undefined}</span>
+                        <span className="px-2 text-success fs-5">{withdrawWallet?withdrawWallet.service.name:undefined}</span>
                         </label>
                         <input type="text" className="form-control" value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>
                     </div>
+                    
                     
                 </Modal.Body>
                 <Modal.Footer>
                 <button className="text-danger bg-transparent border-0" onClick={closeWithdrawModal}>
                     لغو
                 </button>
-                <button className="btn-success btn-sm" size="sm" onClick={confirmWithdraw}>
-                بررسی تراکنش
+                <button className="btn-success btn-sm d-flex justify-content-center" size="sm" onClick={confirmWithdraw} disabled={!withdrawAmount}>
+                    برداشت
+                    {checking_transaction?<Loader type="Oval" color="#fff" height={25} width={25}></Loader> :undefined}
+
                 </button>
                 </Modal.Footer>
             </Modal>
@@ -325,6 +378,7 @@ function Wallet() {
                 <button className="text-danger bg-transparent border-0" onClick={closeNocardsModal}>
                     بستن
                 </button>
+                <Link className="btn btn-sm btn-success " to="/verify-step-1">احراز هویت</Link>
                 
                 </Modal.Footer>
             </Modal>

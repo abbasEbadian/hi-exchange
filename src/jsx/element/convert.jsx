@@ -49,10 +49,11 @@ function Convert() {
         execTime.setSeconds(2)
         
         let timeLeft = execTime - currentTimeUnix;
+        let inter = undefined
         setTimeout(function() {
 
             if(!interval){
-                setInterval(function() {
+                inter = setInterval(function() {
                     dispatch(update_next_refresh(new Date().getTime()))
                     dispatch(fetch_currencies());
                 }, 60000)  
@@ -64,6 +65,7 @@ function Convert() {
         }, timeLeft); 
         dispatch(fetch_currencies());
         dispatch(update_next_refresh(execTime.getTime()))
+        return ()=>{clearInterval(inter)}
     }, [dispatch, interval])
    
 

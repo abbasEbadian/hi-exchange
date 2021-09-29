@@ -3,11 +3,13 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 
-const RadialChart = ({ balances, names }) =>{
-    console.log(balances, names);
+const RadialChart = ({ balances, names }) =>{  
+    const names2 = names.filter((c,i)=>i<5)
+    const balances2 = balances.filter((c,i)=>i<5)
+    console.log(names2, balances2);
     
     const chart_details = {
-        series: balances, 
+        series: balances2, 
         options: {
             chart: {
                 height: 300,
@@ -89,7 +91,7 @@ const RadialChart = ({ balances, names }) =>{
             ],
 
             
-            labels: names, // ["ETH", "BTC"]
+            labels: names2, // ["ETH", "BTC"]
 
 
             legend: {
@@ -112,6 +114,7 @@ const RadialChart = ({ balances, names }) =>{
                     vertical: 3
                 }
             },
+
             responsive: [{
                 breakpoint: 480,
                 options: {
@@ -128,7 +131,7 @@ const RadialChart = ({ balances, names }) =>{
     return (
         <> 
             {names.length ?
-            <ReactApexChart options={chart_details.options} series={balances} type="radialBar" height={360} />:
+            <ReactApexChart options={chart_details.options} series={balances2} type="radialBar" height={360} />:
             
             <span></span>
             }

@@ -1,15 +1,28 @@
 import axios from "axios";
-import { sessionService } from 'redux-react-session' 
 import { Constants } from '../../Constants'
 
 
 export const UPDATE_WALLET_LIST = "UPDATE_WALLET_LIST"
 export const UPDATE_FETCHING_STATE = "UPDATE_FETCHING_STATE"
+export const UPDATE_NETWORK_LIST = "UPDATE_NETWORK_LIST"
 export const CHECKING_TRANSACTION = "CHECKING_TRANSACTION"
 export const CHECKING_WITHDRAW = "CHECKING_WITHDRAW"
 
 
 
+
+export const get_network_list = ()=>{
+    return dispatch=>{
+        axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
+                if(!res) throw Error(401)
+                dispatch(update_network_list(res.datad))
+                
+            }).catch(err=>{
+                console.log("network401");
+                dispatch(update_network_list(["TEST1", "TEST2", "Test3"]))
+            })
+    }
+}
 export const get_wallet_list = ()=>{
     return dispatch=>{
         dispatch(update_fetching_state(true))
@@ -36,6 +49,12 @@ export const get_wallet_list = ()=>{
         })
        
        
+    }
+}
+export const update_network_list = (networkList)=>{
+    return {
+        type: UPDATE_NETWORK_LIST,
+        payload: networkList
     }
 }
 export const update_wallet_list = (wallet_object)=>{
@@ -88,7 +107,30 @@ export const checking_transaction = (is_checking)=>{
     }
 }
 
-export const check_withdraw = ({card_id, amount=0}, setWithdrawModalOpen, toast)=>{
+export const check_withdraw = ({sourceWallet, Destwallet, amount}, setWithdrawModalOpen, toast)=>{
+    return dispatch=>{
+        dispatch(checking_transaction(true))
+        axios.post(Constants.BASE_URL + "/api/v2/wallet/withdrawal/", {
+            id: sourceWallet,
+            wallet: Destwallet,
+            amount: String(amount)
+        }).then(response=>{
+            const {data} = response
+            if (data.error === 1)
+                toast.error(data.message)
+            else{
+                toast.success("تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد.")
+            }
+        }).catch(err=>{
+            console.log(err);
+            toast.error("خطا هنگام ثبت درخواست .لطفا بعدا تلاش نمایید.")
+        }).finally(fn=>{
+            setWithdrawModalOpen(false)
+            dispatch(checking_transaction(false))
+        })
+    }
+}
+export const check_withdraw_irt = ({card_id, amount=0}, setWithdrawModalOpen, toast)=>{
     return dispatch=>{
         dispatch(checking_transaction(true))
         axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", {
