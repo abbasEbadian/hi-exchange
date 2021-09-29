@@ -32,11 +32,11 @@ export const get_wallet_list = ()=>{
                 }).catch(err=>{
                     console.log(err);
                     dispatch(update_fetching_state(false))
-                    return reject()
+                    return reject(400)
                 })
             }).catch(err=>{
                 console.log(err);
-                return reject()
+                return reject(400)
             })
         })
        

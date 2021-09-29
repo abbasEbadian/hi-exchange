@@ -55,7 +55,7 @@ export const userUpdateDetail = ( _history=undefined)=>{
             }).catch(err=>{console.log(err);
             })
         }).catch(err=>{
-            console.log(err);
+            console.log("user update detail",401);
         }).finally(e=>{
             setTimeout(() => {
                 if(_history)

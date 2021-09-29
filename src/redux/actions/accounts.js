@@ -31,6 +31,8 @@ export const fetch_user_all_data = ()=>{
                 dispatch(get_wallet_list())
                 dispatch(update_fetching_state(false))
             }
+        }).catch(err=>{
+            console.log(400);
         })
     }
 }
