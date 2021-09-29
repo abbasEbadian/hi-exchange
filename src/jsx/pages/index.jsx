@@ -52,11 +52,16 @@ function Dashboard() {
                                       <i className="icofont-close-line"></i>
                                     </span>
                                   تایید حساب
-                                </Link>:(
-                                  <span className="verified">
-                                  <i className="icofont-check-alt"></i>
+                                </Link>:
+                                <>
+                                  <a href="#">
+                                    <span className="verified">
+                                    <i className="icofont-check-alt"></i>
+
                                 </span>
-                                )}
+                                  تایید شده
+                                  </a>
+                                </>}
                             </li>
                             
                             <li>

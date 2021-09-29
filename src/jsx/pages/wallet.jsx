@@ -17,6 +17,7 @@ function Wallet() {
     const {wallet, checking_transaction, is_fetching } = useSelector(state => state.wallet)
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
+    const [address, setAddress] = useState("")
     const [validCards, setValidCards] = useState([])
     const [currencyID, setCurrencyID] = useState(undefined)
     const [selectedCurrency, setSelectedCurrency] = useState(undefined)
@@ -29,7 +30,42 @@ function Wallet() {
     const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
     const [nocardsModalOpen, setNocardsModalOpen] = useState(false)
     const [summaryModalOpen, setSummaryModalOpen] = useState(false)
+    const [preDepositModalOpen, setPreDepositModalOpen] = useState(false)
+    
+    
     const [historyOrders, setHistoyOrders] = useState([])
+
+    const closePreDepositModal = () => {
+        setAddress("")
+        setPreDepositModalOpen(false)
+    }
+    const openPreDepositModal = (currency_id) => {
+        if(validCards.length === 0){
+            openNocardsModal()
+            return 
+        }
+        const _wallet = wallet.filter(item=>{
+            return item && item.service.id === currency_id
+        })
+        if (!_wallet.length) return
+        
+        axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
+            wallet:_wallet[0].id
+        }).then(response=>{
+            if(!response) throw Error(401)
+            const {data} = response 
+            setAddress(data.address)
+            setSelectedCurrency(_wallet[0])
+            setPreDepositModalOpen(true)
+            setCurrencyID(currency_id)
+        
+        
+            setPreDepositModalOpen(true)
+            
+        }).catch(err=>{
+        })
+
+    }
 
     const closeNocardsModal = () => setNocardsModalOpen(false)
     const openNocardsModal = () => setNocardsModalOpen(true)
@@ -47,29 +83,7 @@ function Wallet() {
     }
 
     const openDepositModal = (currency_id) => {
-        if(validCards.length === 0){
-            openNocardsModal()
-            return 
-        }
-        const _wallet = wallet.filter(item=>{
-            return item.service.id === currency_id
-        })
-        if (!_wallet.length) return
-        console.log(_wallet);
         
-        axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
-            wallet:_wallet[0].id
-        }).then(response=>{
-            if(!response) throw Error
-            const {data} = response 
-            console.log(data);
-            
-        }).catch(err=>{
-            console.log(err);
-        })
-        setSelectedCurrency(_wallet[0])
-        setDepositModalOpen(true)
-        setCurrencyID(currency_id)
     };
     const openWithdrawModal = (currency_id) => {
         if(validCards.length === 0){
@@ -142,7 +156,7 @@ function Wallet() {
                                                 <td>{item.balance}</td>
                                                 <td>
                                                     <button className="text-success  border-0 bg-transparent fs-5 py-0"
-                                                        onClick={e=>openDepositModal(item.service.id)}
+                                                        onClick={e=>openPreDepositModal(item.service.id)}
                                                     >واریز</button>
                                                     <button className="text-danger  border-0 bg-transparent fs-5 py-0"
                                                         onClick={e=>openWithdrawModal(item.service.id)}
@@ -290,6 +304,39 @@ function Wallet() {
                 <Modal.Footer>
                 <button className="text-danger bg-transparent border-0" onClick={closeSummaryModal}>
                     بستن
+                </button>
+                
+                </Modal.Footer>
+            </Modal>
+
+            <Modal contentClassName="dark" show={preDepositModalOpen} onHide={() => setPreDepositModalOpen(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>تاریخچه</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedCurrency && selectedCurrency.service && address?(
+                        <p>
+                        کاربر گرامی ، لطفا ابتدا میزان مورد نظر ارز 
+                        <span className="px-2 text-success">{selectedCurrency.service.name}</span>
+                        را به کیف پول  
+                        <p className="px-2 text-success my-5">{address}</p>
+                            در وبسایت
+                        <a className="px-2 fs-5 text-warning" href="https://www.binance.com/">بایننس</a>
+                        واریز نموده سپس  دکمه «واریز کردم» را  کلیک کنید.
+                        </p>
+
+                    ):<>
+                        <p>مشکلی در دریافت آدرس کیف پول مربوطه پیش آمد.</p> 
+                      <button className="btn-simple text-warning">نلاش دوباره </button>
+                    </>
+                    }
+                </Modal.Body>
+                <Modal.Footer>
+                <button className="text-danger bg-transparent border-0" onClick={closePreDepositModal}>
+                    بستن
+                </button>
+                <button className="btn btn-sm btn-success " onClick={confirmDeposit}>
+                    واریز کردم
                 </button>
                 
                 </Modal.Footer>

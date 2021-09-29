@@ -10024,4 +10024,8 @@ div.modal-content.dark > div {
 div.modal-content .close {
   color: white; }
 
+button.btn-simple {
+  border: none;
+  background: none; }
+
 /*# sourceMappingURL=style.css.map */

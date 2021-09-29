@@ -34,6 +34,8 @@ function Otp2({userLogin}) {
             history.push("/signup")
     }
     const verifyCode = e=>{
+        e.preventDefault()
+        e.stopPropagation()
         if(code.length !== 5) return
         setIsSubmitting(true);
         if (authID) {
@@ -72,7 +74,7 @@ function Otp2({userLogin}) {
                                     <p className="text-center mb-5">
                                         لطفا در صورت ارسال کد ، آن را وارد کنید
                                     </p>
-                                    <form action="#">
+                                    <form action="#" onSubmit={verifyCode}>
                                         <div className="mb-3">
                                             <label className="form-label">رمز یکبار مصرف:</label>
                                             <input
@@ -85,7 +87,7 @@ function Otp2({userLogin}) {
                                         </div>
                                         <div className="text-center">
                                             {!isSubmitting ?
-                                                <button type="button" onClick={verifyCode} className="btn btn-success w-100">تایید</button>          
+                                                <button type="submit"  className="btn btn-success w-100">تایید</button>          
                                                 :
                                                 <Loader
                                                     type="ThreeDots"

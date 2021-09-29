@@ -146,7 +146,7 @@ function Signup() {
                                         </div>
                                         <div className="text-center mt-4">
                                             {!isSubmitting ? 
-                                                <button  className="btn btn-success w-100 bg-transparent text-primary" disabled={  submitted } >
+                                                <button  type="submit" className="btn btn-success w-100 bg-transparent text-primary" disabled={  submitted } >
                                                     {submitted ? "ارسال شد" : "عضویت"}
                                                     </button>
                                                 :
