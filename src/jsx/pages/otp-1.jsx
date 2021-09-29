@@ -24,6 +24,8 @@ function Otp1() {
         setPhone(e.target.value)
     }
     const sendCode = e=>{
+        e.preventDefault()
+        e.stopPropagation()
         if (phone_valid){
             setIsSubmitting(true);
             axios.post("https://hi-exchange.com/api/v2/token/otp/", {
@@ -46,7 +48,7 @@ function Otp1() {
                 console.log(error);
                 
                 toast.error(' برای این شماره همراه ، حسابی وجود ندارد.', toastOpt);
-            }).finally(e=>{ 
+            }).finally(()=>{ 
                 setIsSubmitting(false) 
             })
         }
@@ -84,7 +86,7 @@ function Otp1() {
                                     <p className="text-center mb-5">
                                         به شماره وارد شده یک کد ارسال خواهد شد.
                                     </p>
-                                    <form action="#">
+                                    <form action="#" onSubmit={sendCode}>
                                         <div className="mb-3">
                                             <label className="form-label">شماره همراه</label>
                                             <div className="input-group mb-3">
@@ -105,7 +107,7 @@ function Otp1() {
                                         </div>
                                         <div className="text-center mt-4">
                                             {!isSubmitting ? 
-                                                <button type="button" className="btn btn-success w-100 bg-transparent text-primary" disabled={ !phone_valid || submitted } onClick={sendCode}>
+                                                <button type="submit" className="btn btn-success w-100 bg-transparent text-primary" disabled={ !phone_valid || submitted } >
                                                     
                                                     {submitted ? "ارسال شد" : "ارسال"}
                                                     </button>

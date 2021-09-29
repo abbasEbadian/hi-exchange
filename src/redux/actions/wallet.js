@@ -14,29 +14,24 @@ export const get_wallet_list = ()=>{
     return dispatch=>{
         dispatch(update_fetching_state(true))
         return new Promise((resolve, reject)=>{
-            sessionService.loadSession().then(session=>{
-                axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
-                    if(!res) throw Error(401)
-                    
-                    const d = res.data                
-                    const newData = [
-                        d.find(item => item.service.id === Constants.IRT_CURRENCY_ID),
-                        d.find(item => item.service.id === Constants.USDT_CURRENCY_ID),
-                        ...d.filter(item => ![Constants.IRT_CURRENCY_ID,
-                             Constants.USDT_CURRENCY_ID].includes(item.service.id)).sort((a,b)=>b.balance*b.service.show_price_irt-a.balance*a.service.show_price_irt),
-                    ]
-                    dispatch(update_wallet_list(newData))
-                    dispatch(update_fetching_state(false))
-                    return resolve(d)
-                    
-                }).catch(err=>{
-                    console.log(err);
-                    dispatch(update_fetching_state(false))
-                    return reject(400)
-                })
+            axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
+                if(!res) throw Error(401)
+                
+                const d = res.data                
+                const newData = [
+                    d.find(item => item.service.id === Constants.IRT_CURRENCY_ID),
+                    d.find(item => item.service.id === Constants.USDT_CURRENCY_ID),
+                    ...d.filter(item => ![Constants.IRT_CURRENCY_ID,
+                            Constants.USDT_CURRENCY_ID].includes(item.service.id)).sort((a,b)=>b.balance*b.service.show_price_irt-a.balance*a.service.show_price_irt),
+                ]
+                dispatch(update_wallet_list(newData))
+                dispatch(update_fetching_state(false))
+                return resolve(d)
+                
             }).catch(err=>{
-                console.log(err);
-                return reject(400)
+                console.log("wallet401");
+            }).finally(f=>{
+                dispatch(update_fetching_state(false))
             })
         })
        

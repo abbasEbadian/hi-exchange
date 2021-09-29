@@ -70,10 +70,10 @@ axios.interceptors.response.use((response) => {
             // window.location.href = ('/otp-1');
             return Promise.reject(error);
         }
-    if (error.response.status === 403  && originalRequest._retry ) {
+    if (error.response && error.response.status === 403  && originalRequest._retry ) {
         return Promise.reject()
     }
-    if (error.response.status === 401  && !originalRequest._retry ) {
+    if (error.response && error.response.status === 401  && !originalRequest._retry ) {
  
         originalRequest._retry = true;
         
