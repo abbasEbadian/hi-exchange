@@ -6,17 +6,18 @@ import { Modal } from 'react-bootstrap'
 import {Constants}  from '../../Constants'
 import { useDispatch } from 'react-redux'
 import Loader from 'react-loader-spinner';
-import { check_transaction, check_withdraw, check_withdraw_irt, get_wallet_list, check_irt_deposit } from '../../redux/actions'
+import { check_transaction, check_withdraw, check_withdraw_irt, get_wallet_list, check_irt_deposit, fetch_accounts } from '../../redux/actions'
 import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
 import axios from 'axios';
-import {useLocation} from 'react-router-dom'
+import {useLocation, useHistory} from 'react-router-dom'
 
 function Wallet(props) {
     
     const dispatch = useDispatch() 
     const params = useLocation()
+    const history= useHistory()
     const {wallet, checking_transaction, is_fetching, checking_irt_deposit } = useSelector(state => state.wallet)
     const user = useSelector(state => state.session.user)
     const cards = useSelector(state => state.accounts.cards)
@@ -45,7 +46,14 @@ function Wallet(props) {
     const [validateModalOpen, setValidateModalOpen] = useState(false)
     
     const [historyOrders, setHistoyOrders] = useState([])
-
+    /** 
+     *  Predeposit :  displaying currency wallet address
+     *  Nocards Modal : when user has no cards
+     *  DepositModal : Depositing for all currencies
+     *  WithdrawModalL: withdrawal info
+     *  SummaryModal : history of selected currency
+     *  confirmIRTDeposit : when user clicks "PAY" 
+    */
     const closePreDepositModal = () => {
         setAddress("")
         setPreDepositModalOpen(false)
@@ -102,6 +110,9 @@ function Wallet(props) {
         // }
 
       }
+
+    // Create a payment link by calling  /create_payment_link in mini server 'proxy.js' 
+    // which has been described before `validateIRTDeposit` function
     const confirmIRTDeposit = ()=>{
         setGeneratingWallet(true)
         axios.post("http://127.0.0.1:5000/create_payment_link", {
@@ -180,6 +191,7 @@ function Wallet(props) {
 
     const changeDepositCard = (e)=>{
         const selected = e.target.value
+        localStorage.setItem("deposit_card_id", selected)
         setDepositCard(cards.filter(item=>item.id === selected))
     }
     const changeWithdrawCard = (e)=>{
@@ -202,16 +214,44 @@ function Wallet(props) {
         "200": 	"به دریافت کننده واریز شد",
     }
 
-    const validateIRTDeposit = (params)=>{
+
+    /**
+     * IDPAY callbacks a url with GET method which we can specify
+     * when creating a payment link 
+     * 
+     * Create payment link route is placed in proxy.js inside root directory
+     *  use `node proxy.js` or `nodemon proxy.js` to start that mini-server.
+     * 
+     * mini server implemented for 2 reasons
+     * 1.connect to CMC api
+     * 2.hide idpay TERMINAL ID from users network and sight.
+     *
+     * 
+     * 
+     * 
+     * Function below  gets called when there are exactly 4 params in 
+     * the url. i.e. : `/wallet?id=65564&order_id?\=6545 ...`
+     * which are : id , status, order_id, track_id
+     * IDPAY callbacks our url with this params.
+     * 
+     * Suggestion: 
+     * idpay also suggests a post request callback to specified url
+     * which i think is more secure way to confirm payment 
+     */
+
+        const validateIRTDeposit = (params)=>{
     
         const id = params.get("id")
         const status = params.get("status")
         const order_id = params.get("order_id")
         const track_id = params.get("track_id")
+        if(!id ||!status || !order_id ||!track_id) return
+
+
         const status_text = statusMessage[String(status)]
         if(+status === 200 )
             dispatch(check_irt_deposit({
-                bank_id: depositCard.id,
+                bank_id: localStorage.getItem("deposit_card"),
                 order_id,
                 id
             })).then(response=>{
@@ -224,17 +264,40 @@ function Wallet(props) {
         }
         setValidateModalOpen(true)
     }
+    /**
+    * When mounted, setValidCards and trigger `validateIRTDeposit` function if 
+    * there are some params
+    * but show it if it has been not shown before
+    * i.e. when user refreshes the page.
+    * but its not trusty.
+    * user can delete localstorage.
+    * And also removes params from url.
+    * so on refresh wont get triggered again
+    * Its must get saved in DB.
+    */
     useEffect(() => {
         const vc = cards.filter((item, idx)=>{
            return item.status === "confirmed"
         })
         setValidCards(vc)
         dispatch(get_wallet_list())
-        if(params.search){
+        if(params.search && !localStorage.getItem("deposit_shown")){
+            localStorage.setItem("deposit_shown", true)
+            history.replace({search: ""})
             validateIRTDeposit(new URLSearchParams(params.search))
-        }
 
-   }, [cards])
+        }
+        
+      
+   }, [cards]
+   )
+   // Load wallets and cards 
+   useEffect(() => {
+    dispatch(get_wallet_list())
+    dispatch(fetch_accounts())
+    
+    
+   }, [])
     return (
         <>
             <Header2 />

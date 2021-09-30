@@ -34,13 +34,12 @@ app.post("/create_payment_link", (req , res)=>{
     const headers = {
         "Content-Type": "application/json",
         "X-API-KEY": process.env.IDPAY_TOKEN,
-        "X-SANDBOX": 1
+        "X-SANDBOX": '0'
     }
-    console.log(req.body);
     
     const {order_id, amount, name, phone, mail, desc} = req.body
-    const data  =JSON.stringify({order_id, amount, name, phone, mail, desc, callback:"https://hi-exchange.herokuapp.com/wallet"})
-    console.log(data);
+    const data  =JSON.stringify({order_id, amount, callback:"https://hi-exchange.herokuapp.com/wallet"})
+    console.log({order_id, amount, name, phone, mail, desc, callback:"https://hi-exchange.herokuapp.com/wallet"});
     
     axios.post(url, data, {headers}).then(response=>{
         const {data} = response
