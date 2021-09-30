@@ -176,7 +176,7 @@ function Convert() {
     }
     const changeAmount = (a)=>{
         setConvertAmount(a)
-        computePrices({convertAmountP: +a});
+        computePrices({convertAmountP: a});
     }
     
 
@@ -204,7 +204,7 @@ function Convert() {
                         <form method="post" name="myform" className="currency_validate row">
                             <div className="mb-3 col-xl-4 mb-0">
                                 <label className="form-label" htmlFor="currency_amount">مقدار</label>
-                                <input type="number"  name="currency_amount" className="form-control" value={convertAmount} onChange={(e)=> changeAmount(e.target.value) }
+                                <input type="number"  name="currency_amount" className="form-control" onFocus={e=>{changeAmount("")}} value={convertAmount} onChange={(e)=> changeAmount(e.target.value) }
                                     placeholder="100" /> 
                                 {lowCredit.current && <Link to="/wallet" className="form-text text-muted text-nowrap">
                                     <small className="text-danger">اعتبار ناکافی ! </small>

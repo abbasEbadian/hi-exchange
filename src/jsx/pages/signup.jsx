@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link, useHistory} from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 // import {userSignup} from '../../redux/actions'
@@ -11,8 +11,9 @@ function Signup() {
     const [password, setPassword] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
-    
+    const referralRef = useRef("")
     const history = useHistory();
+
     const handleSignup =(e)=>{
         e.preventDefault();
         e.stopPropagation();
@@ -43,11 +44,11 @@ function Signup() {
                 first_name,
                 last_name,
                 mobile,
-                password
-            }).then(response=>{
+                password,
+                ref_mobile: referralRef.current.value
+            }, {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
                 const {data} = response
                 if(data.error!==1){
-
                     setSubmitted(true)
                     toast.success('کد یک بار مصرف ارسال شد.', {
                         autoClose: 2000,
@@ -60,7 +61,7 @@ function Signup() {
                     toast.warn(data.message)
                 }
             }).catch(error=>{
-                console.log(error.data);
+                console.log(error);
                 toast.error(error);
             }).finally(e=>{ 
                 setIsSubmitting(false) 
@@ -129,6 +130,17 @@ function Signup() {
                                                 autoComplete="false"
                                                 value={mobile}
                                                 onChange={e=>setMobile(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label">شماره موبایل معرف</label>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="09...."
+                                                name="number"
+                                                autoComplete="false"
+                                                ref={referralRef}
                                             />
                                         </div>
                                         <div className="mb-3">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import Header2 from './../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector } from 'react-redux'
@@ -46,6 +46,7 @@ function Wallet(props) {
     const [validateModalOpen, setValidateModalOpen] = useState(false)
     
     const [historyOrders, setHistoyOrders] = useState([])
+    const depositRef = useRef(0)
     /** 
      *  Predeposit :  displaying currency wallet address
      *  Nocards Modal : when user has no cards
@@ -114,24 +115,17 @@ function Wallet(props) {
     // Create a payment link by calling  /create_payment_link in mini server 'proxy.js' 
     // which has been described before `validateIRTDeposit` function
     const confirmIRTDeposit = ()=>{
-        setGeneratingWallet(true)
-        axios.post("http://127.0.0.1:5000/create_payment_link", {
-            order_id: "HiEx-"+Math.round(100000*(Math.random())),
+        axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", {
             amount: depositTxAmount,
-            name: (user.first_name + " " + user.last_name) || 'کاربر های ایکسچنج',
-            phone: user.phone || user.mobile || "",
-            mail: user.email || "",
-            desc: "شارژ کیف پول تومانی"
-        }).then(response=>{
+            bank_id: depositRef.current.value,
+            type: 1,
+        }, {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
             
             const {data} = response
-            if(data.link){
-                openInNewTab(data.link)
-            }
+            console.log(data)
         }).catch(error=>{
             toast.error("با خطا مواجه شد")
         }).finally(f=>{
-            setGeneratingWallet(false)
             closeDepositModal(false)
         })
     }
@@ -382,7 +376,7 @@ function Wallet(props) {
                     { currencyID === Constants.IRT_CURRENCY_ID ?
                         <>
                             <label htmlFor="card-select" className="form-label">انتخاب کارت</label>
-                            <select className="form-control" name="card-select" value={depositCard} onChange={changeDepositCard}>
+                            <select ref={depositRef } className="form-control" name="card-select" value={depositCard} onChange={changeDepositCard}>
                                 {validCards.map((item, idx)=>{
                                     return <option value={item.id} key={idx}>{item.card} {"-"} {item.bank}</option>
                                 })}
