@@ -1,13 +1,15 @@
 import {
     UPDATE_UNREAD_NOTIFICATION_LIST,
     UPDATE_NOTIFICATION_LIST,
+    UPDATING_NOTIFICATIONS,
 }
 
 from '../actions'
 
 const init_state ={
     notificationList: [],
-    unreadNotificationList: []
+    unreadNotificationList: [],
+    updating_notifications: false
 }
 export const notificationReducer = (state=init_state, action)=>{
     switch (action.type) {
@@ -20,6 +22,12 @@ export const notificationReducer = (state=init_state, action)=>{
             return {
                 ...state,
                 unreadNotificationList: action.payload
+            }
+    
+        case UPDATING_NOTIFICATIONS:
+            return {
+                ...state,
+                updating_notifications: action.payload
             }
     
         default:

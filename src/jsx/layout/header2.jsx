@@ -1,15 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { DropdownButton } from 'react-bootstrap';
 import { Link, useHistory} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { userLogout } from '../../redux/actions';
-
-
+import NotificationWidget from '../element/notificationWidget' 
 
 function Header2() {
     const currentUser = useSelector(state=>state.session.user);
     const dispatch = useDispatch()
     const history = useHistory()
+    
     return (
         <>
         
@@ -28,6 +28,9 @@ function Header2() {
                                 </div>
                                 <div className="dashboard_log">
                                     <div className="d-flex align-items-center">
+
+                                        <NotificationWidget></NotificationWidget>
+
                                         <DropdownButton
                                             alignRight
                                             title={ currentUser.first_name + " " + currentUser.last_name }
@@ -61,5 +64,4 @@ function Header2() {
         </>
     )
 }
-
 export default Header2;

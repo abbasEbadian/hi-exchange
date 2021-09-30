@@ -2,6 +2,7 @@ import axios from "axios";
 import {Constants} from '../../Constants'
 import { generate_wallet, get_wallet_list, update_fetching_state, get_network_list } from "./wallet";
 import { userUpdateDetail } from "./user";
+import { get_notifications, get_unread_notifications } from "./notifications";
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
 export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
 export const UPDATE_ORDERS =  "UPDATE_ORDERS"
@@ -20,6 +21,8 @@ export const fetch_user_all_data = ()=>{
         dispatch(fetch_orders())
         dispatch(fetch_transactions())
         dispatch(userUpdateDetail())
+        dispatch(get_unread_notifications())
+        dispatch(get_notifications())
 
         // Generate wallets if not aleady have them
         dispatch(get_wallet_list()).then(wallet=>{

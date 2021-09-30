@@ -6,7 +6,7 @@ import { combineReducers } from 'redux'
 import { sessionReducer } from 'redux-react-session'
 import { preloaderReducer } from './preloader';
 import { accountsReducer } from './accounts';
-import { notificationReducer } from './notificatios';
+import { notificationReducer } from './notifications';
 
 const rootReducer = combineReducers({
     indexConverter,

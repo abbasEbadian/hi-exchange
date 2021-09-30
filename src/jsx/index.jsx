@@ -21,6 +21,7 @@ import VerifyStep1 from './pages/verify-step-1';
 import VerifyStep2 from './pages/verify-step-2';
 import VerifyStep4 from './pages/verify-step-4';
 import Wallet from './pages/wallet'
+import Notifications from './pages/notifications'
 import History from './pages/history';
 import Demo from './pages/demo';
 import Landing from './pages/landing';
@@ -94,6 +95,7 @@ axios.interceptors.response.use((response) => {
                         axios.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.access
      
                         // 3) return originalRequest object with Axios.
+                        document.location.reload()
                         return axios(originalRequest);
                     })
 
@@ -139,6 +141,7 @@ const Index = ()=> {
             <BrowserRouter  >
                 <div id="main-wrapper">
                     <Switch>
+                        <AuthRoute  exact path='/notifications'> <Notifications/> </AuthRoute>
                         <AuthRoute  exact path='/buy-sell'> <BuySell/> </AuthRoute>
                         <AuthRoute  exact path='/accounts'> <Accounts/> </AuthRoute>
                         <AuthRoute  exact path='/settings'> <Settings/> </AuthRoute>
