@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef} from "react";
 import { Link, useHistory } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,9 +12,10 @@ function Otp2({userLogin}) {
     const [registerMobileID, setRegisterMobileID] = useState("")
     const [timer, setTimer] = useState(60)
     const [isSubmitting, setIsSubmitting] = useState(false); 
-    const history = useHistory()
-    
+    const _history = useHistory()
+    const ref = useRef()
     useEffect(()=>{
+        ref.current.focus()
         setAuthID(localStorage.getItem('hiexchange_authID'))
         setRegisterMobileID(localStorage.getItem('hiexchange_register_mobile'))
     }, [authID])
@@ -29,9 +30,9 @@ function Otp2({userLogin}) {
         localStorage.clear("hiexchange_authID");
         localStorage.clear("hiexchange_register_mobile");
         if(authID)
-            history.push('/')
+            _history.push('/')
         else
-            history.push("/signup")
+            _history.push("/signup")
     }
     const verifyCode = e=>{
         e.preventDefault()
@@ -42,13 +43,13 @@ function Otp2({userLogin}) {
             userLogin( {
                 id: authID,
                 otp: code,
-            }, history, setIsSubmitting )    
+            }, _history, setIsSubmitting )    
         }
         else{
             dispatch(userSignup({
                 mobile: registerMobileID, 
                 code: code
-            }, history, setIsSubmitting))
+            }, _history, setIsSubmitting))
         }
     }
 
@@ -83,6 +84,7 @@ function Otp2({userLogin}) {
                                                 placeholder="1 2 3 4 5"
                                                 value={code}
                                                 onChange={e => setCode(e.target.value)}
+                                                ref={ref}
                                             />
                                         </div>
                                         <div className="text-center">

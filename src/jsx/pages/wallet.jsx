@@ -384,7 +384,7 @@ function Wallet(props) {
                                 })}
                             </select>
                             <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مقدار  </label>
-                            <input type="text" className="form-control" value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
+                            <input type="text" className="form-control" onFocus={e=>setDepositTxAmount("")}value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
                         
                         </>:
                         <div className="col-12">
@@ -396,7 +396,7 @@ function Wallet(props) {
                             <input type="text" className="form-control" value={depositTxID} onChange={e=>setDepositTxID(e.target.value)}/>
 
                             <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مبلغ تراکنش </label>
-                            <input type="text" className="form-control" value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
+                            <input type="text" className="form-control" onFocus={e=>setDepositTxAmount("")} value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
 
 
                             {transactionResult.status?
@@ -464,7 +464,7 @@ function Wallet(props) {
                         <label htmlFor="card-select" className="form-label">مقدار برداشت از 
                         <span className="px-2 text-success fs-5">{withdrawWallet?withdrawWallet.service.name:undefined}</span>
                         </label>
-                        <input type="text" className="form-control" value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>
+                        <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>
                     </div>
                     
                     

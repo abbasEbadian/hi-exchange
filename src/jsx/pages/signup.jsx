@@ -107,6 +107,7 @@ function Signup() {
                                                 name="fist_name"
                                                 value={first_name}
                                                 onChange={e=>setFirstName(e.target.value)}
+                                                autoFocus
                                             />
                                         </div>
                                         <div className="mb-3 col-6">

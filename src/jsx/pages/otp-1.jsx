@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
@@ -19,6 +19,7 @@ function Otp1() {
         draggable: true,
         autoClose: 5000,
     }
+    const ref = useRef()
     const phone_valid = phone.length === 11; 
     const changePhone = e=>{
         setPhone(e.target.value)
@@ -54,7 +55,7 @@ function Otp1() {
         }
     }
     
- 
+    useEffect(()=>ref.current.focus())
     return (
         <>
             <div className="authincation section-padding">
@@ -71,15 +72,7 @@ function Otp1() {
                             </div>
                             <div className="auth-form card">
                                 <div className="card-body">
-                                    {/* <Link
-                                        className="page-back text-muted"
-                                        to={"./signin"}
-                                    >
-                                        <span>
-                                            <i className="fa fa-angle-left"></i>
-                                        </span>{" "}
-                                        بازگشت
-                                    </Link> */}
+                                  
                                     <h3 className="text-center">
                                         احراز هویت با رمز یکبار مصرف
                                     </h3>
@@ -102,6 +95,7 @@ function Otp1() {
                                                     maxLength="11"
                                                     value={phone}
                                                     onChange={ changePhone}
+                                                    ref={ref}
                                                 />
                                             </div>
                                         </div>
