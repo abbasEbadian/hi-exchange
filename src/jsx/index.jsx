@@ -152,7 +152,6 @@ const Index = ()=> {
                         <AuthRoute  exact path='/settings-invite'> <SettingsInvite/> </AuthRoute>
                         <AuthRoute  exact path='/add-bank-acc'> <AddBankAccount/> </AuthRoute>
                         <AuthRoute  exact path='/add-debit-card'> <AddDebitCard/> </AuthRoute>
-                        <AuthRoute  exact path='/lock'> <Locked/> </AuthRoute>
                         <AuthRoute  exact path='/privacy-policy'> <PrivacyPolicy/> </AuthRoute>
                         <AuthRoute  exact path='/reset'> <Reset/> </AuthRoute>
                         <AuthRoute  exact path='/terms-condition'> <TermsCondition/> </AuthRoute>

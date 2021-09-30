@@ -12,6 +12,7 @@ import qs from 'qs'
 import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
+import { Constants } from '../../Constants';
 
 
 function BuySell() {
@@ -429,7 +430,7 @@ function BuySell() {
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={buyDestination.small_name_slug+"1!"}
+                                                    symbol={Constants.TW_SYMBOL[buyDestination.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
@@ -451,7 +452,7 @@ function BuySell() {
                                                 }
                                             <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={sellSource.small_name_slug}
+                                                    symbol={Constants.TW_SYMBOL[buyDestination.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}

@@ -3,6 +3,7 @@ import TradingViewWidget from 'react-tradingview-widget';
 import { Themes } from 'react-tradingview-widget';
 import axios from 'axios';
 import Loader from 'react-loader-spinner'
+import {Constants} from '../../Constants'
 function ProfileChart({ selectedChart}) {
     const base = "http://127.0.0.1:5000/cryptocurrency/quotes/latest?symbol="
     const [info, setInfo] = useState({})
@@ -25,7 +26,7 @@ function ProfileChart({ selectedChart}) {
                 <div style={{minHeight: 400+"px"}}>
 
                 <TradingViewWidget 
-                    symbol={selectedChart+"1!"}
+                    symbol={Constants.TW_SYMBOL[selectedChart]}
                     theme={Themes.DARK}
                     locale="fa_IR"
                     width={"100%"}
