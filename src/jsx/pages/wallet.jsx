@@ -115,14 +115,16 @@ function Wallet(props) {
     // Create a payment link by calling  /create_payment_link in mini server 'proxy.js' 
     // which has been described before `validateIRTDeposit` function
     const confirmIRTDeposit = ()=>{
-        axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", {
-            amount: depositTxAmount,
-            bank_id: depositRef.current.value,
-            type: 1,
-        }, {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
+        const FormData = require('form-data');
+        let data = new FormData();
+        data.append('type', '1');
+        data.append('amount', String(depositTxAmount));
+        data.append('bank_id', depositRef.current.value);
+
+        axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", data, {headers: {"Content-Type": "application/form-data"}}).then(response=>{
             
             const {data} = response
-            console.log(data)
+            if (data.link) openInNewTab(data.link)
         }).catch(error=>{
             toast.error("با خطا مواجه شد")
         }).finally(f=>{
