@@ -10094,4 +10094,21 @@ button.btn-simple {
 .Toastify {
   z-index: 1051; }
 
+#S404 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh; }
+  #S404 h2, #S404 .h2 {
+    font-size: 50px; }
+  #S404 a {
+    font-size: 27px;
+    margin-top: 32px;
+    color: green; }
+
 /*# sourceMappingURL=style.css.map */

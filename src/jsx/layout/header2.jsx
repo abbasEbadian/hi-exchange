@@ -45,9 +45,6 @@ function Header2() {
                                             <Link to={'./settings'} className="dropdown-item">
                                                 <i className="la la-cog"></i> تنظیمات
                                             </Link>
-                                            <Link to={'./lock'} className="dropdown-item">
-                                                <i className="la la-lock"></i> قفل 
-                                            </Link>
                                             <button onClick={()=>dispatch(userLogout(history))} className="dropdown-item logout">
                                             <i className="la la-sign-out"></i> خروج
                                             </button>

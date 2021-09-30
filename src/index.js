@@ -18,17 +18,17 @@ const store = createStore(rootReducer,
     applyMiddleware(...mid),
     (window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : a=>a)
     ));
-//validate session
-// const validateSession = (session) => { 
-//     return new Promise((res, rej)=>{
-//         if (!session) return rej(false)
-//         const refresh_time = +Object.keys(session).includes("refresh_time") && session.refresh_time;
-//         if(!refresh_time) return  rej("time session not found");
-//         if(new Date().getTime() - refresh_time>60*60*1000) rej("session Expired");
-//         return res(true);
-//     });
-// }
-const options = { refreshOnCheckAuth: true, redirectPath: '/opt-1' };
+// validate session
+const validateSession = (session) => { 
+    return new Promise((res, rej)=>{
+        if (!session) return rej(false)
+        const refresh_time = +Object.keys(session).includes("refresh_time") && session.refresh_time;
+        if(!refresh_time) return  rej("time session not found");
+        if(new Date().getTime() - refresh_time>60*60*12*1000) rej("session Expired");
+        return res(true);
+    });
+}
+const options = { refreshOnCheckAuth: true, redirectPath: '/otp-1', validateSession };
 sessionService.initSessionService(store, options)
  
 
