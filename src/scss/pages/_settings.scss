@@ -88,3 +88,14 @@
     font-size: 13px;
     font-family: "iransans";
 }
+.reset-password{
+    .reset-row{
+        position: relative;
+        .visible {
+            position: absolute;
+            right: 24px;
+            font-size: 22px;
+            bottom: 11px;
+        }
+    }
+}

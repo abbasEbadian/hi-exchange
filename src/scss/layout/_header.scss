@@ -343,3 +343,28 @@ button.navbar-toggler {
         }
     }
 }
+@media (max-width: 768px){
+    body{
+        padding-bottom: 58px;
+    }
+    .header{
+        left: 0;
+        .navbar-brand{
+            margin-right: 0;
+        }
+        .dropdown-toggle{
+            padding: 7px;
+            font-size: 14px;
+        }
+        .profile_log .dropdown-menu{
+            inset: -8px  auto auto -80px;
+        }
+        #notification-dropdown{
+            transform: translateY(2px);
+            div.dropdown-menu{
+                width: 260px;
+                inset:8px auto auto -54px;
+            }
+        }
+    }
+}

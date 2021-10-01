@@ -51,7 +51,7 @@ function Balance() {
                                 <br/>
                               
                             </div>
-                            <div className="col-xl-12 col-xxl-6 col-lg-6">
+                            <div className="col-xl-12 col-xxl-6 col-lg-6 px-4">
                             <div className="balance-widget">
                                 <ul className="list-unstyled">
                                 {!wallet.length ?

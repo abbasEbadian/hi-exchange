@@ -11,6 +11,7 @@ import { userUpdateAvatar } from '../../redux/actions'
 import {  toast } from 'react-toastify';
 import Loader from 'react-loader-spinner';
 import UserAvatar from '../element/userAvatar';
+import ResetPassword from '../element/ResetPassword';
 
 
 function Settings() {
@@ -121,31 +122,7 @@ function Settings() {
                                     </div>
                                 </div>
                                 <div className="col-xl-6">
-                                    <div className="card">
-                                        <div className="card-header">
-                                            <h4 className="card-title">حساب کاربر</h4>
-                                        </div>
-                                        <div className="card-body">
-                                            <form action="#">
-                                                <div className="row">
-                                                    <div className="mb-3 col-xl-12">
-                                                        <label className="form-label">ایمیل جدید</label>
-                                                        <input type="email" className="form-control" placeholder="Email" />
-                                                    </div>
-                                                    <div className="mb-3 col-xl-12">
-                                                        <label className="form-label">رمز عبور جدید</label>
-                                                        <input type="password" className="form-control"
-                                                            placeholder="**********" />
-                                                        <small className="mt-2 mb-0">فعالسازی هویت سنجی دو مرحله ای 
-                                                        </small>
-                                                    </div>
-                                                    <div className="col-12  text-start">
-                                                        <button className="btn btn-success waves-effect">ذخیره</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+                                    <ResetPassword />
                                 </div>
                                 <div className="col-xl-12">
                                     <PersonalInfo></PersonalInfo>

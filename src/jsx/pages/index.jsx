@@ -29,7 +29,7 @@ function Dashboard() {
             <div className="row">
               <div className="col-xl-9 col-xxl-12">
                 <div className="row">
-                  <div className="col-12 row">
+                  <div className="col-12 d-flex flex-wrap ">
                     <div className="col-12 col-lg-4">
                       <div className="card welcome-profile transparent">
                         <div className="card-body">
@@ -89,7 +89,7 @@ function Dashboard() {
                       <Convert></Convert>
                     </div>
                   </div>
-                  <div className="col-12 row">
+                  <div className="col-12 d-flex flex-wrap">
                     <IndexChart></IndexChart>
                   </div>
                 </div>

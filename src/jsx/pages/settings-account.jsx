@@ -37,7 +37,7 @@ function SettingsAccount() {
                                             cards.map((card, idx)=>{
                                                 return <li key={idx}>
                                                 <div className="row">
-                                                    <div className="col-9">
+                                                    <div className="col-12 col-md-9">
                                                         <div className="d-flex">
                                                             <span className="ms-3"><i className="fa fa-credit-card"></i></span>
                                                             <div>
@@ -47,7 +47,7 @@ function SettingsAccount() {
                                                            
                                                         </div>
                                                     </div>
-                                                    <div className="col-3">
+                                                    <div className="col-12 col-md-3 my-md-0 mt-2 mb-5">
                                                         <div className="verify">
                                                             {card.status==="confirmed" ?
                                                                 <div className="verified">

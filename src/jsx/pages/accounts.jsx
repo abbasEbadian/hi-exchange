@@ -5,6 +5,7 @@ import Sidebar from '../layout/sidebar';
 import OrderList  from '../element/orderList'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetch_user_all_data } from '../../redux/actions';
+import UserAvatar from '../element/userAvatar';
 
 
 function Accounts() {
@@ -28,8 +29,8 @@ function Accounts() {
                             <div className="card profile_card">
                                 <div className="card-body">
                                     <div className="d-flex">
-                                        <img className="me-3 rounded-circle me-0 me-sm-3" src={require('./../../images/profile/2.png')} width="60"
-                                            height="60" alt="" />
+                                        <UserAvatar width={"70px"}></UserAvatar>
+                                           
                                         <div className="pe-4">
                                             <h4 className="mb-2">{user.first_name + " " + user.last_name}</h4>
                                             <p className="mb-1"> <span><i className="fa fa-phone ms-2 text-primary"></i></span>
