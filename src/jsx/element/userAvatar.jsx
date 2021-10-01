@@ -16,6 +16,7 @@ const  UserAvatar= ({width="65px"})=> {
                 />:
                 <img
                     className="rounded-circle ms-0 ms-sm-3"
+                    style={{borderRadius: "50%", width, height:"65px" }}
                     src={require("../../images/profile/2.png")}
                     alt="userAvatar"
                 />
