@@ -190,27 +190,21 @@ export const userUpdateAvatar =  (image, toast=0, toastOpt=0)=>{
 export const userUpdatePersonal = (info)=>{
     return dispatch=>{
         
-        sessionService.loadSession().then(session=>{
-            axios.post(BASE+"/api/v2/account/manage/", {
-                action: "profile",
-                ...info
-            },{
-                headers:{
-                    Authorization: "Bearer " + session.token
-                }
-            }).then(response=>{
-                const {data} = response;
-                if (data.error === 1){
-                    toast.warning(data.message, toastOpt);
-                }else{
-                    toast.success(data.message, toastOpt)
-                }
-            }).catch(error=>{
-                toast.error("با خطا مواجه شد.", toastOpt)
-                console.log(error)
-            })
-        }).catch(err=>{console.log(err);
+        axios.post(BASE+"/api/v2/account/manage/", {
+            action: "profile",
+            ...info
+        }).then(response=>{
+            const {data} = response;
+            if (data.error === 1){
+                toast.warning(data.message, toastOpt);
+            }else{
+                toast.success(data.message, toastOpt)
+            }
+        }).catch(error=>{
+            toast.error("با خطا مواجه شد.", toastOpt)
+            console.log(error)
         })
+        
     }
 }
 
