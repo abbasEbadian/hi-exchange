@@ -34,7 +34,7 @@ function NotificationWidget() {
                 <Dropdown.Divider />
                 <div class="d-flex justify-content-between p-2">
                   <Link className="" to="/notifications">نمایش همه</Link>
-                  {notifications.length? <button className="btn-simple text-white" onClick={e=>dispatch(mark_notifications_asread())}>خواندم</button>:undefined}
+                  {notifications.length? <button className="btn-simple text-white py-0" onClick={e=>dispatch(mark_notifications_asread())}>خواندم</button>:undefined}
                 </div>
             </Dropdown.Menu>
         </Dropdown>
