@@ -7,9 +7,9 @@ import {ToastContainer} from 'react-toastify'
 
 const PersonalInfo = () => {
     const currentUser = useSelector(state=>state.session.user)
-    const [ email, setEmail ] = useState(currentUser.email)
-    const [ birth, setBirth ] = useState(currentUser.bithday)
-    const [ address, setAddress ] = useState(currentUser.address)
+    const [ email, setEmail ] = useState(currentUser.email || "")
+    const [ birth, setBirth ] = useState(currentUser.bithday || "")
+    const [ address, setAddress ] = useState(currentUser.address || "")
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -44,17 +44,17 @@ const PersonalInfo = () => {
                         
                         <div className="mb-3 col-xl-6">
                             <label className="form-label">ایمیل</label>
-                            <input type="email" className="form-control" value={email} onChange={(e)=>setEmail(e.target.value)}
+                            <input type="email" className="form-control" value={email || ""} onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="Hello@example.com" name="email" />
                         </div>
                         <div className="mb-3 col-xl-6">
                             <label className="form-label">تاریخ تولد</label>
-                            <input type="text" className="form-control" placeholder="1373/11/24" value={birth} onChange={(e)=>setBirth(e.target.value)}
+                            <input type="text" className="form-control" placeholder="1373/11/24" value={birth || ""} onChange={(e)=>setBirth(e.target.value)}
                                 id="datepicker" autoComplete="off" name="dob" />
                         </div>
                         <div className="mb-3 col-xl-6">
                             <label className="form-label">آدرس</label>
-                            <input type="text" className="f form-control" value={address} onChange={(e)=>setAddress(e.target.value)}
+                            <input type="text" className="f form-control" value={address || ""} onChange={(e)=>setAddress(e.target.value)}
                                 placeholder="تبریز ولیعصر" name="presentaddress" />
                         </div>
                         

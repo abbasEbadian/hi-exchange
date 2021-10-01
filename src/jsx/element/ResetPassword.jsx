@@ -1,6 +1,7 @@
 import React, {useState, useRef} from 'react'
 import axios from 'axios';
-
+import { Constants } from '../../Constants';
+import { toast, ToastContainer} from 'react-toastify'
 function ResetPassword() {
     const [pass1Visible, setPass1Visible] = useState(false)
     const [pass2Visible, setPass2Visible] = useState(false)
@@ -11,8 +12,33 @@ function ResetPassword() {
     const resetPassword = (e)=>{
         e.preventDefault()
         e.stopPropagation()
+        const data = new FormData()
+        data.append("old_password", pass1.current.value)
+        data.append("new_password1", pass2.current.value)
+        data.append("new_password2", pass3.current.value)
+        data.append("action","password")
+        const data2 = {
+            old_password:pass1.current.value,
+            new_password1:pass2.current.value,
+            new_password2: pass3.current.value,
+            action: "password"
+        }
+        const headers = {
+            "Content-Type" : "application/x-www-form-urlencoded"
+        }
 
-        axios.post()
+        axios.post(Constants.BASE_URL + "/api/v2/account/manage/", data2).then(response=>{
+            const {data} = response
+            if(data.error === 1){
+                toast.error(data.message)
+            }else{
+                toast.success(data.message)
+            }
+        }).catch(error=>{
+            console.log(error);
+            
+            toast.error("با خطا مواجه شد")
+        })
     }
     return (
         <div className="card reset-password">
@@ -43,6 +69,17 @@ function ResetPassword() {
                     </div>
                 </form>
             </div>
+            <ToastContainer
+                    position="bottom-left"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={true}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    />
         </div>
     )
 }
