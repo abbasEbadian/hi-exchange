@@ -28,7 +28,7 @@ const validateSession = (session) => {
         return res(true);
     });
 }
-const options = { refreshOnCheckAuth: true, redirectPath: '/otp-1', validateSession };
+const options = { refreshOnCheckAuth: true, redirectPath: '/signin', validateSession };
 sessionService.initSessionService(store, options)
  
 
