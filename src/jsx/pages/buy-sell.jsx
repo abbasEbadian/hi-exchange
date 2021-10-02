@@ -98,13 +98,7 @@ function BuySell() {
         dispatch(create_order(data, toast))
     }
     
-    const convertFeeToIrt=(id, amount)=>{
-        if(!currencyList || !currencyList.length) return 0;
-        else{
-            const c = currencyList.filter((item)=>{return item&&item.id===id})
-            return c && c.length ?amount * (+c[0].show_price_irt): 0
-        }
-    }
+
 
     const get_available = (symbolid)=>{
         if (!wallet || !wallet.length )return 0
@@ -129,9 +123,12 @@ function BuySell() {
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
+        console.log(selectedCurrency);
+        
         buyDestinationR.current = selectedCurrency;
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
+        setBuyConvertInvalid(Math.random())
         computePrices({buyConvertAmountP: 0})
 
     }
@@ -142,6 +139,7 @@ function BuySell() {
         sellDestinationR.current = selectedCurrency;
         sellLowCreditR.current = false
         setSellConvertAmount(0)
+        setSellConvertInvalid(Math.random())
         computePrices({sellConvertAmountP: 0})
     }
     const changeSellSource = (e)=>{
@@ -453,7 +451,7 @@ function BuySell() {
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.id]}
+                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
