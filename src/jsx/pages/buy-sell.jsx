@@ -451,7 +451,7 @@ function BuySell() {
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.id]}
+                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
