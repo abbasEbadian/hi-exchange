@@ -33,7 +33,7 @@ export const userLogout = (_history)=>{
         dispatch(toggle_loader_on())
         sessionService.deleteUser().then(e=>{
             sessionService.deleteSession().then(e=>{
-                _history.push("/otp-1")
+                _history.push("/signin")
             }).catch(err=>{
                 console.log(err);
             });
@@ -83,6 +83,8 @@ export const userLogin = (credentias, _history ,setIsSubmitting)=>{
                     console.log(err);
                 })
             }).catch(err=>{
+                if (err.non_field_errors)
+                    toast.error(err.non_field_errors[0], toastOpt)
                 toast.error("کد وارد شده صحیح نمی باشد.", toastOpt)
             }).finally(e=>{
                 setIsSubmitting(false);
@@ -131,7 +133,7 @@ export const userSignup = (credentias, _history ,setIsSubmitting)=>{
                     toast.success(response.data.message + " در حال انتقال به صفحه ورود...", {
                         ...toastOpt,
                         onClose: ()=>{
-                            _history.push("/otp-1")
+                            _history.push("/signin")
                         },
                     })
                 }

@@ -45,8 +45,10 @@ function Signin() {
                 })
             }
         }).catch(error=>{
+            if (error.non_field_errors)
+                    toast.error(error.non_field_errors[0])
             toast.error('لطفا یک دقیقه دیگر تلاش نمایید')
-            console.log(error)
+            console.log(error, "ERR")
         }).finally(f=>{
             setIsSubmitting(false)
         })
