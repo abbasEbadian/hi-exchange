@@ -140,7 +140,7 @@ export const userSignup = (credentias, _history ,setIsSubmitting)=>{
 export const userUpdateName =  (name)=>{
     return dispatch=>{
         sessionService.loadSession().then(session=>{
-            axios.post("https://hi-exchange.com/api/v2/account/verify/", {
+            axios.post(BASE + "/api/v2/account/verify/", {
                 name
             },
             {headers:{
@@ -285,7 +285,7 @@ export const user_login = (access, refresh)=>{
 }
 export const fetch_user_detail = (token)=>{
     return (dispatch) => {
-        axios.get("https://hi-exchange.com/api/v2/account/details/", {
+        axios.get(BASE + "/api/v2/account/details/", {
             headers: {
                 "Authorization": "Bearer "+token,
             }
@@ -298,7 +298,7 @@ export const fetch_user_detail = (token)=>{
 }
 export const fetch_user_profile = (token)=>{
     return (dispatch) => {
-        axios.post("https://hi-exchange.com/api/v2/account/manage/", {
+        axios.post(BASE + "/api/v2/account/manage/", {
             headers: {
                 "Authorization": "Bearer "+token
             }

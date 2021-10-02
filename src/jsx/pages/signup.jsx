@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 import Loader from "react-loader-spinner";
 import qs from 'qs'
+import { Constants } from "../../Constants";
 function Signup() {
     const [first_name, setFirstName] = useState("")
     const [last_name, setLastName] = useState("")
@@ -49,7 +50,7 @@ function Signup() {
                 password,
                 ref_mobile: referralRef.current.value
             })
-            axios.post("https://hi-exchange.com/api/v2/token/register/", d , {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
+            axios.post(Constants.BASE_URL + "/api/v2/token/register/", d , {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
                 const {data} = response
                 if(data.error!==1){
                     setSubmitted(true)

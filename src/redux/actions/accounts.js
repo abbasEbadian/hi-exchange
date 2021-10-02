@@ -54,7 +54,7 @@ export const fetch_accounts = ()=>{
 }
 export const fetch_transactions = ()=>{
     return dispatch =>{
-        axios.get("https://hi-exchange.com/api/v2/transaction/list/").then(res=>{
+        axios.get(Constants.BASE_URL + "/api/v2/transaction/list/").then(res=>{
         if (!res) throw Error(401)   
         const {data} = res
 
@@ -80,7 +80,7 @@ export const fetch_orders = ()=>{
 }
 export const add_credit_card = ({card, shaba, bank}, toast)=>{
         return dispatch=>{
-            axios.post("https://hi-exchange.com/api/v2/bank/add/", {
+            axios.post(Constants.BASE_URL + "/api/v2/bank/add/", {
             card,
             shaba,
             bank

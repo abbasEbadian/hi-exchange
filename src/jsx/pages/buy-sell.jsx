@@ -5,7 +5,7 @@ import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetch_currencies, creating_order, create_order } from '../../redux/actions';
+import { creating_order, create_order } from '../../redux/actions';
 import TradingViewWidget from 'react-tradingview-widget';
 import { Themes } from 'react-tradingview-widget';
 import qs from 'qs'
@@ -13,7 +13,6 @@ import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
-import debounce from 'lodash.debounce';
 
 function BuySell() {
     const dispatch = useDispatch()
@@ -21,24 +20,12 @@ function BuySell() {
     const {currencyList}  = useSelector(state => state.currencies)
     const wallet  = useSelector(state => state.wallet.wallet)
     const _creating_order  = useSelector(state => state.accounts.creating_order)
-    const details = useSelector(state=>state.indexConverter.bsdetails)
     const [tab, setTab] = useState("buy")
     const [ chartOpen, setChartOpen ] = useState(true)
-    const [sellAvailableCurrency, setSellAvailableCurrency] = useState(0)
-    const [buyAvailableCurrency, setBuyAvailableCurrency] = useState(0)
     const [buyConvertAmount, setBuyConvertAmount] = useState(0)
     const [sellConvertAmount, setSellConvertAmount] = useState(0)
 
-    const [buySource, setBuySource] = useState({small_name_slug: undefined})
-    const [sellSource, setSellSource] = useState({small_name_slug: undefined})
-    const [buyDestination, setBuyDestination] = useState({small_name_slug: undefined})
-    const [sellDestination, setSellDestination] = useState({small_name_slug: undefined})
-    
-    const [buyConvertInvalid, setBuyConvertInvalid] = useState(true)
-    const [sellConvertInvalid, setSellConvertInvalid] = useState(true)
-    
-    const [buyLowCredit, setBuyLowCredit] = useState(false);
-    const [sellLowCredit, setSellLowCredit] = useState(false);
+
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
 
@@ -48,10 +35,8 @@ function BuySell() {
     const sellSourceR = useRef({small_name_slug: undefined})
 
     const buyDestinationR = useRef({small_name_slug: undefined})
-    const buyDestinationRef = useRef()
 
     const sellDestinationR = useRef({small_name_slug: undefined})
-    const sellDestinationRef = useRef()
 
     const buyLowCreditR = useRef(false)
     const sellLowCreditR = useRef(false)
@@ -203,7 +188,7 @@ function BuySell() {
                 'source-price': '0',
                 'destination-price': buyConvertAmountP
             })
-            axios.post("https://hi-exchange.com/api/v2/order/calculator/", data, {
+            axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{
                    "Content-type": "application/x-www-form-urlencoded"
                }
@@ -255,7 +240,7 @@ function BuySell() {
                 'source-price': sellConvertAmountP,
                 'destination-price': '0' 
             })
-            axios.post("https://hi-exchange.com/api/v2/order/calculator/", data, {
+            axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{
                    "Content-type": "application/x-www-form-urlencoded"
                }
@@ -405,7 +390,7 @@ function BuySell() {
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return  [12, 14].includes(c.id) && (c.id !== sellSource.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
+                                                                        return  [12, 14].includes(c.id) && (c.id !== sellSourceR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
                                                                     })
                                                                 }
                                                             </select>
@@ -459,7 +444,7 @@ function BuySell() {
                                     <div className="buyer-seller">
                                         <div className="d-flex flex-column mb-3">
                                             
-                                            {tab === "buy" && buyDestination.small_name_slug? 
+                                            {tab === "buy" && buyDestinationR.current.small_name_slug? 
                                             <>
                                                 {chartOpen ?
                                                     <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
@@ -467,7 +452,7 @@ function BuySell() {
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestination.small_name_slug]}
+                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
@@ -481,7 +466,7 @@ function BuySell() {
                                                     </>
                                                 :
                                                 undefined
-                                            }{tab === "sell" && sellSource.small_name_slug? 
+                                            }{tab === "sell" && sellSourceR.current.small_name_slug? 
                                             <>
                                              {chartOpen ?
                                                 <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
@@ -489,7 +474,7 @@ function BuySell() {
                                                 }
                                             <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestination.small_name_slug]}
+                                                    symbol={Constants.TW_SYMBOL[sellSourceR.current.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}

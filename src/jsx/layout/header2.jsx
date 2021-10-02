@@ -4,6 +4,7 @@ import { Link, useHistory} from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { userLogout } from '../../redux/actions';
 import NotificationWidget from '../element/notificationWidget' 
+import { Constants } from '../../Constants';
 
 function Header2() {
     const currentUser = useSelector(state=>state.session.user);
@@ -21,7 +22,7 @@ function Header2() {
                                 <Link className="navbar-brand" to={'/'}><img src={require('./../../images/logo.png')} alt="" /></Link>
 
                                 <div className="d-md-flex d-none   align-items-center justify-contetn-center mx-auto">
-                                    <a className="ms-4 text-white" href="https://hi-exchange.com">صفحه اصلی</a>
+                                    <a className="ms-4 text-white" href={Constants.BASE_URL}>صفحه اصلی</a>
                                     <Link to="/" className="ms-4 text-white">تبدیل</Link>
                                     <Link to="/buy-sell" className="ms-4 text-white">خرید و فروش</Link>
                                     <Link to="/settings-invite" className="text-white">معرفی دوستان</Link>

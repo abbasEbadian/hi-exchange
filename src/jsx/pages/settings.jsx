@@ -12,6 +12,7 @@ import {  toast } from 'react-toastify';
 import Loader from 'react-loader-spinner';
 import UserAvatar from '../element/userAvatar';
 import ResetPassword from '../element/ResetPassword';
+import { Constants } from '../../Constants';
 
 
 function Settings() {
@@ -41,14 +42,14 @@ function Settings() {
             var bodyFormData = new FormData();
             bodyFormData.append("first_name", name);
             bodyFormData.append("action", "profile");
-            axios.post("https://hi-exchange.com/api/v2/account/manage/", bodyFormData,
+            axios.post(Constants.BASE_URL + "/api/v2/account/manage/", bodyFormData,
                 {headers: {Authorization: "Bearer "+ token }}
             ).then(res=>{
                 const {data} = res;
                 if (data.error === 1)
                 toast.error(data.message)
                 else {
-                    axios.get("https://hi-exchange.com/api/v2/account/details/", {
+                    axios.get(Constants.BASE_URL + "/api/v2/account/details/", {
                         headers: {
                             "Authorization": "Bearer "+token,
                         }
