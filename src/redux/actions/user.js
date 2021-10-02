@@ -14,7 +14,7 @@ import axios from 'axios';
 import {toast } from 'react-toastify'
 import { toggle_loader_on, toggle_loader_off } from '../actions'
 import {Constants} from '../../Constants'
-
+import qs from 'qs'
 var fs = require('fs');
 const toastOpt = {
     position: "bottom-left",
@@ -94,7 +94,15 @@ export const userLogin = (credentias, _history ,setIsSubmitting)=>{
 }
 export const userForget = ({mobile,code},_history ,setIsSubmitting)=>{
     return dispatch=>{
-        axios.post(BASE+"/api/v2/token/password/verify/", {mobile, code})
+        const d = qs.stringify({
+            mobile, code
+        })
+        axios.post(BASE+"/api/v2/token/password/verify/", d,
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        })
             .then(response=>{
                 const {data} = response
                 if(data.error === 1){

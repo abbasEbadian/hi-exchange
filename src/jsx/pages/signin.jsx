@@ -45,7 +45,7 @@ function Signin() {
                 })
             }
         }).catch(error=>{
-            toast.error('با خطا مواجه شد')
+            toast.error('لطفا یک دقیقه دیگر تلاش نمایید')
             console.log(error)
         }).finally(f=>{
             setIsSubmitting(false)

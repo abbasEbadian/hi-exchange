@@ -29,6 +29,7 @@ function Forget() {
                     setSubmitted(true)
                     localStorage.setItem('otp_type', 'forget')
                     localStorage.setItem('otp_id', data.id)
+                    localStorage.setItem('otp_phone', phone)
                     toast.success('کد یک بار مصرف ارسال شد.', {
                         autoClose: 2000,
                         onClose: ()=>{

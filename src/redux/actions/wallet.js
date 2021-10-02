@@ -219,12 +219,7 @@ export const generate_wallet = (service)=>{
     return dispatch=>{
         axios.post(Constants.BASE_URL + "/api/v2/wallet/generate/", {service}).then(response=>{
             const {data} = response
-            dispatch(get_wallet_list()).then(wallet=>{
-                return Promise.resolve(data.id)
-            }).catch(error=>{
-                console.log(error);
-                
-            })
+            return Promise.resolve(data.id)
         }).catch(err=>{
             console.log(err)
         })
