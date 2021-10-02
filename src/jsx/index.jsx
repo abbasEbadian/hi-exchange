@@ -18,6 +18,7 @@ import Reset from './pages/reset';
 import Signup from './pages/signup';
 import Signin from './pages/signin';
 import S404 from './pages/404';
+import Forget from './pages/Forget';
 import TermsCondition from './pages/terms-condition';
 import VerifyStep1 from './pages/verify-step-1';
 import VerifyStep2 from './pages/verify-step-2';
@@ -171,6 +172,7 @@ const Index = ()=> {
                         <BasicRoute exact path='/signup'> <Signup/> </BasicRoute>
                         <BasicRoute exact path='/otp-1'> <Otp1/> </BasicRoute>
                         <BasicRoute exact path='/otp-2'> <Otp2/> </BasicRoute>
+                        <BasicRoute  exact path='/forget'> <Forget/> </BasicRoute>
                         <Route><S404></S404></Route>
                     </Switch>
                 </div>

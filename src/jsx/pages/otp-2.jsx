@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef} from "react";
 import { Link, useHistory } from "react-router-dom";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { userLogin, userSignup } from '../../redux/actions'
+import { userLogin, userSignup, userForget } from '../../redux/actions'
 import Loader from 'react-loader-spinner'
 import { connect, useDispatch } from 'react-redux'
 function Otp2({userLogin}) {
 
     const [otpType, setOtpType] =  useState("login")
-    const [otpId, setOtpId] =  useState("login")
-    const [otpPhone, setOtpPhone] =  useState("login")
+    const [otpId, setOtpId] =  useState("")
+    const [otpPhone, setOtpPhone] =  useState("")
     
     const dispatch = useDispatch()
     const [code, setCode]= useState("");
@@ -54,8 +54,14 @@ function Otp2({userLogin}) {
                     otp: code,
                 }, _history, setIsSubmitting )
                 break
-            case "signu":
+            case "signup":
                 dispatch(userSignup({
+                    mobile: otpPhone, 
+                    code: code
+                }, _history, setIsSubmitting))
+                break
+            case "forget":
+                dispatch(userForget({
                     mobile: otpPhone, 
                     code: code
                 }, _history, setIsSubmitting))
@@ -127,8 +133,8 @@ function Otp2({userLogin}) {
                                         }
                                     </div>
                                     <ToastContainer
-                                        position="top-right"
-                                        autoClose={5000}
+                                        position="bottom-left"
+                                        autoClose={3000}
                                         hideProgressBar={false}
                                         newestOnTop={false}
                                         closeOnClick

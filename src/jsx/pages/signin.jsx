@@ -141,6 +141,14 @@ function Signin() {
                                             </Link>
                                         </p>
                                     </div>
+                                    <div className="forget-password mt-3">
+                                        <Link
+                                                className="text-gray"
+                                                to={"./forget"}
+                                            >
+                                                رمز عبور خود را فراموش کردم
+                                            </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>

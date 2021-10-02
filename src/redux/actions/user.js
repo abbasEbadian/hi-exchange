@@ -92,6 +92,27 @@ export const userLogin = (credentias, _history ,setIsSubmitting)=>{
             })
     }
 }
+export const userForget = ({mobile,code},_history ,setIsSubmitting)=>{
+    return dispatch=>{
+        axios.post(BASE+"/api/v2/token/password/verify/", {mobile, code})
+            .then(response=>{
+                const {data} = response
+                if(data.error === 1){
+                    toast.error(data.message)
+                }else{
+                    toast.success(data.message, {
+                        onClose: ()=>{
+                            _history.push("/signin")
+                        }
+                    })
+                }
+            }).catch(err=>{
+                toast.error("کد وارد شده صحیح نمی باشد.")
+            }).finally(e=>{
+                setIsSubmitting(false);
+            })
+    }
+}
 export const userSignup = (credentias, _history ,setIsSubmitting)=>{
     return dispatch=>{
         axios.post(BASE+"/api/v2/token/register/verify/", credentias)
