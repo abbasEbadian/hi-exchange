@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { userLogin, userSignup } from '../../redux/actions'
 import Loader from 'react-loader-spinner'
-import { connect, useDispatch, useSelector } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 function Otp2({userLogin}) {
 
     const [otpType, setOtpType] =  useState("login")

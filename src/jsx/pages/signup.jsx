@@ -13,6 +13,7 @@ function Signup() {
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
     const referralRef = useRef("")
+
     const history = useHistory();
 
     const handleSignup =(e)=>{
@@ -55,8 +56,8 @@ function Signup() {
                     toast.success('کد یک بار مصرف ارسال شد.', {
                         autoClose: 2000,
                         onClose: ()=>{
-                            localStorage.clear("hiexchange_authID" )
-                            localStorage.setItem("hiexchange_register_mobile", mobile )
+                            localStorage.setItem("otp_type", "signup")
+                            localStorage.setItem("otp_phone", mobile )
                             history.push('/otp-2')
                         }
                     });

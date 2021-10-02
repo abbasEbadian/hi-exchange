@@ -35,9 +35,7 @@ function Signin() {
             }else{
                 
                 setSubmitted(true)
-                
-                dispatch({type:"UPDATE_TYPE", payload: "login"})
-                dispatch({type:"UPDATE_ID", payload: data.id})
+            
                 localStorage.setItem('otp_type', 'login')
                 localStorage.setItem('otp_id', data.id)
                 toast.success("در حال انتقال", {
