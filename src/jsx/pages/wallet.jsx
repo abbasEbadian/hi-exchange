@@ -19,7 +19,7 @@ function Wallet(props) {
     const params = useLocation()
     const history= useHistory()
     const {wallet, checking_transaction, is_fetching, checking_irt_deposit } = useSelector(state => state.wallet)
-    const user = useSelector(state => state.session.user)
+    const [copying, setCopying] = useState(false)
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
     const [address, setAddress] = useState("")
@@ -292,8 +292,15 @@ function Wallet(props) {
     dispatch(get_wallet_list())
     dispatch(fetch_accounts())
     
-    
    }, [])
+
+    const copyToClipboard = ()=>{
+        navigator.clipboard.writeText(address)
+        setCopying(true)
+        setTimeout(() => {
+            setCopying(false)
+        }, 2000);
+    }
     return (
         <>
             <Header2 />
@@ -591,7 +598,21 @@ function Wallet(props) {
                             <span className="px-2 text-success">{selectedCurrency.service.name}</span>
                             را به کیف پول  
                             </p>
-                            <p className="px-2 text-success my-5">{address}</p>
+                            <p className="px-2 text-success my-5">
+                                {address}
+                                <br/>
+                                <button class=" btn-sm btn-danger fs-6 mt-3"
+                                   onClick={copyToClipboard}
+                                >
+                                    {copying? 
+                                    <>
+                                        کپی شد !
+                                        <i className="fa fa-check me-2 text-white"></i>
+                                    </> 
+                                    : "کپی کن !"}
+                                    
+                                    </button>
+                            </p>
                                 در شبکه
                                 {depositWallet.service && depositWallet.service.network && depositWallet.service.network.realName?
                                 <span className="px-2 fs-5 text-warning" >{depositWallet.service.network.realName} {"("}{depositWallet.service.network.name}{")"}</span>
