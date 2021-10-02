@@ -5,7 +5,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from 'react-loader-spinner'
-import {Cosntants} from '../../Constants'
+import {Constants} from '../../Constants'
 import { useDispatch } from "react-redux";
 function Otp1() {
     const [phone, setPhone] = useState("");
@@ -30,7 +30,7 @@ function Otp1() {
         e.stopPropagation()
         if (phone_valid){
             setIsSubmitting(true);
-            axios.post(Cosntants.BASE_URL + "/api/v2/token/otp/", {
+            axios.post(Constants.BASE_URL + "/api/v2/token/otp/", {
                 mobile: phone
             }).then(data=>{
                 if(Object.keys(data).includes("data")){

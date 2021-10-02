@@ -1,5 +1,6 @@
 import { UPDATE_CONVERT_RATES, UPDATE_CURRENCIES } from '../actionTypes' 
 import axios from 'axios';
+import { Constants } from '../../Constants';
 function convertToRates(cl){
     /* 
     *   @param cl : currencyList fetched from server api/v2/service/list/
@@ -37,7 +38,7 @@ export const update_currencies = (currencies)=>{
 }
 export const fetch_currencies = ()=>{
     return async dispatch=>{
-        axios.get("https://hi-exchange.com/api/v2/service/list/", {})
+        axios.get(Constants.BASE_URL + "/api/v2/service/list/", {})
         .then(data=>{
             dispatch(update_currencies(data.data))
             dispatch(update_convert_rates(convertToRates(data.data)));

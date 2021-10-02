@@ -24,6 +24,8 @@ function BuySell() {
     const [ chartOpen, setChartOpen ] = useState(true)
     const [buyConvertAmount, setBuyConvertAmount] = useState(0)
     const [sellConvertAmount, setSellConvertAmount] = useState(0)
+    const [buyConvertInvalid, setBuyConvertInvalid] = useState(0)
+    const [sellConvertInvalid, setSellConvertInvalid] = useState(0)
 
 
     const sellConvertErrorMessage = useRef("")
