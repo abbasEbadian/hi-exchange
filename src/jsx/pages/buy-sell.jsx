@@ -306,7 +306,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length>0 ? currencyList.map((c, idx)=>{
-                                                                    return  [14, 12].includes(c.id) && (c.id !== buyDestinationR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
+                                                                    return  [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(c.id) && (c.id !== buyDestinationR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
                                                                 }):undefined
                                                                 }
                                                         </select>
@@ -392,7 +392,7 @@ function BuySell() {
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return  [12, 14].includes(c.id) && (c.id !== sellSourceR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
+                                                                        return  [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(c.id) && (c.id !== sellSourceR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
                                                                     })
                                                                 }
                                                             </select>
@@ -445,16 +445,15 @@ function BuySell() {
                                 <div className="card-body">
                                     <div className="buyer-seller">
                                         <div className="d-flex flex-column mb-3">
-                                            
-                                            {tab === "buy" && buyDestinationR.current.small_name_slug? 
+                                            {tab === "buy" && buyDestinationR.current.id? 
                                             <>
                                                 {chartOpen ?
                                                     <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                    :<span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
+                                                    :<sgit span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.small_name_slug]}
+                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.id]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
@@ -468,7 +467,7 @@ function BuySell() {
                                                     </>
                                                 :
                                                 undefined
-                                            }{tab === "sell" && sellSourceR.current.small_name_slug? 
+                                            }{tab === "sell" && sellSourceR.current.id? 
                                             <>
                                              {chartOpen ?
                                                 <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
