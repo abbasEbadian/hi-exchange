@@ -63,7 +63,8 @@ function BuySell() {
     // const sellConvertValidR = useRef(false)
 
 
-
+    const [selectedChart1, setSelectedChart1] = useState()
+    const [selectedChart2, setSelectedChart2] = useState()
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
@@ -122,13 +123,11 @@ function BuySell() {
     const changeBuyDestination = (e)=>{
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
-        console.log(selectedCurrency);
-        
+        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]        
         buyDestinationR.current = selectedCurrency;
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        setBuyConvertInvalid(Math.random())
+        setSelectedChart1(selectedCurrency)
         computePrices({buyConvertAmountP: 0})
 
     }
@@ -139,7 +138,7 @@ function BuySell() {
         sellDestinationR.current = selectedCurrency;
         sellLowCreditR.current = false
         setSellConvertAmount(0)
-        setSellConvertInvalid(Math.random())
+        setSelectedChart1(selectedChart2)
         computePrices({sellConvertAmountP: 0})
     }
     const changeSellSource = (e)=>{
@@ -151,6 +150,8 @@ function BuySell() {
         sellAvailableCurrencyR.current = av
         sellLowCreditR.current = false
         setSellConvertAmount(0)
+        setSelectedChart2(selectedCurrency)
+
         computePrices({sellConvertAmountP: 0})
     }
 

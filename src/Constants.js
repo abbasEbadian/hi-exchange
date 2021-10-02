@@ -20,7 +20,7 @@ export const Constants = {
         "LINK": "BINANCE:LINKUSD",
         "XML": "XML",
         "BTT": "BITFINEX:BTTUSD",
-        "REEF": "BINANCE:BEEFUSD",
+        "REEF": "BINANCE:REEFUSD",
         "VET": "BINANCE:VETUSD",
         "XTZ ": "BINANCE:XTZUSD"
     }
