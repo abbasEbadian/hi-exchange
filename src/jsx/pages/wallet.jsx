@@ -106,9 +106,9 @@ function Wallet(props) {
     const openInNewTab = (url) => {
         const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
         if (newWindow) newWindow.opener = null
-        // if(!newWindow || newWindow.closed || typeof newWindow.closed=='undefined') {
-        //     toast.info("پنجره های پاپ آپ مرورگر غیر فعال شده است.لطفا ابتدا آن را فعال کنید.")
-        // }
+        if(!newWindow || newWindow.closed || typeof newWindow.closed=='undefined') {
+            toast.info("پنجره های پاپ آپ مرورگر غیر فعال شده است.لطفا ابتدا آن را فعال کنید.")
+        }
 
       }
 
@@ -124,7 +124,11 @@ function Wallet(props) {
         axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", data, {headers: {"Content-Type": "application/form-data"}}).then(response=>{
             
             const {data} = response
-            if (data.link) openInNewTab(data.link)
+            if(data.error===1){
+                toast.error(data.message)
+            }else{
+                if (data.link) openInNewTab(data.link)
+            }
         }).catch(error=>{
             toast.error("با خطا مواجه شد")
         }).finally(f=>{
