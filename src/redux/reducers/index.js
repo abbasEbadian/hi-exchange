@@ -7,6 +7,7 @@ import { sessionReducer } from 'redux-react-session'
 import { preloaderReducer } from './preloader';
 import { accountsReducer } from './accounts';
 import { notificationReducer } from './notifications';
+import { otpReducer } from './otp';
 
 const rootReducer = combineReducers({
     indexConverter,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
     wallet, 
     preloader: preloaderReducer,
     accounts:accountsReducer,
-    notifications: notificationReducer
+    notifications: notificationReducer,
+    otp: otpReducer
 });
 export default rootReducer;

@@ -2,6 +2,8 @@ import React, {useState, useRef} from 'react'
 import axios from 'axios';
 import { Constants } from '../../Constants';
 import { toast, ToastContainer} from 'react-toastify'
+import qs from 'qs'
+
 function ResetPassword() {
     const [pass1Visible, setPass1Visible] = useState(false)
     const [pass2Visible, setPass2Visible] = useState(false)
@@ -12,22 +14,31 @@ function ResetPassword() {
     const resetPassword = (e)=>{
         e.preventDefault()
         e.stopPropagation()
-        const data = new FormData()
-        data.append("old_password", pass1.current.value)
-        data.append("new_password1", pass2.current.value)
-        data.append("new_password2", pass3.current.value)
-        data.append("action","password")
-        const data2 = {
+        const data2 =qs.stringify({
             old_password:pass1.current.value,
             new_password1:pass2.current.value,
             new_password2: pass3.current.value,
             action: "password"
-        }
-        const headers = {
-            "Content-Type" : "application/x-www-form-urlencoded"
+        })
+        const data = new  FormData()
+        data.append('action', "password");  
+        data.append('old_password', pass1.current.value);  
+        data.append('new_password1', pass2.current.value);  
+        data.append('new_password2', pass3.current.value);  
+        const config = {
+            method: "post",
+            url: Constants.BASE_URL + "/api/v2/account/manage/",
+            data,
+            headers:{
+              
+                "User-Agent":" PostmanRuntime/7.26.10",
+                "Accept": "*/*",
+                
+                
+            }
         }
 
-        axios.post(Constants.BASE_URL + "/api/v2/account/manage/", data2).then(response=>{
+        axios( config).then(response=>{
             const {data} = response
             if(data.error === 1){
                 toast.error(data.message)

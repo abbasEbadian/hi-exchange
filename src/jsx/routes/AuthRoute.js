@@ -10,7 +10,7 @@ const AuthRoute = ({children, ...rest}) =>{
                 ({location})=> authenticated ? (children):(
                     <Redirect 
                         to={{
-                            pathname: "/otp-1",
+                            pathname: "/signin",
                             state: {from: location}
                         }}
                     ></Redirect>

@@ -4,11 +4,11 @@ import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import { useDispatch } from "react-redux";
 import Loader from 'react-loader-spinner'
+import { useDispatch } from "react-redux";
 function Otp1() {
     const [phone, setPhone] = useState("");
-    // const dispatch = useDispatch()
+    const dispatch = useDispatch()
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
     const history = useHistory()
@@ -38,7 +38,8 @@ function Otp1() {
                         ...toastOpt,
                         autoClose: 2000,
                         onClose: ()=>{
-                            localStorage.setItem("hiexchange_authID",data.data.id )
+                            dispatch({"type": "UPDATE_TYPE", payload: "login"})
+                            dispatch({"type": "UPDATE_ID", payload: data.id})
                             history.push('/otp-2')
                         }
                     });

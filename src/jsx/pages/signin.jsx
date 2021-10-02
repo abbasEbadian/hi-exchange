@@ -1,7 +1,62 @@
-import React from "react";
+import React, {useRef, useState, useEffect} from "react";
 import { Link } from "react-router-dom";
+import Loader from 'react-loader-spinner'
+import { toast, ToastContainer } from "react-toastify";
+import axios from "axios";
+import {Constants} from '../../Constants'
+import {useHistory} from 'react-router-dom'
+import { useDispatch } from "react-redux";
 
 function Signin() {
+
+    const phoneRef = useRef("")
+    const passRef = useRef("")
+    const rememberRef = useRef(false)
+
+    const _history = useHistory()
+    const dispatch = useDispatch()
+
+    const [isSubmitting, setIsSubmitting] = useState(false); 
+    const [submitted, setSubmitted] = useState(false); 
+
+    const submit = (e)=>{
+        e.preventDefault()
+        e.stopPropagation()
+        setIsSubmitting(true)
+        const data = {
+            mobile: phoneRef.current.value,
+            password: passRef.current.value,
+            remember: rememberRef.current.value,
+        }
+        axios.post(Constants.BASE_URL + "/api/v2/token/otp/", data).then(response=>{
+            const {data} = response
+            if(data.error === 1){
+                toast.error(data.message)
+            }else{
+                
+                setSubmitted(true)
+                
+                dispatch({type:"UPDATE_TYPE", payload: "login"})
+                dispatch({type:"UPDATE_ID", payload: data.id})
+                localStorage.setItem('otp_type', 'login')
+                localStorage.setItem('otp_id', data.id)
+                toast.success("در حال انتقال", {
+                    onClose: ()=>{
+                        _history.push("/otp-2")
+                    }
+                })
+            }
+        }).catch(error=>{
+            toast.error('با خطا مواجه شد')
+            console.log(error)
+        }).finally(f=>{
+            setIsSubmitting(false)
+        })
+    }
+    useEffect(() => {
+        phoneRef.current.focus()
+    }, [])
+
     return (
         <>
             <div className="authincation section-padding">
@@ -22,18 +77,21 @@ function Signin() {
                                 </div>
                                 <div className="card-body">
                                     <form
+                                    onSubmit={submit}
                                         method="post"
                                         name="myform"
                                         className="signin_validate"
                                         action="#"
                                     >
                                         <div className="mb-3">
-                                            <label>ایمیل</label>
+                                            <label>شماره همراه</label>
                                             <input
-                                                type="email"
+                                                type="text"
                                                 className="form-control"
-                                                placeholder="hello@example.com"
-                                                name="email"
+                                                placeholder="09..."
+                                                name="phone"
+                                                ref={phoneRef}
+                                                autoFocus
                                             />
                                         </div>
                                         <div className="mb-3">
@@ -41,7 +99,7 @@ function Signin() {
                                             <input
                                                 type="password"
                                                 className="form-control"
-                                                placeholder="Password"
+                                                ref={passRef}
                                                 name="password"
                                             />
                                         </div>
@@ -49,6 +107,7 @@ function Signin() {
                                             <div className="mb-3 mb-0">
                                                 <label className="toggle">
                                                     <input
+                                                        ref={rememberRef}
                                                         className="toggle-checkbox"
                                                         type="checkbox"
                                                     />
@@ -58,20 +117,19 @@ function Signin() {
                                                     </span>
                                                 </label>
                                             </div>
-                                            <div className="mb-3 mb-0">
-                                                <Link href="reset.html">
-                                                    فراموش رمز عبور
-                                                </Link>
-                                            </div>
+                                           
                                         </div>
-                                        <div className="text-center">
-                                            <Link
-                                                to={"./otp-1"}
-                                                type="submit"
-                                                className="btn btn-success w-100"
-                                            >
-                                                ورود
-                                            </Link>
+                                        <div className="text-center mt-4">
+                                            {!isSubmitting ? 
+                                                <button  type="submit" className="btn btn-success w-100 bg-transparent text-primary" disabled={  submitted } >
+                                                    {submitted ? "ارسال شد" : "ورود"}
+                                                    </button>
+                                                :
+                                                <Loader
+                                                    type="ThreeDots"
+                                                    height={48}
+                                                ></Loader>
+                                            }
                                         </div>
                                     </form>
                                     <div className="new-account mt-3">
@@ -90,6 +148,17 @@ function Signin() {
                         </div>
                     </div>
                 </div>
+                <ToastContainer
+                    position="bottom-left"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={true}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    />
             </div>
         </>
     );

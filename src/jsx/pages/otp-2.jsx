@@ -4,21 +4,28 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { userLogin, userSignup } from '../../redux/actions'
 import Loader from 'react-loader-spinner'
-import { connect, useDispatch } from 'react-redux'
+import { connect, useDispatch, useSelector } from 'react-redux'
 function Otp2({userLogin}) {
+
+    const [otpType, setOtpType] =  useState("login")
+    const [otpId, setOtpId] =  useState("login")
+    const [otpPhone, setOtpPhone] =  useState("login")
+    
     const dispatch = useDispatch()
     const [code, setCode]= useState("");
-    const [authID, setAuthID] = useState("")
-    const [registerMobileID, setRegisterMobileID] = useState("")
     const [timer, setTimer] = useState(60)
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const _history = useHistory()
     const ref = useRef()
     useEffect(()=>{
         ref.current.focus()
-        setAuthID(localStorage.getItem('hiexchange_authID'))
-        setRegisterMobileID(localStorage.getItem('hiexchange_register_mobile'))
-    }, [authID])
+        const type = localStorage.getItem("otp_type")
+        if(type) setOtpType(type)
+        const id = localStorage.getItem("otp_id")
+        if(id) setOtpId(id)
+        const phone = localStorage.getItem("otp_phone")
+        if(phone) setOtpPhone(phone)
+    }, [])
     
     setTimeout(e=>{
         if(timer > 0 ) 
@@ -27,30 +34,37 @@ function Otp2({userLogin}) {
     
 
     const resetAuth = e=>{
-        localStorage.clear("hiexchange_authID");
-        localStorage.clear("hiexchange_register_mobile");
-        if(authID)
-            _history.push('/')
-        else
+        
+        if(otpType === "login")
+            _history.push('/signin')
+        else if(otpType === 'signup')
             _history.push("/signup")
+        else if(otpType === "forget")
+            _history.push("/forget")
     }
     const verifyCode = e=>{
         e.preventDefault()
         e.stopPropagation()
         if(code.length !== 5) return
         setIsSubmitting(true);
-        if (authID) {
-            userLogin( {
-                id: authID,
-                otp: code,
-            }, _history, setIsSubmitting )    
+        switch (otpType) {
+            case "login":
+                userLogin( {
+                    id: otpId,
+                    otp: code,
+                }, _history, setIsSubmitting )
+                break
+            case "signu":
+                dispatch(userSignup({
+                    mobile: otpPhone, 
+                    code: code
+                }, _history, setIsSubmitting))
+                break
+            
+            default: return
+            
         }
-        else{
-            dispatch(userSignup({
-                mobile: registerMobileID, 
-                code: code
-            }, _history, setIsSubmitting))
-        }
+       
     }
 
     return (

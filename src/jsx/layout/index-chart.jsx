@@ -13,7 +13,7 @@ function IndexChart() {
     }, [])
     return (
         <>
-        <div className="col-12 col-lg-4">
+        <div className="col-12 col-lg-4 px-2">
         <div className="row">
             {chartList.map((item, idx)=>{
                 return <div key={idx} className="col-xl-12 col-lg-12 chart-selector">

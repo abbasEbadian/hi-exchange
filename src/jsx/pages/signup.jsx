@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 // import {userSignup} from '../../redux/actions'
 import axios from "axios";
 import Loader from "react-loader-spinner";
+import qs from 'qs'
 function Signup() {
     const [first_name, setFirstName] = useState("")
     const [last_name, setLastName] = useState("")
@@ -40,19 +41,21 @@ function Signup() {
             return
         }
             setIsSubmitting(true);
-            axios.post("https://hi-exchange.com/api/v2/token/register/", {
+            const d = qs.stringify({
                 first_name,
                 last_name,
                 mobile,
                 password,
                 ref_mobile: referralRef.current.value
-            }, {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
+            })
+            axios.post("https://hi-exchange.com/api/v2/token/register/", d , {headers: {"Content-Type": "application/x-www-form-urlencoded"}}).then(response=>{
                 const {data} = response
                 if(data.error!==1){
                     setSubmitted(true)
                     toast.success('کد یک بار مصرف ارسال شد.', {
                         autoClose: 2000,
                         onClose: ()=>{
+                            localStorage.clear("hiexchange_authID" )
                             localStorage.setItem("hiexchange_register_mobile", mobile )
                             history.push('/otp-2')
                         }
@@ -128,7 +131,6 @@ function Signup() {
                                                 className="form-control"
                                                 placeholder="09...."
                                                 name="number"
-                                                autoComplete="false"
                                                 value={mobile}
                                                 onChange={e=>setMobile(e.target.value)}
                                             />
@@ -140,7 +142,6 @@ function Signup() {
                                                 className="form-control"
                                                 placeholder="09...."
                                                 name="number"
-                                                autoComplete="false"
                                                 ref={referralRef}
                                             />
                                         </div>
@@ -151,7 +152,6 @@ function Signup() {
                                                 className="form-control"
                                                 placeholder=""
                                                 name="password"
-                                                autoComplete="new-password"
                                                 value={password}
                                                 onChange={e=>setPassword(e.target.value)}
 
