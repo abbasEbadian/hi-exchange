@@ -1,6 +1,7 @@
 import { UPDATE_CONVERT_RATES, UPDATE_CURRENCIES } from '../actionTypes' 
 import axios from 'axios';
 import { Constants } from '../../Constants';
+import { resolveTxt } from 'dns';
 function convertToRates(cl){
     /* 
     *   @param cl : currencyList fetched from server api/v2/service/list/
@@ -37,13 +38,17 @@ export const update_currencies = (currencies)=>{
     }
 }
 export const fetch_currencies = ()=>{
-    return async dispatch=>{
-        axios.get(Constants.BASE_URL + "/api/v2/service/list/", {})
-        .then(data=>{
-            dispatch(update_currencies(data.data))
-            dispatch(update_convert_rates(convertToRates(data.data)));
-        }).catch(error=>{
-            console.log(error);
+    return  dispatch=>{
+        return new Promise((resolve, reject)=>{
+            axios.get(Constants.BASE_URL + "/api/v2/service/list/", {})
+            .then(data=>{
+                dispatch(update_currencies(data.data))
+                dispatch(update_convert_rates(convertToRates(data.data)));
+                return resolve(data.data)
+            }).catch(error=>{
+                console.log(error);
+                return reject(400)
+            })
         })
     }
 }

@@ -3,6 +3,7 @@ import {Constants} from '../../Constants'
 import { generate_wallet, get_wallet_list, update_fetching_state, get_network_list } from "./wallet";
 import { userUpdateDetail } from "./user";
 import { get_notifications, get_unread_notifications } from "./notifications";
+import { fetch_currencies } from "./currencies";
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
 export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
 export const UPDATE_ORDERS =  "UPDATE_ORDERS"
@@ -26,15 +27,18 @@ export const fetch_user_all_data = ()=>{
 
         // Generate wallets if not aleady have them
         dispatch(get_wallet_list()).then(wallet=>{
-            if(!wallet || wallet.length !== Constants.CURRENCIES.length ){
-                dispatch(update_fetching_state(true))
-                for(let service_id of Constants.CURRENCIES)     
-                    dispatch(generate_wallet(service_id))
-
-
-                dispatch(get_wallet_list())
-                dispatch(update_fetching_state(false))
-            }
+            dispatch(fetch_currencies()).then(currencyList=>{
+                if(currencyList === 400) throw new Error(400)
+                if(!wallet || wallet.length !== currencyList.length ){
+                    dispatch(update_fetching_state(true))
+                    for(let service of currencyList)     
+                    dispatch(generate_wallet(service.id))
+                    dispatch(get_wallet_list())
+                    dispatch(update_fetching_state(false))
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
         }).catch(err=>{
             console.log(400);
         })
