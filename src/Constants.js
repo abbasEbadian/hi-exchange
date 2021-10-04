@@ -13,7 +13,7 @@ export const Constants = {
         "SHIB": "COINBASE:SHIBUSD ",
         "BNB": "BINANCE:BNBUSD",
         "DOT": "BINANCE:DOTUSD",
-        "DOGE": "BINANCE:DODGEUSD",
+        "DOGE": "BINANCE:DOGEUSD",
         "BCH": "BINANCE:BCHUSD",
         "LTC": "BINANCE:LTCUSD",
         "XRP": "BINANCE:XRPUSD",
