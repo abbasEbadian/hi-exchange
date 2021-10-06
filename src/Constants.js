@@ -5,12 +5,12 @@ export const Constants = {
     BASE_URL: "https://hi-exchange.com",
     TW_SYMBOL:{
         "BTC": "BINANCE:BTCUSD",
-        "USDT": "PHOENIX:ETHUSDT ",
-        "XEM": "BINANCE:XEMUSD ",
-        "TRX ": "BINANCE:TRXUDS",
+        "USDT": "POLONIEX:ETHUSDT",
+        "XEM": "BINANCE:XEMUSD",
+        "TRX": "BINANCE:TRXUSD",
         "ETC": "BINANCE:ETCUSD",
         "ETH": "BINANCE:ETHUSD",
-        "SHIB": "COINBASE:SHIBUSD ",
+        "SHIB": "COINBASE:SHIBUSD",
         "BNB": "BINANCE:BNBUSD",
         "DOT": "BINANCE:DOTUSD",
         "DOGE": "BINANCE:DOGEUSD",
@@ -22,7 +22,7 @@ export const Constants = {
         "BTT": "BITFINEX:BTTUSD",
         "REEF": "BINANCE:REEFUSD",
         "VET": "BINANCE:VETUSD",
-        "XTZ ": "BINANCE:XTZUSD"
+        "XTZ": "BINANCE:XTZUSD"
     }
     
 }
