@@ -5,9 +5,7 @@ import ReactApexChart from "react-apexcharts";
 
 const RadialChart = ({ balances, names }) =>{  
     const names2 = names.filter((c,i)=>i<5)
-    const balances2 = balances.filter((c,i)=>i<5)
-    console.log(names2, balances2);
-    
+    const balances2 = balances.filter((c,i)=>i<5)    
     const chart_details = {
         series: balances2, 
         options: {

@@ -161,7 +161,7 @@ function Signin() {
                 </div>
                 <ToastContainer
                     position="bottom-left"
-                    autoClose={5000}
+                    autoClose={2500}
                     hideProgressBar={false}
                     newestOnTop={false}
                     closeOnClick

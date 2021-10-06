@@ -33,16 +33,13 @@ export const userLogout = (_history)=>{
         dispatch(toggle_loader_on())
         sessionService.deleteUser().then(e=>{
             sessionService.deleteSession().then(e=>{
-                _history.push("/signin")
             }).catch(err=>{
                 console.log(err);
             });
         }).catch(err=>{
             console.log(err)
         }).finally(e=>{
-            setTimeout(() => {
-                dispatch(toggle_loader_off());
-            }, 2000);
+            window.location.href = "https://Hi-exchange.com"
         });
     }
 }
