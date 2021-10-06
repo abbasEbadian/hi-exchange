@@ -99,3 +99,12 @@
         }
     }
 }
+.visibility{
+    position: relative;
+    .visible {
+        position: absolute;
+        right: 24px;
+        font-size: 22px;
+        bottom: 11px;
+    }
+}

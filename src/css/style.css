@@ -9901,6 +9901,14 @@ input[type=number] {
     font-size: 22px;
     bottom: 11px; }
 
+.visibility {
+  position: relative; }
+  .visibility .visible {
+    position: absolute;
+    right: 24px;
+    font-size: 22px;
+    bottom: 11px; }
+
 .profile_card .d-flex {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   padding-bottom: 20px;

@@ -18,7 +18,7 @@ function Signin() {
 
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
-
+    const [passVisible, setPassVisible] = useState(false)
     const submit = (e)=>{
         e.preventDefault()
         e.stopPropagation()
@@ -94,14 +94,17 @@ function Signin() {
                                                 autoFocus
                                             />
                                         </div>
-                                        <div className="mb-3">
+                                        <div className="mb-3 visibility">
                                             <label>رمز عبور</label>
                                             <input
                                                 type="password"
                                                 className="form-control"
                                                 ref={passRef}
                                                 name="password"
+                                                type={passVisible? "text": "password"} 
                                             />
+                                            <span  className={"visible icofont-" + (passVisible? "eye-blocked": "eye")} onClick={e=>setPassVisible(s=>!s)} ></span>
+                      
                                         </div>
                                         <div className="row d-flex justify-content-between mt-4 mb-2">
                                             <div className="mb-3 mb-0">
