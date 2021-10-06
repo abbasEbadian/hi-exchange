@@ -41,7 +41,7 @@ function Header2() {
                                                 <i className="la la-user"></i> حساب کاربری
                                             </Link>
                                             <Link to={'./history'} className="dropdown-item">
-                                                <i className="la la-book"></i> تاریخچه
+                                                <i className="la la-book"></i> تاریخچه واریز و برداشت
                                             </Link>
                                             <Link to={'./settings'} className="dropdown-item">
                                                 <i className="la la-cog"></i> تنظیمات
