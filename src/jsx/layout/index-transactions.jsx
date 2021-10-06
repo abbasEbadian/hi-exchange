@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 function IndexTransactions({visibleTrancactionCount}) {
     const transactions = useSelector(state=>state.accounts.transactions)
+    const wallet = useSelector(state=>state.accounts.wallet)
     const [ visibleCount, setVisibleCount ] = useState(visibleTrancactionCount)
     // const transactions = useRef([])
     const increaseVisible = ()=>{
@@ -28,8 +29,12 @@ function IndexTransactions({visibleTrancactionCount}) {
                                         <tr>
                                             <th>#</th>
                                             <th>شماره تراکنش</th>
+                                            <th>تاریخ تراکنش</th>
                                             <th>نوع تراکنش</th>
                                             <th>مقدار تراکنش</th>
+                                            {/* <th>ارز مبدا</th>
+                                            <th>ارز مقصد</th> */}
+                                            <th>شماره پیگیری </th>
                                             <th>وضعیت تراکنش</th>
                                         </tr>
                                     </thead>
@@ -38,18 +43,25 @@ function IndexTransactions({visibleTrancactionCount}) {
                                             return (idx+1) <= visibleCount && <tr key={idx}>
                                                     <td>{idx+1}</td>
                                                     <td>{item["id"]}</td>
+                                                    <td>{new Date(item["published"]).toLocaleString("fa-IR")}</td>
                                                     <td>
                                                         {item["type"] === "deposit"?
                                                             <span className="badge badge-success">
                                                                 واریز
                                                             </span>
-                                                                :
+                                                                :item["type"] === "swap"?
+                                                            <span className="badge badge-warning">
+                                                                تبدیل
+                                                            </span>:
                                                             <span className="badge badge-danger">
                                                                 برداشت
                                                             </span>
                                                         }
                                                     </td>
-                                                    <td>{item["amount"]}</td>
+                                                    <td>{Number(item["amount"]).toLocaleString()}</td>
+                                                    <td>{item["tx_id"]}</td>
+                                                    {/* <td>{wallet && wallet.filter(c=>c.id===+item["source"])[0].name}</td>
+                                                    <td>{wallet && wallet.filter(c=>c.id===+item["destination"])[0].name}</td> */}
                                                     
                                                     <td className={
                                                         (item["status"] === "pending" ? "text-warning": undefined) ||
