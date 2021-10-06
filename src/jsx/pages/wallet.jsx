@@ -298,12 +298,35 @@ function Wallet(props) {
     
    }, [])
 
-    const copyToClipboard = ()=>{
-        navigator.clipboard.writeText(address)
+    const copyToClipboard = (event)=>{
         setCopying(true)
-        setTimeout(() => {
-            setCopying(false)
-        }, 2000);
+        if (window.clipboardData && window.clipboardData.setData) {
+            // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+            return window.clipboardData.setData("Text", address);
+    
+        }
+        else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+            var textarea = document.createElement("textarea");
+            textarea.textContent = address;
+            textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+            }
+            catch (ex) {
+                console.warn("Copy to clipboard failed.", ex);
+                return false;
+            }
+            finally {
+                document.body.removeChild(textarea);
+                setTimeout(() => {
+                    setCopying(false)
+                }, 2000);
+            }
+        }
+        
+        
     }
     return (
         <>
@@ -603,7 +626,7 @@ function Wallet(props) {
                             را به کیف پول  
                             </p>
                             <p className="px-2 text-success my-5">
-                                {address}
+                                <span className=" px-2 rounded border-success border">{address}</span>
                                 <br/>
                                 <button class=" btn-sm btn-danger fs-6 mt-3"
                                    onClick={copyToClipboard}
