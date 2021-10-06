@@ -39,7 +39,15 @@ function IndexTransactions({visibleTrancactionCount}) {
                                                     <td>{idx+1}</td>
                                                     <td>{item["id"]}</td>
                                                     <td>
-                                                        <span className="badge badge-danger">{item["type"]}</span>
+                                                        {item["type"] === "deposit"?
+                                                            <span className="badge badge-success">
+                                                                واریز
+                                                            </span>
+                                                                :
+                                                            <span className="badge badge-danger">
+                                                                برداشت
+                                                            </span>
+                                                        }
                                                     </td>
                                                     <td>{item["amount"]}</td>
                                                     
