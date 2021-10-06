@@ -385,7 +385,7 @@ function Wallet(props) {
                                             <td> { item.service.small_name } <i className={"me-2 fs-3 cc "+ item.service.small_name_slug}/></td>
                                             <td> { item.service.name } </td>
                                             
-                                            <td>{item.balance}</td>
+                                            <td>{Number(Number(item.balance).toFixed()).toLocaleString()}</td>
                                             <td>
                                                 <button className="text-success  border-0 bg-transparent fs-5 py-0"
                                                     onClick={e=>openPreDepositModal(item.service.id)}

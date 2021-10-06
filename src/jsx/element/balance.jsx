@@ -70,7 +70,7 @@ function Balance() {
                                             </div>
                                             <div className="text-right">
                                                 <h5 className="m-0">{item.balance} {" "} {item.service.small_name_slug}</h5>
-                                                <span className="w-100 text-left">{(item.balance * item.service.show_price_irt).toLocaleString()} ت</span>
+                                                <span className="w-100 text-left">{(Number(item.balance * item.service.show_price_irt).toFixed()).toLocaleString()} ت</span>
                                             </div>
                                         </li>
                                     })}
