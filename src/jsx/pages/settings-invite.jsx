@@ -44,7 +44,7 @@ function SettingsInvite() {
                                             <thead>
                                                 <tr>
                                                     <th>ایمیل</th>
-                                                    <th>تاریخ عضویت</th>
+                                                    <th>تاریخ ثبت نام</th>
                                                     <th>میزان بازگشت</th>
                                                     <th>وضعیت</th>
                                                 </tr>

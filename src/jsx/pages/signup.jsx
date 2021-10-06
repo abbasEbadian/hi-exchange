@@ -93,7 +93,7 @@ function Signup() {
                             <div className="auth-form card">
                                 <div className="card-header justify-content-center">
                                     <h4 className="card-title">
-                                        عضویت در وبسایت
+                                        ثبت نام در وبسایت
                                     </h4>
                                 </div>
                                 <div className="card-body">
@@ -162,7 +162,7 @@ function Signup() {
                                         <div className="text-center mt-4">
                                             {!isSubmitting ? 
                                                 <button  type="submit" className="btn btn-success w-100 bg-transparent text-primary" disabled={  submitted } >
-                                                    {submitted ? "ارسال شد" : "عضویت"}
+                                                    {submitted ? "ارسال شد" : "ثبت نام"}
                                                     </button>
                                                 :
                                                 <Loader
