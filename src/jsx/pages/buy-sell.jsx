@@ -354,7 +354,7 @@ function BuySell() {
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
                                                     disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySourceR.current.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
-                                                            بخرید
+                                                            خرید
                                                             {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -422,7 +422,7 @@ function BuySell() {
                                                        
                                                     </div>
                                                     <button type="button" onClick={handleSellConfirm} name="submit" disabled={!+sellConvertAmount || !sellDestinationR.current.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
-                                                        className="btn btn-danger w-100 d-flex justify-content-center">بفروشید!
+                                                        className="btn btn-danger w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
