@@ -24,7 +24,7 @@ function AddDebitCard() {
             toast.warn("تمامی فیلد ها الزامی است")
             return
         }
-        dispatch(add_credit_card({card, bank , shaba}, toast))
+        dispatch(add_credit_card({card, bank , shaba:"IR"+shaba}, toast))
     }
   
     return (
@@ -52,10 +52,14 @@ function AddDebitCard() {
                                                 <input type="text" className="form-control"  value={card} onChange={e=>setCard(e.target.value)}
                                                 placeholder="6037***********" />
                                             </div>
-                                            <div className="mb-3 col-xl-12">
-                                                <label className="form-label">شماره شبا </label>
+                                            
+                                            <div className="input-group mb-3 col-xl-12">
+                                                <label className="form-label w-100">شماره شبا </label>
                                                 <input type="text" className="form-control" value={shaba} onChange={e=>setShaba(e.target.value)}
-                                                placeholder="IR85***********" />
+                                                placeholder="85***********" />
+                                                <div class="input-group-append pe-0">
+                                                    <span class="input-group-text px-3" id="basic-addon1">IR</span>
+                                                </div>
                                             </div>
                                             <div className="mb-4 col-xl-12">
                                                 <label className="form-label">نام بانک</label>
