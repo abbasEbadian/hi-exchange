@@ -55,8 +55,15 @@ function IndexTransactions({visibleTrancactionCount}) {
                                                         (item["status"] === "pending" ? "text-warning": undefined) ||
                                                         (item["status"] === "registered" ? "text-info": undefined) ||
                                                         (item["status"] === "cancel" ? "text-danger": undefined) ||
+                                                        (item["status"] === "paying" ? "text-info": undefined) ||
                                                         (item["status"] === "accepted" ? "text-success": undefined) 
-                                                        }>{item["status"]}</td>
+                                                        }>{
+                                                            (item["status"] === "pending" ? "در انتظار تایید": undefined) ||
+                                                            (item["status"] === "registered" ? "ارسال شده": undefined) ||
+                                                            (item["status"] === "cancel" ? "لغو شده": undefined) ||
+                                                            (item["status"] === "paying" ? "در حال پرداخت": undefined) ||
+                                                            (item["status"] === "accepted" ? "ثبت شده": undefined) 
+                                                            }</td>
                                                     
                                                 </tr>
                                         })}
