@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
 import axios from 'axios';
 import {useLocation, useHistory} from 'react-router-dom'
+import {fill} from 'lodash'
 
 function Wallet(props) {
     
@@ -44,7 +45,7 @@ function Wallet(props) {
     const [summaryModalOpen, setSummaryModalOpen] = useState(false)
     const [preDepositModalOpen, setPreDepositModalOpen] = useState(false)
     const [validateModalOpen, setValidateModalOpen] = useState(false)
-    
+    const [syncStates, setSyncStates] = useState(fill(Array(20), false))
     const [historyOrders, setHistoyOrders] = useState([])
     const depositRef = useRef(0)
     /** 
@@ -288,7 +289,8 @@ function Wallet(props) {
 
         }
         
-      
+        console.log(syncStates);
+        
    }, [cards]
    )
    // Load wallets and cards 
@@ -327,6 +329,30 @@ function Wallet(props) {
         }
         
         
+    }
+    const syncWallet = (event, idx)=>{
+        setSyncStates(s => {
+            let new_s = [...syncStates]
+            new_s[idx] = 'syncing'
+            return new_s
+        })
+        dispatch(get_wallet_list()).then(e=>{
+
+        }).catch(e=>console.log(e)
+        ).finally(f=>{
+            setSyncStates(s => {
+                let new_s = [...syncStates]
+                new_s[idx] = true
+                return new_s
+            })
+            setTimeout(() => {
+                setSyncStates(s => {
+                    let new_s = [...syncStates]
+                    new_s[idx] = false
+                    return new_s
+                })
+            }, 2000);
+        })
     }
     return (
         <>
@@ -371,7 +397,12 @@ function Wallet(props) {
                                                     onClick={e=>openSummaryModal(item.service.id)}
                                                 >تاریخچه</button>
                                             </td>
-                                            <td style={{width: 50+"px"}} className="text-center cursor-pointer"><span className="icofont-refresh"></span></td>
+                                            <td style={{width: 50+"px"}} className="text-center cursor-pointer position-relative">
+                                                <span onClick={e=>syncWallet(e, idx)} className={"icofont-refresh  " +(syncStates[idx]==="syncing"?"spin":"")}>
+                                                </span>
+                                                {syncStates[idx]===true ? <span className={"icofont-check text-success px-2  position-absolute"}></span>:undefined}
+
+                                            </td>
                                             
                                         </tr>
                                     }):undefined}
