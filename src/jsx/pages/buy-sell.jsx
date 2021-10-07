@@ -27,14 +27,14 @@ function BuySell() {
     const [buyConvertInvalid, setBuyConvertInvalid] = useState(0)
     const [sellConvertInvalid, setSellConvertInvalid] = useState(0)
     const [buySource, setBuySource] = useState({})
-    const [sellDestinaion, setSellDestinaion ] = useState({})
+    const [sellDestination, setSellDestination ] = useState({})
 
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
 
     const sellAvailableCurrencyR = useRef(0)
     const buyAvailableCurrencyR = useRef(0)
-    const buySourceR = useRef({small_name_slug: undefined})
+    // const buySourceR = useRef({small_name_slug: undefined})
     const sellSourceR = useRef({small_name_slug: undefined})
 
     const buyDestinationR = useRef({small_name_slug: undefined})
@@ -69,8 +69,8 @@ function BuySell() {
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id)[0].id:undefined:undefined
+                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
+                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
         const data= {
             source_price: buyConversionResultStrR.current,
             destination_price: String(buyConvertAmount),
@@ -85,13 +85,13 @@ function BuySell() {
     const handleSellConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id)[0].id:undefined:undefined
+                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
+                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
         const data= {
             source_price: String(sellConvertAmount),
             destination_price: sellConversionResultStrR.current,
             source_asset: String(sellSourceR.current.id),
-            destination_asset: String(sellDestinationR.current.id),
+            destination_asset: String(sellDestination.id),
             wallet: _wallet,
             changed:"source",
             description: "" ,
@@ -132,12 +132,10 @@ function BuySell() {
         computePrices({buyConvertAmountP: 0})
 
     }
-    const changeSellDestination = (e)=>{
-        let selectedCurrency = e.target.value;
-        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
-        sellDestinationR.current = selectedCurrency;
+    const changeSellDestination = (e, selectedCurrency)=>{
+        selectedCurrency = currencyList.filter(c=>c.id===+selectedCurrency)[0]
         sellLowCreditR.current = false
+        setSellDestination(selectedCurrency)
         setSellConvertAmount(0)
         setSelectedChart1(selectedChart2)
         computePrices({sellConvertAmountP: 0})
@@ -237,7 +235,7 @@ function BuySell() {
             }
             const data = qs.stringify({
                 'source': String(sellSourceR.current.id), 
-                'destination': String(sellDestinationR.current.id),
+                'destination': String(sellDestination.id),
                 'changed': 'source',
                 'source-price': sellConvertAmountP,
                 'destination-price': '0' 
@@ -261,15 +259,14 @@ function BuySell() {
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 
                 const a = sellConversionResultR.current
-                const a2 = sellDestinationR.current.show_price_irt * sellKarmozdAmountR.current
-                const a3 = sellDestinationR.current.show_price_irt * sellFixedKarmozdR.current
+                const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
+                const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
                 
                 sellTotalR.current = (a+a2+a3).toLocaleString()
 
                 
                 // setsellConvertAmount(sellConvertAmountP)
                 sellLowCreditR.current = !sellConvertAmount || sellConvertAmount > +sellAvailableCurrencyR.current
-                console.log(sellLowCreditR,sellConvertAmount , sellAvailableCurrencyR.current, )
                 setSellConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -279,7 +276,7 @@ function BuySell() {
     }
    useEffect(() => {
         if(!buySource.id && currencyList.length>0) setBuySource(currencyList.filter(c=>c.id===Constants.USDT_CURRENCY_ID)[0])
-        console.log(buySource);
+        if(!sellDestination.id && currencyList.length>0) setSellDestination(currencyList.filter(c=>c.id===Constants.USDT_CURRENCY_ID)[0])
         
    }, [currencyList])
    
@@ -301,7 +298,7 @@ function BuySell() {
                                             <Tab eventKey="buy" title="خرید">
                                                 <form action="#" method="post" name="myform" className="currency_validate">
                                                     <div className="mb-3">
-                                                        <label className="form-label"style={{width:"70px"}}>بازار به :</label>
+                                                        <label className="form-label"style={{width:"90px"}}>بازار به :</label>
                                                         <div className="button-group">
                                                             <button type="button" className={buySource.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeBuySource(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
                                                             <button type="button" className={buySource.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeBuySource(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
@@ -312,12 +309,12 @@ function BuySell() {
                                                     </div>
 
                                                     <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label text-nowrap ps-3" style={{width:"70px"}}>انتخاب ارز:</label>
-                                                            <Form.Control as="select"  name='currency' className=" mb-3 px-2" onChange={changeBuyDestination} >
+                                                        <label className="form-label text-nowrap ps-3" style={{width:"90px"}}>انتخاب ارز:</label>
+                                                            <Form.Control as="select"  name='currency' className=" mb-3 px-2 w-50" onChange={changeBuyDestination} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== buySourceR.current.id) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                                                    return   (c.id !== buySource.id) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -349,7 +346,7 @@ function BuySell() {
                                                         
                                                     </div>
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
-                                                    // disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
+                                                    disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
                                                             خرید
                                                             {_creating_order? <Loader
@@ -364,14 +361,14 @@ function BuySell() {
                                             </Tab>
                                             <Tab eventKey="sell" title="فروش" >
                                                 <form method="post" name="myform" className="currency2_validate">
-                                                <div className="mb-3">
-                                                        <label className="form-label">ارز دیجیتال زیر را می فروشید</label>
-                                                        <select name='currency' className="form-control " onChange={changeSellSource} >
+                                                <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز : </label>
+                                                        <select name='currency' className="form-control w-50" onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== sellDestinationR.current.id) && <option key={idx} value={c.id}> {c.name}</option>
+                                                                        return   (c.id !== sellDestination.id) && <option key={idx} value={c.id}> {c.name}</option>
                                                                     })
                                                                 }
                                                         </select>
@@ -382,18 +379,13 @@ function BuySell() {
                                                     </div>
 
                                                     <div className="mb-3">
-                                                        <label className="form-label">واحد زیر را دریافت میکنید</label>
-                                                            <select name='currency' className="form-control mb-3" onChange={changeSellDestination} >
-                                                            <option value={undefined}>انتخاب</option>
-
-                                                                { 
-                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return  [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(c.id) && (c.id !== sellSourceR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
-                                                                    })
-                                                                }
-                                                            </select>
+                                                        <label className="form-label" style={{width:"90px"}}>ارز دریافتی:</label>
+                                                        <div className="button-group">
+                                                            <button type="button" className={sellDestination.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeSellDestination(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
+                                                            <button type="button" className={sellDestination.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeSellDestination(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
+                                                        </div>
                                                             
-                                                    </div>
+                                                        </div>
 
                                                     <div className="mb-3">
                                                         <label className="form-label">
@@ -412,13 +404,14 @@ function BuySell() {
                                                                 placeholder="" />
                                                             <input type="text" name="usd_amount" className="form-control " value={sellConversionResultStrR.current} readOnly
                                                                 placeholder="" />
-                                                            {sellDestinationR.current.name? <div className="input-group-append p-0">
-                                                                <span className="input-group-text">{ sellDestinationR.current.name }</span>
+                                                            {sellDestination.name? <div className="input-group-append p-0">
+                                                                <span className="input-group-text">{ sellDestination.name }</span>
                                                             </div>:undefined}
                                                         </div>
                                                        
                                                     </div>
-                                                    <button type="button" onClick={handleSellConfirm} name="submit" disabled={!+sellConvertAmount || !sellDestinationR.current.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                    <button type="button" onClick={handleSellConfirm} name="submit"
+                                                     disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-danger w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
@@ -497,7 +490,7 @@ function BuySell() {
                                                     </tr>
                                                     <tr>
                                                         <td>روش پرداخت</td>
-                                                        <td>{ buySourceR.current.name || "-"}</td>
+                                                        <td>{ buySource.name || "-"}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>نسبت تبدیل</td>
@@ -513,12 +506,12 @@ function BuySell() {
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
-                                                        <td>{buyConversionResultR.current.toLocaleString() || 0} {" "} {buySourceR.current.name}</td>
+                                                        <td>{buyConversionResultR.current.toLocaleString() || 0} {" "} {buySource.name}</td>
                                                     </tr>
                                                    
                                                     <tr>
                                                         <td> مجموع</td>
-                                                        <td> {buyTotalR.current} {" "}  {buySourceR.current.name}</td>
+                                                        <td> {buyTotalR.current} {" "}  {buySource.name}</td>
                                                     </tr>
                                                 </tbody>
                                          
@@ -531,7 +524,7 @@ function BuySell() {
                                                     
                                                     <tr>
                                                         <td>واحد دریافتی</td>
-                                                        <td>{ sellDestinationR.current.name || "-"}</td>
+                                                        <td>{ sellDestination.name || "-"}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>نسبت تبدیل</td>
@@ -539,11 +532,11 @@ function BuySell() {
                                                     {/* </tr> */}
                                                     <tr>
                                                         <td>فی ثابت</td>
-                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellDestinationR.current.name}</td>
+                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellDestination.name}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>فی  تراکنش</td>
-                                                        <td>{sellKarmozdAmountR.current || 0} {" "} {sellDestinationR.current.name}</td>
+                                                        <td>{sellKarmozdAmountR.current || 0} {" "} {sellDestination.name}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
@@ -557,7 +550,7 @@ function BuySell() {
                                                     </tr> */}
                                                     <tr>
                                                         <td> مجموع</td>
-                                                        <td> {sellTotalR.current} {" "}  {sellDestinationR.current.name}</td>
+                                                        <td> {sellTotalR.current} {" "}  {sellDestination.name}</td>
                                                     </tr>
                                                 </tbody>}
                                                </table>
