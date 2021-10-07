@@ -581,20 +581,7 @@ function Wallet(props) {
                 
                 </Modal.Footer>
             </Modal>
-            <Modal dialogClassName="modal-90w mx-auto" contentClassName="dark" show={summaryModalOpen} onHide={() => setSummaryModalOpen(false)}>
-                <Modal.Header closeButton>
-                <Modal.Title>تاریخچه</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <OrderList orders={historyOrders}></OrderList>
-                </Modal.Body>
-                <Modal.Footer>
-                <button className="text-danger bg-transparent border-0" onClick={closeSummaryModal}>
-                    بستن
-                </button>
-                
-                </Modal.Footer>
-            </Modal>
+           
             <Modal  contentClassName="dark" show={validateModalOpen} onHide={() => setValidateModalOpen(false)}>
                 <Modal.Header closeButton>
                 <Modal.Title>تاریخچه</Modal.Title>

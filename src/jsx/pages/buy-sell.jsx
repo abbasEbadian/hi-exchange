@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form, ButtonGroup, Button} from 'react-bootstrap';
+import {  Tab, Tabs, Form, Modal} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
@@ -13,6 +13,7 @@ import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
+import FastBuySell from '../element/fast-buy-sell';
 
 function BuySell() {
     const dispatch = useDispatch()
@@ -66,6 +67,8 @@ function BuySell() {
 
     const [selectedChart1, setSelectedChart1] = useState()
     const [selectedChart2, setSelectedChart2] = useState()
+
+    const [fastModal, setFastModal] = useState(false)
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
@@ -110,9 +113,7 @@ function BuySell() {
          return target.length > 0 ? target[0]["balance"] : 0
     }
 
-    const changeBuySource = (e, selectedCurrency)=>{
-        console.log(selectedCurrency);
-        
+    const changeBuySource = (e, selectedCurrency)=>{        
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
         buyAvailableCurrencyR.current = av
@@ -280,6 +281,12 @@ function BuySell() {
         
    }, [currencyList])
    
+    const handleSelect = (key)=>{
+        if(key !== "fast")
+            setTab(key)   
+        else
+            setFastModal(true)
+    }
     return (
         <>
             <Header2 />
@@ -294,7 +301,7 @@ function BuySell() {
                                 <div className="card-body">
                                     <div className="buy-sell-widget">
 
-                                        <Tabs activeKey={tab} onSelect={(k)=>setTab(k)} id="uncontrolled-tab-example">
+                                        <Tabs activeKey={tab} onSelect={handleSelect} id="uncontrolled-tab-example">
                                             <Tab eventKey="buy" title="خرید">
                                                 <form action="#" method="post" name="myform" className="currency_validate">
                                                     <div className="mb-3">
@@ -368,7 +375,7 @@ function BuySell() {
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== sellDestination.id) && <option key={idx} value={c.id}> {c.name}</option>
+                                                                        return   (c.id !== sellDestination.id) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
@@ -421,8 +428,12 @@ function BuySell() {
                                                             ></Loader>:undefined}</button>
                                                 </form>
                                             </Tab>
+                                            <Tab eventKey="fast" title="سفارش سریع" onClick={e=>setFastModal(true)}>
+
+                                            </Tab>
+                                            <button className="btn-simple" type="button" onClick={e=>setFastModal(true)}>سفارش سریع</button>
+
                                         </Tabs>
-                                        
                                     </div>
 
                                 </div>
@@ -574,6 +585,20 @@ function BuySell() {
                     draggable
                     pauseOnHover
                     />
+                    <Modal dialogClassName="mx-auto" contentClassName="dark" show={fastModal} onHide={() => setFastModal(false)}>
+                        <Modal.Header closeButton>
+                        <Modal.Title>تاریخچه</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <FastBuySell></FastBuySell>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <button className="text-danger bg-transparent border-0" onClick={e=>setFastModal(false)}>
+                            بستن
+                        </button>
+                        
+                        </Modal.Footer>
+                    </Modal>
             </div>
 
             

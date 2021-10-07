@@ -30,7 +30,7 @@
                     background: $success-gradient;
                     color     : white;
                 }
-                &.active:last-of-type {
+                &.active:nth-of-type(2) {
                     background: $danger-gradient;
                     color     : white;
                 }
