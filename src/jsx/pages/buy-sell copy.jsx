@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form } from 'react-bootstrap';
+import {  Tab, Tabs, Form, ButtonGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetch_currencies, creating_order, create_order } from '../../redux/actions';
+import { creating_order, create_order } from '../../redux/actions';
 import TradingViewWidget from 'react-tradingview-widget';
 import { Themes } from 'react-tradingview-widget';
 import qs from 'qs'
@@ -14,44 +14,67 @@ import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 
-
 function BuySell() {
     const dispatch = useDispatch()
 
     const {currencyList}  = useSelector(state => state.currencies)
     const wallet  = useSelector(state => state.wallet.wallet)
     const _creating_order  = useSelector(state => state.accounts.creating_order)
-    const details = useSelector(state=>state.indexConverter.bsdetails)
     const [tab, setTab] = useState("buy")
     const [ chartOpen, setChartOpen ] = useState(true)
-    const [sellAvailableCurrency, setSellAvailableCurrency] = useState(0)
-    const [buyAvailableCurrency, setBuyAvailableCurrency] = useState(0)
     const [buyConvertAmount, setBuyConvertAmount] = useState(0)
     const [sellConvertAmount, setSellConvertAmount] = useState(0)
-    const [buySource, setBuySource] = useState({small_name_slug: undefined})
-    const [sellSource, setSellSource] = useState({small_name_slug: undefined})
-    const [buyDestination, setBuyDestination] = useState({small_name_slug: undefined})
-    const [sellDestination, setSellDestination] = useState({small_name_slug: undefined})
-    
-    const [buyConvertInvalid, setBuyConvertInvalid] = useState(true)
-    const [sellConvertInvalid, setSellConvertInvalid] = useState(true)
-    
-    const [buyLowCredit, setBuyLowCredit] = useState(false);
-    const [sellLowCredit, setSellLowCredit] = useState(false);
+    const [buyConvertInvalid, setBuyConvertInvalid] = useState(0)
+    const [sellConvertInvalid, setSellConvertInvalid] = useState(0)
+
+
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
 
-     
+    const sellAvailableCurrencyR = useRef(0)
+    const buyAvailableCurrencyR = useRef(0)
+    const buySourceR = useRef({small_name_slug: undefined})
+    const sellSourceR = useRef({small_name_slug: undefined})
+
+    const buyDestinationR = useRef({small_name_slug: undefined})
+
+    const sellDestinationR = useRef({small_name_slug: undefined})
+
+    const buyLowCreditR = useRef(false)
+    const sellLowCreditR = useRef(false)
+
+    const buyConversionResultR = useRef(0)
+    const buyConversionResultStrR = useRef(0)
+    const buyEndPriceR = useRef(0)
+    const buyKarmozdAmountR = useRef(0)
+    const buyFixedKarmozdR = useRef(0)
+    const buyTotalR = useRef(0)
+    const sellConversionResultR = useRef(0)
+    const sellConversionResultStrR = useRef(0)
+    const sellEndPriceR = useRef(0)
+    const sellKarmozdAmountR = useRef(0)
+    const sellFixedKarmozdR = useRef(0)
+    const sellTotalR = useRef(0)
+
+    const buyConvertValidR = useRef(false)
+    const sellConvertValidR = useRef(false)
+
+    const buyAmountRef = useRef(0)
+    // const sellConvertValidR = useRef(false)
+
+
+    const [selectedChart1, setSelectedChart1] = useState()
+    const [selectedChart2, setSelectedChart2] = useState()
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
+                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id).lenght?
+                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id)[0].id:undefined:undefined
         const data= {
-            source_price: details.buyConversionResultStr,
+            source_price: buyConversionResultStrR.current,
             destination_price: String(buyConvertAmount),
-            source_asset: String(buySource.id),
-            destination_asset: String(buyDestination.id),
+            source_asset: String(buySourceR.current.id),
+            destination_asset: String(buyDestinationR.current.id),
             wallet: _wallet,
             description: "" ,
             type:"buy"
@@ -61,13 +84,13 @@ function BuySell() {
     const handleSellConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
+                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id).lenght?
+                wallet.filter(item=>item&&item.service&&item.service.id === buySourceR.current.id)[0].id:undefined:undefined
         const data= {
             source_price: String(sellConvertAmount),
-            destination_price: details.sellConversionResultStr,
-            source_asset: String(sellSource.id),
-            destination_asset: String(sellDestination.id),
+            destination_price: sellConversionResultStrR.current,
+            source_asset: String(sellSourceR.current.id),
+            destination_asset: String(sellDestinationR.current.id),
             wallet: _wallet,
             changed:"source",
             description: "" ,
@@ -76,13 +99,7 @@ function BuySell() {
         dispatch(create_order(data, toast))
     }
     
-    const convertFeeToIrt=(id, amount)=>{
-        if(!currencyList || !currencyList.length) return 0;
-        else{
-            const c = currencyList.filter((item)=>{return item&&item.id===id})
-            return c && c.length ?amount * (+c[0].show_price_irt): 0
-        }
-    }
+
 
     const get_available = (symbolid)=>{
         if (!wallet || !wallet.length )return 0
@@ -97,77 +114,82 @@ function BuySell() {
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
-        setBuySource(selectedCurrency);
-        setBuyAvailableCurrency(av)
+        buySourceR.current = selectedCurrency;
+        buyAvailableCurrencyR.current = av
+        buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        setBuyLowCredit(false)
-        computePrices({buySourceP:selectedCurrency, buyAvailableCurrencyP:av})
+        computePrices({buyConvertAmountP: 0})
     }
     const changeBuyDestination = (e)=>{
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
-        setBuyDestination(selectedCurrency);
-        setBuyLowCredit(false)
+        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]        
+        buyDestinationR.current = selectedCurrency;
+        buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        computePrices({buyDestinationP:selectedCurrency})
+        setSelectedChart1(selectedCurrency)
+        computePrices({buyConvertAmountP: 0})
 
     }
     const changeSellDestination = (e)=>{
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
-        setSellDestination(selectedCurrency);
-        setSellLowCredit(false)
+        sellDestinationR.current = selectedCurrency;
+        sellLowCreditR.current = false
         setSellConvertAmount(0)
-        computePrices({sellDestinationP: selectedCurrency})
-
-        
+        setSelectedChart1(selectedChart2)
+        computePrices({sellConvertAmountP: 0})
     }
     const changeSellSource = (e)=>{
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
-        setSellSource(selectedCurrency);
-        setSellAvailableCurrency(av)
-        setSellLowCredit(false)
+        sellSourceR.current = selectedCurrency;
+        sellAvailableCurrencyR.current = av
+        sellLowCreditR.current = false
         setSellConvertAmount(0)
-        computePrices({
-            sellSourceP:selectedCurrency,
-            sellAvailableCurrencyP: av
-        })
+        setSelectedChart2(selectedCurrency)
+
+        computePrices({sellConvertAmountP: 0})
     }
-    const changeBuyAmount = (value)=>{
-        setBuyConvertAmount(value)
-        computePrices({buyConvertAmountP: +value})
+
+    const changeBuyAmount = (value)=>{    
+      computePrices({buyConvertAmountP: value})
+      setBuyConvertAmount(value)
     }
     const changeSellAmount = (value)=>{
         setSellConvertAmount(value)
-        computePrices({sellConvertAmountP: +value})
+        computePrices({sellConvertAmountP: value})
     }
     const computePrices = ({
-        buySourceP=buySource,
-        buyDestinationP=buyDestination,
-        sellDestinationP=sellDestination,
-        sellSourceP=sellSource,
-        buyConvertAmountP=buyConvertAmount,
-        sellConvertAmountP=buyConvertAmount,
-        buyAvailableCurrencyP=buyAvailableCurrency,
-        sellAvailableCurrencyP=sellAvailableCurrency,
+        buyConvertAmountP= buyConvertAmount,
+        sellConvertAmountP= sellConvertAmount,
     })=>{
         
         if(tab === "buy"){
             
-    
+            if(!buyConvertAmountP){
+                buyEndPriceR.current =0
+                buyKarmozdAmountR.current =0
+                buyFixedKarmozdR.current =0
+                buyConversionResultR.current =0
+                buyConversionResultStrR.current = 0
+                buyTotalR.current = 0
+                buyLowCreditR.current = false
+                setBuyConvertInvalid(true)
+                return
+
+            }
             const data = qs.stringify({
-                'source': String(buySourceP.id), 
-                'destination': String(buyDestinationP.id),
+                'source': String(buySourceR.current.id), 
+                'destination': String(buyDestinationR.current.id),
                 'changed': 'destination',
                 'source-price': '0',
-                'destination-price': buyConvertAmountP 
+                'destination-price': buyConvertAmountP
             })
-            axios.post("https://hi-exchange.com/api/v2/order/calculator/", data, {
+            axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{
                    "Content-type": "application/x-www-form-urlencoded"
                }
@@ -179,47 +201,47 @@ function BuySell() {
                 }
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
-                let d ={
-                    buyEndPrice: Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2),
-                    buyKarmozdAmount: +data["total_fee"],
-                    buyFixedKarmozd: +data["fix_fee"],
-                    buyConversionResult: buyConvertAmountP? +data["source_price"]: 0,
-                    buyConversionResultStr: buyConvertAmountP? data["source_price_str"]: 0,
-                }
-                const a = d.buyConversionResult
-                const a2 = convertFeeToIrt(buyDestination.id, d.buyKarmozdAmount)
-                const a3 = convertFeeToIrt(buyDestination.id, d.buyFixedKarmozd)
+                buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
+                buyKarmozdAmountR.current =  +data["total_fee"] || 0
+                buyFixedKarmozdR.current =  +data["fix_fee"] || 0
+                buyConversionResultR.current =  buyConvertAmountP? +data["source_price"]: 0
+                buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
                 
+                const a = buyConversionResultR.current
+                const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
+                const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
                 
-                d["buyTotal"] = (a+a2+a3).toLocaleString()
+                buyTotalR.current = (a+a2+a3).toLocaleString()
 
-                dispatch({type: "UPDATE_BSDETAILS", payload: d})
-                console.log(d.buyConversionResult > +buyAvailableCurrencyP);
                 
-                if(d.buyConversionResult > +buyAvailableCurrencyP){
-                    setBuyLowCredit(true)
-                    setBuyConvertInvalid(true)
-                }else{
-                    setBuyLowCredit(false)
-                    setBuyConvertInvalid(false)
-                }
+                // setBuyConvertAmount(buyConvertAmountP)
+                buyLowCreditR.current = buyConversionResultR.current > +buyAvailableCurrencyR.current
+                setBuyConvertInvalid(Math.random())
+               
            }).catch(error=>{
                console.log(error);
            })
-           
-            
-            
-            
         }else{
-        
+            if(!sellConvertAmountP){
+                sellEndPriceR.current =0
+                sellKarmozdAmountR.current =0
+                sellFixedKarmozdR.current =0
+                sellConversionResultR.current =0
+                sellConversionResultStrR.current = 0
+                sellTotalR.current = 0
+                sellLowCreditR.current = false
+                setSellConvertInvalid(true)
+                return
+
+            }
             const data = qs.stringify({
-                'source': String(sellSourceP.id), 
-                'destination': String(sellDestinationP.id),
+                'source': String(sellSourceR.current.id), 
+                'destination': String(sellDestinationR.current.id),
                 'changed': 'source',
                 'source-price': sellConvertAmountP,
-                'destination-price': 0
+                'destination-price': '0' 
             })
-            axios.post("https://hi-exchange.com/api/v2/order/calculator/", data, {
+            axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{
                    "Content-type": "application/x-www-form-urlencoded"
                }
@@ -231,38 +253,34 @@ function BuySell() {
                 }
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
-                let d ={
-                    sellEndPrice: Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2),
-                    sellKarmozdAmount: +data["total_fee"],
-                    sellFixedKarmozd: +data["fix_fee"],
-                    sellConversionResult: sellConvertAmountP?+data["destination_price"]:0,
-                    sellConversionResultStr: sellConvertAmountP?data["destination_price_str"]:0,
-                }
-                const a = d.sellConversionResult
-                const a2 = convertFeeToIrt(sellDestination.id, d.sellKarmozdAmount)
-                const a3 = convertFeeToIrt(sellDestination.id, d.sellFixedKarmozd)
+                sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
+                sellKarmozdAmountR.current =  +data["total_fee"] || 0
+                sellFixedKarmozdR.current =  +data["fix_fee"] || 0
+                sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
+                sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 
+                const a = sellConversionResultR.current
+                const a2 = sellDestinationR.current.show_price_irt * sellKarmozdAmountR.current
+                const a3 = sellDestinationR.current.show_price_irt * sellFixedKarmozdR.current
                 
-                d["sellTotal"] = (a+a2+a3).toLocaleString()
+                sellTotalR.current = (a+a2+a3).toLocaleString()
 
-                dispatch({type: "UPDATE_BSDETAILS", payload: d})
-                if(d.sellConversionResult > +sellAvailableCurrencyP){
-                    setSellLowCredit(true)
-                    setSellConvertInvalid(true)
-                }else{
-                    setSellLowCredit(false)
-                    setSellConvertInvalid(false)
-                }
+                
+                // setsellConvertAmount(sellConvertAmountP)
+                sellLowCreditR.current = !sellConvertAmount || sellConvertAmount > +sellAvailableCurrencyR.current
+                console.log(sellLowCreditR,sellConvertAmount , sellAvailableCurrencyR.current, )
+                setSellConvertInvalid(Math.random())
+               
            }).catch(error=>{
                console.log(error);
-               
            })
         }
     }
    useEffect(() => {
-    dispatch(fetch_currencies());
-   }, [dispatch])
-   console.log(buyLowCredit);
+        // dispatch(fetch_currencies());
+        // computePrices({})
+        // consoelog
+   }, [])
    
     return (
         <>
@@ -283,26 +301,27 @@ function BuySell() {
                                                 <form method="post" name="myform" className="currency_validate">
                                                     <div className="mb-3">
                                                         <label className="form-label">ارز زیر را پرداخت میکنید</label>
-                                                        <select name='currency' className="form-control" onChange={changeBuySource} value={buySource.id}>
+                                                        
+                                                        <select name='currency' className="form-control" onChange={changeBuySource}>
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length>0 ? currencyList.map((c, idx)=>{
-                                                                    return  [14, 12].includes(c.id) && (c.id !== buyDestination.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
+                                                                    return  [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(c.id) && (c.id !== buyDestinationR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
                                                                 }):undefined
                                                                 }
                                                         </select>
-                                                        {buyLowCredit ? <Link to="/wallet" className="form-text text-muted text-nowrap">
+                                                        {buyLowCreditR.current ? <Link to="/wallet" className="form-text text-muted text-nowrap">
                                                             <small className="text-danger">اعتبار ناکافی ! </small>
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>:undefined}   
                                                     </div>
 
                                                     <div className="mb-3">
                                                         <label className="form-label">واحد زیر را دریافت میکنید</label>
-                                                            <Form.Control as="select"  name='currency' className=" mb-3" onChange={changeBuyDestination} value={buyDestination.id}>
+                                                            <Form.Control as="select"  name='currency' className=" mb-3" onChange={changeBuyDestination} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== buySource.id) && <option key={idx} value={c.id}> {c.name}</option>
+                                                                    return   (c.id !== buySourceR.current.id) && <option key={idx} value={c.id}> {c.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -312,29 +331,31 @@ function BuySell() {
 
                                                     <div className="mb-3">
                                                         <label className="form-label">مقدار 
-                                                            {buyDestination && buyDestination.id? 
+                                                            {buyDestinationR.current && buyDestinationR.current.id? 
                                                                 <>
-                                                                <i className="px-2"> {buyDestination.name}</i>    
+                                                                <i className="px-2"> {buyDestinationR.current.name}</i>    
                                                                 مورد نظر
                                                                 </>:undefined
                                                         }
                                                         </label>
-                                                        <div className="input-group">
-                                                            <input type="text" name="currency_amount" className="form-control" onFocus={e=>{changeBuyAmount("")}} value={buyConvertAmount} onChange={e=>changeBuyAmount(e.target.value)}
+                                                        <div className="input-group position-relative">
+                                                            <span className={"position-absolute icofont-close-line cursor-poitner " + (!buyConvertAmount?"d-none":undefined)} 
+                                                                style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeBuyAmount(0)}}></span>
+                                                            <input type="text" name="currency_amount" className="form-control" ref={buyAmountRef} value={buyConvertAmount} onFocus={e=>{changeBuyAmount("")}}  onChange={e=>changeBuyAmount(e.target.value)}
                                                                 placeholder="" />
-                                                            <input type="text" name="usd_amount" className="form-control " value={details.buyConversionResultStr} readOnly
+                                                            <input type="text" name="usd_amount" className="form-control " value={buyConversionResultStrR.current} readOnly
                                                                 placeholder="" />
 
-                                                            {buySource.name ? <div className="input-group-append p-0">
-                                                                <span className="input-group-text">{ buySource.name }</span>
+                                                            {buySourceR.current.name ? <div className="input-group-append p-0">
+                                                                <span className="input-group-text">{ buySourceR.current.name }</span>
                                                             </div>:undefined}
                                                         </div>
                                                         
                                                     </div>
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
-                                                    disabled={!+buyConvertAmount || !buyDestination.id || !buySource.id || buyConvertInvalid || _creating_order}
+                                                    disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySourceR.current.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
-                                                            بخرید
+                                                            خرید
                                                             {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -349,29 +370,29 @@ function BuySell() {
                                                 <form method="post" name="myform" className="currency2_validate">
                                                 <div className="mb-3">
                                                         <label className="form-label">ارز دیجیتال زیر را می فروشید</label>
-                                                        <select name='currency' className="form-control " onChange={changeSellSource} value={sellSource.id}>
+                                                        <select name='currency' className="form-control " onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== sellDestination.id) &&<option key={idx} value={c.id}> {c.name}</option>
+                                                                        return   (c.id !== sellDestinationR.current.id) && <option key={idx} value={c.id}> {c.name}</option>
                                                                     })
                                                                 }
                                                         </select>
-                                                        {sellLowCredit && <Link to="/wallet" className="form-text text-muted text-nowrap">
+                                                        {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap">
                                                             <small className="text-danger">اعتبار ناکافی ! </small>
-                                                            <small className="text-success me-2">شارژ کیف پول</small></Link>} 
+                                                            <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
                                                         
                                                     </div>
 
                                                     <div className="mb-3">
                                                         <label className="form-label">واحد زیر را دریافت میکنید</label>
-                                                            <select name='currency' className="form-control mb-3" onChange={changeSellDestination} value={sellDestination.id}>
+                                                            <select name='currency' className="form-control mb-3" onChange={changeSellDestination} >
                                                             <option value={undefined}>انتخاب</option>
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return  [12, 14].includes(c.id) && (c.id !== sellSource.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
+                                                                        return  [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(c.id) && (c.id !== sellSourceR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
                                                                     })
                                                                 }
                                                             </select>
@@ -381,25 +402,28 @@ function BuySell() {
                                                     <div className="mb-3">
                                                         <label className="form-label">
                                                             مقدار
-                                                            {sellSource && sellSource.id? 
+                                                            {sellSourceR.current && sellSourceR.current.id? 
                                                                 <>
-                                                                <i className="px-2"> {sellSource.name}</i>    
+                                                                <i className="px-2"> {sellSourceR.current.name}</i>    
                                                                 مورد نظر
                                                                 </>:undefined
                                                         }</label>
                                                         <div className="input-group">
+                                                            <span className={"position-absolute icofont-close-line cursor-poitner " + (!sellConvertAmount?"d-none":undefined)} 
+                                                                style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeSellAmount(0)}}></span>
+                                                            
                                                             <input type="text" name="currency_amount" className="form-control" onFocus={e=>{changeSellAmount("")}} value={sellConvertAmount} onChange={e=>changeSellAmount(e.target.value)}
                                                                 placeholder="" />
-                                                            <input type="text" name="usd_amount" className="form-control " value={details.sellConversionResultStr} readOnly
+                                                            <input type="text" name="usd_amount" className="form-control " value={sellConversionResultStrR.current} readOnly
                                                                 placeholder="" />
-                                                            {sellDestination.name? <div className="input-group-append p-0">
-                                                                <span className="input-group-text">{ sellDestination.name }</span>
+                                                            {sellDestinationR.current.name? <div className="input-group-append p-0">
+                                                                <span className="input-group-text">{ sellDestinationR.current.name }</span>
                                                             </div>:undefined}
                                                         </div>
                                                        
                                                     </div>
-                                                    <button type="button" onClick={handleSellConfirm} name="submit" disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSource.small_name_slug || sellConvertInvalid}
-                                                        className="btn btn-danger w-100 d-flex justify-content-center">بفروشید!
+                                                    <button type="button" onClick={handleSellConfirm} name="submit" disabled={!+sellConvertAmount || !sellDestinationR.current.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                        className="btn btn-danger w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -421,16 +445,15 @@ function BuySell() {
                                 <div className="card-body">
                                     <div className="buyer-seller">
                                         <div className="d-flex flex-column mb-3">
-                                            
-                                            {tab === "buy" && buyDestination.small_name_slug? 
+                                            {tab === "buy" && buyDestinationR.current.id? 
                                             <>
                                                 {chartOpen ?
                                                     <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                    :<span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
+                                                    :<span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestination.small_name_slug]}
+                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
@@ -444,7 +467,7 @@ function BuySell() {
                                                     </>
                                                 :
                                                 undefined
-                                            }{tab === "sell" && sellSource.small_name_slug? 
+                                            }{tab === "sell" && sellSourceR.current.id? 
                                             <>
                                              {chartOpen ?
                                                 <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
@@ -452,7 +475,7 @@ function BuySell() {
                                                 }
                                             <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
                                                 <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestination.small_name_slug]}
+                                                    symbol={Constants.TW_SYMBOL[sellSourceR.current.small_name_slug]}
                                                     theme={Themes.DARK}
                                                     locale="fa_IR"
                                                     width={"100%"}
@@ -474,11 +497,11 @@ function BuySell() {
                                                  <tbody>
                                                     <tr>
                                                         <td><span className="text-primary">شما خریدار هستید</span></td>
-                                                        <td><span className="text-primary">{buyConvertAmount} {" "} {buyDestination.small_name_slug}</span></td>
+                                                        <td><span className="text-primary">{buyConvertAmount || 0} {" "} {buyDestinationR.current.small_name_slug}</span></td>
                                                     </tr>
                                                     <tr>
                                                         <td>روش پرداخت</td>
-                                                        <td>{ buySource.name || "-"}</td>
+                                                        <td>{ buySourceR.current.name || "-"}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>نسبت تبدیل</td>
@@ -486,25 +509,20 @@ function BuySell() {
                                                     {/* </tr> */}
                                                     <tr>
                                                         <td>فی ثابت</td>
-                                                        <td>{details.buyFixedKarmozd || 0} {" "} {buyDestination.name}</td>
+                                                        <td>{buyFixedKarmozdR.current || 0} {" "} {buyDestinationR.current.name}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>فی  تراکنش</td>
-                                                        <td>{details.buyKarmozdAmount || 0} {" "} {buyDestination.name}</td>
+                                                        <td>{buyKarmozdAmountR.current || 0} {" "} {buyDestinationR.current.name}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
-                                                        <td>{details.buyConversionResult.toLocaleString() || 0} {" "} {buySource.name}</td>
+                                                        <td>{buyConversionResultR.current.toLocaleString() || 0} {" "} {buySourceR.current.name}</td>
                                                     </tr>
-                                                    {/* <tr>
-                                                        <td>وت</td>
-                                                        <td>
-                                                            <div className="text-danger">$25.00 USD</div>
-                                                        </td>
-                                                    </tr> */}
+                                                   
                                                     <tr>
                                                         <td> مجموع</td>
-                                                        <td> {details.buyTotal|| 0 } {" "}  {buySource.name}</td>
+                                                        <td> {buyTotalR.current} {" "}  {buySourceR.current.name}</td>
                                                     </tr>
                                                 </tbody>
                                          
@@ -512,12 +530,12 @@ function BuySell() {
                                                 <tbody>
                                                     <tr>
                                                         <td><span className="text-primary">شما فروشنده هستید</span></td>
-                                                        <td><span className="text-primary">{sellConvertAmount} {" "} {sellSource.small_name_slug}</span></td>
+                                                        <td><span className="text-primary">{sellConvertAmount} {" "} {sellSourceR.current.small_name_slug}</span></td>
                                                     </tr>
                                                     
                                                     <tr>
                                                         <td>واحد دریافتی</td>
-                                                        <td>{ sellDestination.name || "-"}</td>
+                                                        <td>{ sellDestinationR.current.name || "-"}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>نسبت تبدیل</td>
@@ -525,15 +543,15 @@ function BuySell() {
                                                     {/* </tr> */}
                                                     <tr>
                                                         <td>فی ثابت</td>
-                                                        <td>{details.sellFixedKarmozd || 0} {" "} {sellDestination.name}</td>
+                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellDestinationR.current.name}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>فی  تراکنش</td>
-                                                        <td>{details.sellKarmozdAmount || 0} {" "} {sellDestination.name}</td>
+                                                        <td>{sellKarmozdAmountR.current || 0} {" "} {sellDestinationR.current.name}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
-                                                        <td>{sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSource.name}</td>
+                                                        <td>{sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSourceR.current.name}</td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>وت</td>
@@ -543,7 +561,7 @@ function BuySell() {
                                                     </tr> */}
                                                     <tr>
                                                         <td> مجموع</td>
-                                                        <td> {details.sellTotal|| 0 } {" "}  {sellDestination.name}</td>
+                                                        <td> {sellTotalR.current} {" "}  {sellDestinationR.current.name}</td>
                                                     </tr>
                                                 </tbody>}
                                                </table>

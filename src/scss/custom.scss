@@ -59,6 +59,7 @@ button.btn-simple{
 .cursor-pointer{
     cursor: pointer;
 }
+
 .spin, .spin::before{
     animation: spin 2s forwards infinite;
     display: inline-block;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form } from 'react-bootstrap';
+import {  Tab, Tabs, Form, ButtonGroup, Button} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
@@ -26,7 +26,8 @@ function BuySell() {
     const [sellConvertAmount, setSellConvertAmount] = useState(0)
     const [buyConvertInvalid, setBuyConvertInvalid] = useState(0)
     const [sellConvertInvalid, setSellConvertInvalid] = useState(0)
-
+    const [buySource, setBuySource] = useState({})
+    const [sellDestinaion, setSellDestinaion ] = useState({})
 
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
@@ -73,7 +74,7 @@ function BuySell() {
         const data= {
             source_price: buyConversionResultStrR.current,
             destination_price: String(buyConvertAmount),
-            source_asset: String(buySourceR.current.id),
+            source_asset: String(buySource.id),
             destination_asset: String(buyDestinationR.current.id),
             wallet: _wallet,
             description: "" ,
@@ -109,15 +110,15 @@ function BuySell() {
          return target.length > 0 ? target[0]["balance"] : 0
     }
 
-    const changeBuySource = (e)=>{
-        let selectedCurrency = e.target.value;
-        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
+    const changeBuySource = (e, selectedCurrency)=>{
+        console.log(selectedCurrency);
+        
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
-        buySourceR.current = selectedCurrency;
         buyAvailableCurrencyR.current = av
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
+        setBuySource(selectedCurrency);
         computePrices({buyConvertAmountP: 0})
     }
     const changeBuyDestination = (e)=>{
@@ -183,7 +184,7 @@ function BuySell() {
 
             }
             const data = qs.stringify({
-                'source': String(buySourceR.current.id), 
+                'source': String(buySource.id), 
                 'destination': String(buyDestinationR.current.id),
                 'changed': 'destination',
                 'source-price': '0',
@@ -277,10 +278,10 @@ function BuySell() {
         }
     }
    useEffect(() => {
-        // dispatch(fetch_currencies());
-        // computePrices({})
-        // consoelog
-   }, [])
+        if(!buySource.id && currencyList.length>0) setBuySource(currencyList.filter(c=>c.id===Constants.USDT_CURRENCY_ID)[0])
+        console.log(buySource);
+        
+   }, [currencyList])
    
     return (
         <>
@@ -298,29 +299,25 @@ function BuySell() {
 
                                         <Tabs activeKey={tab} onSelect={(k)=>setTab(k)} id="uncontrolled-tab-example">
                                             <Tab eventKey="buy" title="خرید">
-                                                <form method="post" name="myform" className="currency_validate">
+                                                <form action="#" method="post" name="myform" className="currency_validate">
                                                     <div className="mb-3">
-                                                        <label className="form-label">ارز زیر را پرداخت میکنید</label>
-                                                        <select name='currency' className="form-control" onChange={changeBuySource}>
-                                                            <option value={undefined}>انتخاب</option>
-                                                                { 
-                                                                currencyList && currencyList.length>0 ? currencyList.map((c, idx)=>{
-                                                                    return  [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(c.id) && (c.id !== buyDestinationR.current.id)? <option key={idx} value={c.id}> {c.name}</option>:undefined
-                                                                }):undefined
-                                                                }
-                                                        </select>
-                                                        {buyLowCreditR.current ? <Link to="/wallet" className="form-text text-muted text-nowrap">
+                                                        <label className="form-label"style={{width:"70px"}}>بازار به :</label>
+                                                        <div className="button-group">
+                                                            <button type="button" className={buySource.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeBuySource(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
+                                                            <button type="button" className={buySource.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeBuySource(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
+                                                        </div>
+                                                        {buyLowCreditR.current ? <Link to="/wallet" className="form-text text-muted text-nowrap pe-2">
                                                             <small className="text-danger">اعتبار ناکافی ! </small>
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>:undefined}   
                                                     </div>
 
-                                                    <div className="mb-3">
-                                                        <label className="form-label">واحد زیر را دریافت میکنید</label>
-                                                            <Form.Control as="select"  name='currency' className=" mb-3" onChange={changeBuyDestination} >
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label text-nowrap ps-3" style={{width:"70px"}}>انتخاب ارز:</label>
+                                                            <Form.Control as="select"  name='currency' className=" mb-3 px-2" onChange={changeBuyDestination} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== buySourceR.current.id) && <option key={idx} value={c.id}> {c.name}</option>
+                                                                    return   (c.id !== buySourceR.current.id) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -345,14 +342,14 @@ function BuySell() {
                                                             <input type="text" name="usd_amount" className="form-control " value={buyConversionResultStrR.current} readOnly
                                                                 placeholder="" />
 
-                                                            {buySourceR.current.name ? <div className="input-group-append p-0">
-                                                                <span className="input-group-text">{ buySourceR.current.name }</span>
+                                                            {buySource.name ? <div className="input-group-append p-0">
+                                                                <span className="input-group-text">{ buySource.name }</span>
                                                             </div>:undefined}
                                                         </div>
                                                         
                                                     </div>
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
-                                                    disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySourceR.current.id || buyLowCreditR.current || _creating_order}
+                                                    // disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
                                                             خرید
                                                             {_creating_order? <Loader

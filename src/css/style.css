@@ -9156,6 +9156,20 @@ label.error {
   background-color: white;
   color: #e0aa3e; }
 
+.button-group {
+  display: inline-block; }
+  .button-group button {
+    background-color: #202e37;
+    color: #999;
+    width: 75px;
+    border: 1px solid rgba(255, 255, 255, 0.15); }
+    .button-group button:first-of-type {
+      border-radius: 0 6px 6px 0; }
+    .button-group button:last-of-type {
+      border-radius: 6px 0 0 6px; }
+    .button-group button.active {
+      color: #34c38f; }
+
 button,
 .btn {
   padding: 5px 30px;

@@ -378,3 +378,22 @@ label.error {
     background-color: lighten($primary, 45%);
     color           : $primary;
 }
+.button-group{
+    display: inline-block;
+    button{
+        background-color: $body-bg;
+        color: $body-color;
+        width: 75px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+
+        &:first-of-type{
+            border-radius: 0 6px 6px 0;
+        }
+        &:last-of-type{
+            border-radius:  6px 0 0 6px;
+        }
+        &.active{
+            color: $success;
+        }
+    }
+}
