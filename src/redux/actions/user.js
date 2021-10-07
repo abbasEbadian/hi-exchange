@@ -163,12 +163,10 @@ export const userUpdateName =  (name)=>{
         })
     }
 }
-export const userUpdateImage =  (image, toast=0, toastOpt=0)=>{
+export const userUpdateImage =  (data, toast=0, toastOpt=0)=>{
     return dispatch=>{
         return new Promise((resolve, reject)=>{
-            axios.post(BASE+"/api/v2/account/verify/", {
-                image
-            },
+            axios.post(BASE+"/api/v2/account/document/", data,
             ).then(data=>{
                 if(toast) toast.success(data.data.message, toastOpt); 
                 return resolve(200) 
@@ -218,21 +216,24 @@ export const userUpdateAvatar =  (image, toast=0, toastOpt=0)=>{
 export const userUpdatePersonal = (info)=>{
     return dispatch=>{
         
-        axios.post(BASE+"/api/v2/account/manage/", {
-            action: "profile",
-            ...info
-        }).then(response=>{
-            const {data} = response;
-            if (data.error === 1){
-                toast.warning(data.message, toastOpt);
-            }else{
-                toast.success(data.message, toastOpt)
-            }
-        }).catch(error=>{
-            toast.error("با خطا مواجه شد.", toastOpt)
-            console.log(error)
-        })
-        
+       return new Promise((resolve, reject)=>{
+
+            axios.post(BASE+"/api/v2/account/manage/", {
+                action: "profile",
+                ...info
+            }).then(response=>{
+                const {data} = response;
+                if (data.error === 1){
+                    toast.warning(data.message, toastOpt);
+                }else{
+                    toast.success(data.message, toastOpt)
+                    resolve("sent")
+                }
+            }).catch(error=>{
+                toast.error("با خطا مواجه شد.", toastOpt)
+                console.log(error)
+            })
+        }) 
     }
 }
 

@@ -46,6 +46,19 @@ button.btn-simple{
    right: 0;
    height: 100vh;
 }
+.conditionalList{
+    padding-right: 16px;
+    &, &>li{
+        list-style-type: disc;
+    }
+    li{
+        padding:8px 0px;
+    }
+
+}
+.cursor-pointer{
+    cursor: pointer;
+}
 .spin, .spin::before{
     animation: spin 2s forwards infinite;
     display: inline-block;

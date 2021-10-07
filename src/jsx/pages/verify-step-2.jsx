@@ -11,23 +11,41 @@ function VerifyStep2() {
     const dispatch = useDispatch()
     const history = useHistory()
 
-    const [filename, setFilename] = useState("انتخاب فایل...")
-    const [file, setFile] = useState(undefined)
+    const [filename1, setFilename1] = useState("تصویر پرسنلی یا سلفی")
+    const [filename2, setFilename2] = useState("کارت ملی ")
+    const [filename3, setFilename3] = useState("شناسنامه")
+    const [file1, setFile1] = useState(undefined)
+    const [file2, setFile2] = useState(undefined)
+    const [file3, setFile3] = useState(undefined)
+
     const [ uploading, setUploading ] = useState(false)
 
-    const handleFile = (e)=>{
+    const handleFile = (e, id)=>{
         
         e.preventDefault()
         e.stopPropagation()
-        console.log(e.target);
         
         if(!e || !e.target || !e.target.files || !e.target.files.length>0) return false;
         let reader = new FileReader();
         let filee = e.target.files[0]
         reader.readAsDataURL(filee);
         reader.onload = function () {
-            setFile(reader.result);
-            setFilename(filee.name)
+            switch(id){
+                case 1: 
+                    setFile1(reader.result);
+                    setFilename1(filee.name)
+                    break
+                case 2:
+                    setFile2(reader.result);
+                    setFilename2(filee.name)
+                    break
+                case 3:
+                    setFile3(reader.result);
+                    setFilename3(filee.name)
+                    break
+                default: break
+            }
+
         };
         reader.onerror = function (error) {
             console.log('Error: ', error);
@@ -40,8 +58,10 @@ function VerifyStep2() {
         e.preventDefault()
         e.stopPropagation()
         const data = new FormData() 
-        data.append('image', file)
-        dispatch(userUpdateImage(file)).then(status=>{
+        data.append('selfie_photo', file1)
+        data.append('card', file2)
+        data.append('birth_certificate', file3)
+        dispatch(userUpdateImage(data)).then(status=>{
             if(status === 200){
                 setTimeout(() => {
                     setUploading(false)
@@ -76,9 +96,7 @@ function VerifyStep2() {
                                             
 
                                             <p>
-                                             لطفا تصویر 
-                                                3x4
-                                                خود را آپلود کنید
+                                             لطفا تصاویر زیر را آپلود نمایید
                                             </p>
                                         </div>
 
@@ -86,23 +104,48 @@ function VerifyStep2() {
                                            
                                             <div
                                                 className="file-upload-wrapper"
-                                                data-text={filename}
+                                                data-text={filename1}
                                             >
                                                 <input
                                                     name="file-upload-field"
                                                     type="file"
                                                     accept="image/*"
                                                     className="file-upload-field"
-                                                    onChange={handleFile}
+                                                    onChange={e=>handleFile(e, 1)}
                                                 />
+                                            </div>
+                                            <div
+                                                className="file-upload-wrapper my-3"
+                                                data-text={filename2}
+                                            >
+                                                <input
+                                                    name="file-upload-field"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="file-upload-field"
+                                                    onChange={e=>handleFile(e, 2)}
+                                                />
+                                            </div>
+                                            <div
+                                                className="file-upload-wrapper"
+                                                data-text={filename3}
+                                            >
+                                                <input
+                                                    name="file-upload-field"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="file-upload-field"
+                                                    onChange={e=>handleFile(e, 3)}
+                                                />
+                                                {/* <small className="form-text">اختیاری</small> */}
                                             </div>
                                         </div>
                                        
                                         <div className="text-center mt-5">
                                             <button
                                                 type="submit"
-                                                className={"btn btn-success w-100 d-flex justify-content-center align-items-center " + (!file?"disabled":undefined)}
-                                                disabled={!file?"disabled":undefined}
+                                                className={"btn btn-success w-100 d-flex justify-content-center align-items-center " + (!file1 || !file2 || !file3?"disabled":undefined)}
+                                                disabled={!file1 || !file2 || !file3?"disabled":undefined}
                                             >
                                                 ارسال
                                                 {uploading?

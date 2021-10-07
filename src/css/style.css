@@ -8960,7 +8960,7 @@ input:-internal-autofill-selected {
 
 .toggle-switch {
   display: inline-block;
-  background: #1a262d;
+  background: #293a44;
   border-radius: 16px;
   width: 45px;
   height: 20px;
@@ -10175,6 +10175,16 @@ button.btn-simple {
     font-size: 27px;
     margin-top: 32px;
     color: green; }
+
+.conditionalList {
+  padding-right: 16px; }
+  .conditionalList, .conditionalList > li {
+    list-style-type: disc; }
+  .conditionalList li {
+    padding: 8px 0px; }
+
+.cursor-pointer {
+  cursor: pointer; }
 
 .spin, .spin::before {
   animation: spin 2s forwards infinite;
