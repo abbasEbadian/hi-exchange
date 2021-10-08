@@ -77,3 +77,10 @@ button.btn-simple{
     to {transform:rotate(360deg);}
 }
 
+
+
+@media (max-width: 400px){
+    .convert-details{
+        font-size: 14px;
+    }
+}

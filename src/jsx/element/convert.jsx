@@ -158,7 +158,7 @@ function Convert() {
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0];
         let symid = selectedCurrency.id;
-        let av = get_available(+symid)
+        let av = 1000 || get_available(+symid)
         setCurrencyFrom(selectedCurrency);
         setCurrencyAvailable(av);   
         computePrices({
@@ -246,22 +246,26 @@ function Convert() {
                                         <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeAmount(currencyAvailable)}}>$</div>
                                     }
                                 </div>
-                                {!convertInvalid && <div className="col-12 mx-auto p-0" >
+                                {!convertInvalid && <div className="col-12 mx-auto p-0 convert-details">
                                     
                                     <div className="col-12 row mb-3 mx-0">
                                         
-                                        <small className="d-flex justify-content-between w-100 px-0">
-                                            <span>با پرداخت</span>
-                                            <span className="text-nowrap me-2">
-                                                <span className="text-success px-1 fs-4">{ Number(convertAmount).toLocaleString()}</span>
-                                                { currencyFrom.name }
+                                        <small className="d-flex justify-content-between flex-wrap w-100 px-0">
+                                            <span className="text-nowrap">
+                                                <span>با پرداخت</span>
+                                                <span className="text-nowrap me-2">
+                                                    <span className="text-success px-1 fs-4">{ Number(convertAmount).toLocaleString()}</span>
+                                                    { currencyFrom.name }
+                                                </span>
                                             </span>
-                                            <span className="text-nowrap me-auto ms-2">
-                                                <span className="text-success px-1 fs-4">{ convertDetails.convertResult }</span>
-                                                <span className="px-1">{ currencyTo.name }</span>
-                                            </span>
-                                            <span>
-                                            دریافت می کنید
+                                            <span className="text-nowrap flex-grow-1 text-start">
+                                                <span className="text-nowrap me-auto ms-2">
+                                                    <span className="text-success px-1 fs-4">{ convertDetails.convertResult }</span>
+                                                    <span className="px-1">{ currencyTo.name }</span>
+                                                </span>
+                                                <span>
+                                                دریافت می کنید
+                                                </span>
                                             </span>
                                         </small>
                                     </div>
@@ -273,13 +277,13 @@ function Convert() {
                                         </small>
                                     </div>
 
-                                    <div className="col-12 row mb-3 mx-0">
-                                        <small className="d-flex justify-content-between px-0">
-                                            <label>قیمت تمام شده هر واحد 
+                                    <div className="col-12 row mb-3 mx-0 ">
+                                        <small className="d-flex justify-content-between px-0 flex-wrap">
+                                            <label className="text-nowrap">قیمت تمام شده هر واحد 
                                                 <i className="px-2">{ currencyTo.name }</i>
                                                 :
                                             </label>
-                                            <span > <span className="text-success px-2 fs-4 ">{ convertDetails.endPrice }</span>  <i>{ currencyFrom.name}</i></span>
+                                            <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ convertDetails.endPrice }</span>  <i>{ currencyFrom.name}</i></span>
                                         </small>
                                     </div>
                                     
@@ -374,5 +378,4 @@ function Convert() {
     )
 }
 export default Convert;
-
 
