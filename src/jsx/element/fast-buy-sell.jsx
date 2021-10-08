@@ -55,6 +55,8 @@ function FastBuySell() {
     const sellKarmozdAmountR = useRef(0)
     const sellFixedKarmozdR = useRef(0)
     const sellTotalR = useRef(0)
+    const buyUnitPrice = useRef(0)
+    const sellUnitPrice = useRef(0)
 
     const buyConvertValidR = useRef(false)
     const sellConvertValidR = useRef(false)
@@ -207,7 +209,7 @@ function FastBuySell() {
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
                 buyConversionResultR.current =  buyConvertAmountP? +data["source_price"]: 0
                 buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
-                
+                buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
                 const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
                 const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
@@ -257,7 +259,8 @@ function FastBuySell() {
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
-                
+                sellUnitPrice.current = data['unit_price']
+
                 const a = sellConversionResultR.current
                 const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
                 const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
@@ -336,16 +339,29 @@ function FastBuySell() {
                                 </div>
                                 
                             </div>
-                            { buyConversionResultR.current? 
-                                <div className="mb-3">
-                                    <span>با پرداخت </span>
-                                    <span className="text-success px-2">{buySource.name}</span>
-                                    <span>{buySource.name}</span>
-                                    <i className="px-2">،</i> 
-                                    <span className="text-success px-2">{buyConversionResultR.current}</span>
-                                    <span className="px-1">{buyDestinationR.current.name}</span>
-                                    <span>دریافت میکنید</span>   
-                                </div>:undefined}
+                            { buyConversionResultR.current? <>
+                                <div className="mb-3 d-flex justify-content-between flex-wrap">
+                                    <small className="text-nowrap">
+                                        <span>با پرداخت </span>
+                                        <span className="text-success px-2">{buySource.name}</span>
+                                        <span>{buySource.name}</span>
+                                    </small>
+                                    <small className="text-nowrap flex-grow-1 text-start">
+                                        <span className="text-success px-2">{buyConversionResultR.current}</span>
+                                        <span className="px-1">{buyDestinationR.current.name}</span>
+                                        <span>دریافت میکنید</span>   
+                                    </small>
+                                </div>
+                                 <div className="col-12 row mb-3 mx-0 ">
+                                 <small className="d-flex justify-content-between px-0 flex-wrap">
+                                     <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                         <i className="px-2">{ buySource.name }</i>
+                                         :
+                                     </label>
+                                     <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ buyUnitPrice.current }</span>  <i>{ buyDestinationR.current.name}</i></span>
+                                 </small>
+                             </div>
+                                </>:undefined}
                             <button type="button" name="submit" onClick={handleBuyConfirm}
                             disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                 className="btn btn-success w-100 d-flex justify-content-center">
@@ -412,15 +428,30 @@ function FastBuySell() {
                                
                             </div>
                             { sellConversionResultR.current? 
-                            <div className="mb-3">
-                                <span>با پرداخت </span>
-                                <span className="text-success px-2">{sellConvertAmount}</span>
-                                <span>{sellSourceR.current.name}</span>
-                                <i className="px-2">،</i> 
-                                <span className="text-success px-2">{sellConversionResultR.current}</span>
-                                <span className="px-1">{sellDestination.name}</span>
-                                <span>دریافت میکنید</span>   
-                            </div>:undefined}
+                            <>
+                                <div className="mb-3 d-flex justify-content-between px-0 flex-wrap">
+                                    <small className="text-nowrap">
+                                        <span>با پرداخت </span>
+                                        <span className="text-success px-2">{sellConvertAmount}</span>
+                                        <span>{sellSourceR.current.name}</span>
+                                    </small>
+                                   <small className="flex-grow-1 text-start text-nowrap">
+                                    <span className="text-success px-2">{sellConversionResultR.current}</span>
+                                        <span className="px-1">{sellDestination.name}</span>
+                                        <span>دریافت میکنید</span>   
+                                   </small>
+                                    
+                                </div>
+                                <div className="col-12 row mb-3 mx-0 ">
+                                    <small className="d-flex justify-content-between px-0 flex-wrap">
+                                        <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                            <i className="px-2">{ sellSourceR.current.name }</i>
+                                            :
+                                        </label>
+                                        <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellDestination.name}</i></span>
+                                    </small>
+                                </div>
+                            </>:undefined}
                             <button type="button" onClick={handleSellConfirm} name="submit"
                              disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                 className="btn btn-danger w-100 d-flex justify-content-center">فروش

@@ -158,7 +158,7 @@ function Convert() {
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0];
         let symid = selectedCurrency.id;
-        let av = 1000 || get_available(+symid)
+        let av =  get_available(+symid)
         setCurrencyFrom(selectedCurrency);
         setCurrencyAvailable(av);   
         computePrices({
