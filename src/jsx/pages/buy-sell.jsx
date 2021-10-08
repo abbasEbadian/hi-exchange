@@ -68,7 +68,10 @@ function BuySell() {
     const [selectedChart1, setSelectedChart1] = useState()
     const [selectedChart2, setSelectedChart2] = useState()
 
-    const [fastModal, setFastModal] = useState(false)
+
+    const buyUnitPrice = useRef(0)
+    const sellUnitPrice = useRef(0)
+
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 
@@ -155,17 +158,19 @@ function BuySell() {
         computePrices({sellConvertAmountP: 0})
     }
 
-    const changeBuyAmount = (value)=>{    
-      computePrices({buyConvertAmountP: value})
+    const changeBuyAmount = (value, prevMessageB="")=>{    
+      computePrices({buyConvertAmountP: value, prevMessageB})
       setBuyConvertAmount(value)
     }
-    const changeSellAmount = (value)=>{
+    const changeSellAmount = (value, prevMessageS="")=>{
         setSellConvertAmount(value)
-        computePrices({sellConvertAmountP: value})
+        computePrices({sellConvertAmountP: value, prevMessageS})
     }
     const computePrices = ({
         buyConvertAmountP= buyConvertAmount,
         sellConvertAmountP= sellConvertAmount,
+        prevMessageB="",
+        prevMessageS="",
     })=>{
         
         if(tab === "buy"){
@@ -178,6 +183,8 @@ function BuySell() {
                 buyConversionResultStrR.current = 0
                 buyTotalR.current = 0
                 buyLowCreditR.current = false
+                buyConvertErrorMessage.current = ""
+
                 setBuyConvertInvalid(true)
                 return
 
@@ -196,9 +203,15 @@ function BuySell() {
            }).then(response=>{
                 if (!response) throw Error("no resp")
                 const {data} = response
-                if(data.message){
-                    buyConvertErrorMessage.current = data.message
-                }
+                if(data.message || prevMessageB){
+                    buyConvertErrorMessage.current = data.message || prevMessageB
+                }else
+                    buyConvertErrorMessage.current = ""
+                
+                    
+                if(+data["destination_price"] > +buyConvertAmountP){
+                    changeBuyAmount(+data["destination_price"], data.message)
+                } 
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
@@ -206,7 +219,7 @@ function BuySell() {
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
                 buyConversionResultR.current =  buyConvertAmountP? +data["source_price"]: 0
                 buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
-                
+                buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
                 const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
                 const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
@@ -230,6 +243,8 @@ function BuySell() {
                 sellConversionResultStrR.current = 0
                 sellTotalR.current = 0
                 sellLowCreditR.current = false
+                sellConvertErrorMessage.current = ""
+
                 setSellConvertInvalid(true)
                 return
 
@@ -248,9 +263,16 @@ function BuySell() {
            }).then(response=>{
                 if (!response) throw Error("no resp")
                 const {data} = response
-                if(data.message){
-                    sellConvertErrorMessage.current = data.message
-                }
+                
+                if(data.message || prevMessageS){
+                    sellConvertErrorMessage.current = data.message || prevMessageS
+                }else
+                sellConvertErrorMessage.current = ""
+                
+                    
+                if(+data["source_price"] > +sellConvertAmountP){
+                    changeSellAmount(+data["source_price"], data.message)
+                } 
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
@@ -258,7 +280,7 @@ function BuySell() {
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
-                
+                sellUnitPrice.current = data['unit_price']
                 const a = sellConversionResultR.current
                 const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
                 const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
@@ -282,10 +304,7 @@ function BuySell() {
    }, [currencyList])
    
     const handleSelect = (key)=>{
-        if(key !== "fast")
             setTab(key)   
-        else
-            setFastModal(true)
     }
     return (
         <>
@@ -317,11 +336,11 @@ function BuySell() {
 
                                                     <div className="mb-3 d-flex align-items-center">
                                                         <label className="form-label text-nowrap ps-3" style={{width:"90px"}}>انتخاب ارز:</label>
-                                                            <Form.Control as="select"  name='currency' className=" mb-3 px-2 w-50" onChange={changeBuyDestination} >
+                                                            <Form.Control as="select"  name='currency' className=" my-3 px-2 w-50" onChange={changeBuyDestination} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== buySource.id) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                                                    return   (c.id !== buySource.id) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -352,6 +371,19 @@ function BuySell() {
                                                         </div>
                                                         
                                                     </div>
+                                                    {buyConversionResultR.current?<div className="col-12 row mb-3 mx-0 ">
+                                                    <small className="d-flex justify-content-between px-0 flex-wrap">
+                                                        <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                            <i className="px-2">{ buyDestinationR.current.name }</i>
+                                                            :
+                                                        </label>
+                                                        <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ buyUnitPrice.current }</span>  <i>{ buySource.name}</i></span>
+                                                    </small>
+                                                    </div>:undefined}
+                                                    {buyConvertErrorMessage.current.length>0?
+                                                        <span className="text-danger mb-3" style={{fontSize: "12px"}}> {buyConvertErrorMessage.current} </span>
+                                                        :undefined
+                                                    }
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
                                                     disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
@@ -368,9 +400,17 @@ function BuySell() {
                                             </Tab>
                                             <Tab eventKey="sell" title="فروش" >
                                                 <form method="post" name="myform" className="currency2_validate">
-                                                <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز : </label>
-                                                        <select name='currency' className="form-control w-50" onChange={changeSellSource} >
+                                                    <div className="mb-3">
+                                                        <label className="form-label" style={{width:"90px"}}>بازار به :</label>
+                                                        <div className="button-group">
+                                                            <button type="button" className={sellDestination.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeSellDestination(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
+                                                            <button type="button" className={sellDestination.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeSellDestination(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
+                                                        </div>
+                                                            
+                                                    </div>
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز: </label>
+                                                        <select name='currency' className="form-control w-50 px-2 my-3" onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
 
                                                                 { 
@@ -379,20 +419,13 @@ function BuySell() {
                                                                     })
                                                                 }
                                                         </select>
-                                                        {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap">
+                                                        {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap pe-2">
                                                             <small className="text-danger">اعتبار ناکافی ! </small>
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
                                                         
                                                     </div>
 
-                                                    <div className="mb-3">
-                                                        <label className="form-label" style={{width:"90px"}}>ارز دریافتی:</label>
-                                                        <div className="button-group">
-                                                            <button type="button" className={sellDestination.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeSellDestination(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
-                                                            <button type="button" className={sellDestination.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeSellDestination(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
-                                                        </div>
-                                                            
-                                                        </div>
+                                                    
 
                                                     <div className="mb-3">
                                                         <label className="form-label">
@@ -417,6 +450,19 @@ function BuySell() {
                                                         </div>
                                                        
                                                     </div>
+                                                    {sellConversionResultR.current? <div className="col-12 row mb-3 mx-0 ">
+                                                    <small className="d-flex justify-content-between px-0 flex-wrap">
+                                                        <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                            <i className="px-2">{ sellDestination.name }</i>
+                                                            :
+                                                        </label>
+                                                        <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellSourceR.current.name}</i></span>
+                                                    </small>
+                                                    </div>:undefined}
+                                                    {sellConvertErrorMessage.current.length>0?
+                                                        <span className="text-danger" style={{fontSize: "12px"}}> {sellConvertErrorMessage.current} </span>
+                                                        :undefined
+                                                    }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
                                                      disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-danger w-100 d-flex justify-content-center">فروش
@@ -428,10 +474,6 @@ function BuySell() {
                                                             ></Loader>:undefined}</button>
                                                 </form>
                                             </Tab>
-                                            <Tab eventKey="fast" title="سفارش سریع" onClick={e=>setFastModal(true)}>
-
-                                            </Tab>
-                                            <button className="btn-simple" type="button" onClick={e=>setFastModal(true)}>سفارش سریع</button>
 
                                         </Tabs>
                                     </div>
@@ -585,20 +627,7 @@ function BuySell() {
                     draggable
                     pauseOnHover
                     />
-                    <Modal dialogClassName="mx-auto" contentClassName="dark" show={fastModal} onHide={() => setFastModal(false)}>
-                        <Modal.Header closeButton>
-                        <Modal.Title>تاریخچه</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <FastBuySell></FastBuySell>
-                        </Modal.Body>
-                        <Modal.Footer>
-                        <button className="text-danger bg-transparent border-0" onClick={e=>setFastModal(false)}>
-                            بستن
-                        </button>
-                        
-                        </Modal.Footer>
-                    </Modal>
+                    
             </div>
 
             

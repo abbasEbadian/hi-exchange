@@ -9161,7 +9161,8 @@ label.error {
   .button-group button {
     background-color: #202e37;
     color: #999;
-    width: 75px;
+    width: 60px;
+    padding: 6px 0;
     border: 1px solid rgba(255, 255, 255, 0.15); }
     .button-group button:first-of-type {
       border-radius: 0 6px 6px 0; }
