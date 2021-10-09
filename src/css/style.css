@@ -9780,7 +9780,7 @@ button.btn {
     .play-btn a i {
       color: #e0aa3e; }
 
-.convert-widget .select-all-tooltip {
+.select-all-tooltip {
   position: relative;
   cursor: pointer;
   border-radius: 50%;
@@ -9790,7 +9790,7 @@ button.btn {
   height: 28px;
   color: white;
   text-align: center; }
-  .convert-widget .select-all-tooltip:hover::after {
+  .select-all-tooltip:hover::after {
     content: attr(alt);
     font-size: 12px;
     background: white;

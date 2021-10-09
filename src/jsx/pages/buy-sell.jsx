@@ -146,7 +146,10 @@ function BuySell() {
     }
     const changeSellSource = (e)=>{
         let selectedCurrency = e.target.value;
-        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
+        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1){
+            sellSourceR.current = undefined
+            return;
+        }
         selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
         sellSourceR.current = selectedCurrency;
@@ -158,24 +161,25 @@ function BuySell() {
         computePrices({sellConvertAmountP: 0})
     }
 
-    const changeBuyAmount = (value, prevMessageB="")=>{    
-      computePrices({buyConvertAmountP: value, prevMessageB})
-      setBuyConvertAmount(value)
+    const changeBuyAmount = (value, rerender=true)=>{
+        if (rerender)    
+            computePrices({buyConvertAmountP: value})
+        setBuyConvertAmount(value)
     }
-    const changeSellAmount = (value, prevMessageS="")=>{
+    const changeSellAmount = (value, rerender=true)=>{
+        if (rerender)    
+            computePrices({sellConvertAmountP: value})
         setSellConvertAmount(value)
-        computePrices({sellConvertAmountP: value, prevMessageS})
     }
     const computePrices = ({
         buyConvertAmountP= buyConvertAmount,
         sellConvertAmountP= sellConvertAmount,
-        prevMessageB="",
-        prevMessageS="",
+        buyConvertAll=undefined
     })=>{
         
         if(tab === "buy"){
             
-            if(!buyConvertAmountP){
+            if(!buyConvertAmountP && !buyConvertAll){
                 buyEndPriceR.current =0
                 buyKarmozdAmountR.current =0
                 buyFixedKarmozdR.current =0
@@ -192,9 +196,9 @@ function BuySell() {
             const data = qs.stringify({
                 'source': String(buySource.id), 
                 'destination': String(buyDestinationR.current.id),
-                'changed': 'destination',
-                'source-price': '0',
-                'destination-price': buyConvertAmountP
+                'changed': !buyConvertAll && 'destination' || 'source',
+                'source-price': buyConvertAll || '0',
+                'destination-price': !buyConvertAll && buyConvertAmountP || '0'
             })
             axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{
@@ -203,21 +207,20 @@ function BuySell() {
            }).then(response=>{
                 if (!response) throw Error("no resp")
                 const {data} = response
-                if(data.message || prevMessageB){
-                    buyConvertErrorMessage.current = data.message || prevMessageB
+                if(data.message){
+                    buyConvertErrorMessage.current = data.message 
+                    
                 }else
                     buyConvertErrorMessage.current = ""
                 
                     
-                if(+data["destination_price"] > +buyConvertAmountP){
-                    changeBuyAmount(+data["destination_price"], data.message)
-                } 
+               
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
                 buyKarmozdAmountR.current =  +data["total_fee"] || 0
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
-                buyConversionResultR.current =  buyConvertAmountP? +data["source_price"]: 0
+                buyConversionResultR.current =   buyConvertAmountP? +data["source_price"]: 0
                 buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
                 buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
@@ -226,16 +229,28 @@ function BuySell() {
                 
                 buyTotalR.current = (a+a2+a3).toLocaleString()
 
+                if(data.message && data.message.indexOf("خرید")!==-1){
+                    buyConversionResultR.current =   "-"
+                    buyConversionResultStrR.current =  "-"
+                   
+                }
+                if(buyConvertAll){
+                    changeBuyAmount(data["destination_price"], false)
+                    buyConversionResultR.current = +data['source_price']
+                    buyConversionResultStrR.current = data['source_price_str']
+                }
+
+                console.log(buyConversionResultR, buyConversionResultStrR);
                 
                 // setBuyConvertAmount(buyConvertAmountP)
-                buyLowCreditR.current = buyConversionResultR.current > +buyAvailableCurrencyR.current
+                buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
                 setBuyConvertInvalid(Math.random())
                
            }).catch(error=>{
                console.log(error);
            })
         }else{
-            if(!sellConvertAmountP){
+            if(!sellConvertAmountP || String(sellDestination.id) === String(sellSourceR.current.id)){
                 sellEndPriceR.current =0
                 sellKarmozdAmountR.current =0
                 sellFixedKarmozdR.current =0
@@ -264,15 +279,13 @@ function BuySell() {
                 if (!response) throw Error("no resp")
                 const {data} = response
                 
-                if(data.message || prevMessageS){
-                    sellConvertErrorMessage.current = data.message || prevMessageS
+                if(data.message){
+                    sellConvertErrorMessage.current = data.message
                 }else
-                sellConvertErrorMessage.current = ""
+                    sellConvertErrorMessage.current = ""
                 
                     
-                if(+data["source_price"] > +sellConvertAmountP){
-                    changeSellAmount(+data["source_price"], data.message)
-                } 
+                
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
@@ -289,7 +302,8 @@ function BuySell() {
 
                 
                 // setsellConvertAmount(sellConvertAmountP)
-                sellLowCreditR.current = !sellConvertAmount || sellConvertAmount > +sellAvailableCurrencyR.current
+                console.log(sellConvertAmountP , +sellAvailableCurrencyR.current)
+                sellLowCreditR.current = !sellConvertAmountP || sellConvertAmountP > +sellAvailableCurrencyR.current
                 setSellConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -298,8 +312,8 @@ function BuySell() {
         }
     }
    useEffect(() => {
-        if(!buySource.id && currencyList.length>0) setBuySource(currencyList.filter(c=>c.id===Constants.USDT_CURRENCY_ID)[0])
-        if(!sellDestination.id && currencyList.length>0) setSellDestination(currencyList.filter(c=>c.id===Constants.USDT_CURRENCY_ID)[0])
+        if(!buySource.id && currencyList.length>0) changeBuySource('',Constants.USDT_CURRENCY_ID)
+        if(!sellDestination.id && currencyList.length>0) changeSellDestination('',Constants.USDT_CURRENCY_ID)
         
    }, [currencyList])
    
@@ -340,7 +354,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== buySource.id) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                                                    return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -370,6 +384,13 @@ function BuySell() {
                                                             </div>:undefined}
                                                         </div>
                                                         
+                                                    </div>
+                                                    <div className=" col-xl-12 mb-3 d-flex align-items-center p-0">
+                                                        <small  htmlFor="currency_amount_available">موجودی :</small>
+                                                        <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(buyAvailableCurrencyR.current).toLocaleString() } {" "} { buySource.small_name_slug  }</span>
+                                                        { buySource.id &&
+                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{computePrices({"buyConvertAll": buyAvailableCurrencyR.current})}}>$</div>
+                                                        }
                                                     </div>
                                                     {buyConversionResultR.current?<div className="col-12 row mb-3 mx-0 ">
                                                     <small className="d-flex justify-content-between px-0 flex-wrap">
@@ -415,7 +436,7 @@ function BuySell() {
 
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== sellDestination.id) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
@@ -449,6 +470,13 @@ function BuySell() {
                                                             </div>:undefined}
                                                         </div>
                                                        
+                                                    </div>
+                                                    <div className={"col-xl-12 mb-3 d-flex align-items-center p-0" + (sellSourceR.current.id?"":" d-none")}>
+                                                        <small  htmlFor="currency_amount_available">موجودی :</small>
+                                                        <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(sellAvailableCurrencyR.current).toLocaleString() } {" "} { sellSourceR.current.small_name_slug  }</span>
+                                                        { sellSourceR.current.id &&
+                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeSellAmount(sellAvailableCurrencyR.current)}}>$</div>
+                                                        }
                                                     </div>
                                                     {sellConversionResultR.current? <div className="col-12 row mb-3 mx-0 ">
                                                     <small className="d-flex justify-content-between px-0 flex-wrap">

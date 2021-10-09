@@ -158,148 +158,161 @@ function FastBuySell() {
         computePrices({sellConvertAmountP: 0})
     }
 
-    const changeBuyAmount = (value, prevMessageB="")=>{    
-        computePrices({buyConvertAmountP: value, prevMessageB})
+    const changeBuyAmount = (value, rerender=true)=>{
+        if (rerender)    
+            computePrices({buyConvertAmountP: value})
         setBuyConvertAmount(value)
-      }
-      const changeSellAmount = (value, prevMessageS="")=>{
-          setSellConvertAmount(value)
-          computePrices({sellConvertAmountP: value, prevMessageS})
-      }
-      const computePrices = ({
-          buyConvertAmountP= buyConvertAmount,
-          sellConvertAmountP= sellConvertAmount,
-          prevMessageB="",
-          prevMessageS="",
-      })=>{
-          
-          if(tab === "buy"){
-              
-              if(!buyConvertAmountP){
-                  buyEndPriceR.current =0
-                  buyKarmozdAmountR.current =0
-                  buyFixedKarmozdR.current =0
-                  buyConversionResultR.current =0
-                  buyConversionResultStrR.current = 0
-                  buyTotalR.current = 0
-                  buyLowCreditR.current = false
-                  buyConvertErrorMessage.current = ""
-                  setBuyConvertInvalid(true)
-                  return
-  
-              }
-              const data = qs.stringify({
-                  'source': String(buySource.id), 
-                  'destination': String(buyDestinationR.current.id),
-                  'changed': 'destination',
-                  'source-price': '0',
-                  'destination-price': buyConvertAmountP
-              })
-              axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
-                 headers:{
-                     "Content-type": "application/x-www-form-urlencoded"
-                 }
-             }).then(response=>{
-                  if (!response) throw Error("no resp")
-                  const {data} = response
-                  if(data.message || prevMessageB){
-                      buyConvertErrorMessage.current = data.message || prevMessageB
-                  }else
-                      buyConvertErrorMessage.current = ""
-                  
-                      
-                  if(+data["destination_price"] > +buyConvertAmountP){
-                      changeBuyAmount(+data["destination_price"], data.message)
-                  } 
-                  const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
-                 
-                  buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
-                  buyKarmozdAmountR.current =  +data["total_fee"] || 0
-                  buyFixedKarmozdR.current =  +data["fix_fee"] || 0
-                  buyConversionResultR.current =  buyConvertAmountP? +data["source_price"]: 0
-                  buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
-                  buyUnitPrice.current = data['unit_price']
-                  const a = buyConversionResultR.current
-                  const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
-                  const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
-                  
-                  buyTotalR.current = (a+a2+a3).toLocaleString()
-  
-                  
-                  // setBuyConvertAmount(buyConvertAmountP)
-                  buyLowCreditR.current = buyConversionResultR.current > +buyAvailableCurrencyR.current
-                  setBuyConvertInvalid(Math.random())
-                 
-             }).catch(error=>{
-                 console.log(error);
-             })
-          }else{
-              if(!sellConvertAmountP){
-                  sellEndPriceR.current =0
-                  sellKarmozdAmountR.current =0
-                  sellFixedKarmozdR.current =0
-                  sellConversionResultR.current =0
-                  sellConversionResultStrR.current = 0
-                  sellTotalR.current = 0
-                  sellLowCreditR.current = false
-                  sellConvertErrorMessage.current = ""
-                  setSellConvertInvalid(true)
-                  return
-  
-              }
-              const data = qs.stringify({
-                  'source': String(sellSourceR.current.id), 
-                  'destination': String(sellDestination.id),
-                  'changed': 'source',
-                  'source-price': sellConvertAmountP,
-                  'destination-price': '0' 
-              })
-              axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
-                 headers:{
-                     "Content-type": "application/x-www-form-urlencoded"
-                 }
-             }).then(response=>{
-                  if (!response) throw Error("no resp")
-                  const {data} = response
-                  
-                  if(data.message || prevMessageS){
-                      sellConvertErrorMessage.current = data.message || prevMessageS
-                  }else
-                  sellConvertErrorMessage.current = ""
-                  
-                      
-                  if(+data["source_price"] > +sellConvertAmountP){
-                      changeSellAmount(+data["source_price"], data.message)
-                  } 
-                  const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
-                 
-                  sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
-                  sellKarmozdAmountR.current =  +data["total_fee"] || 0
-                  sellFixedKarmozdR.current =  +data["fix_fee"] || 0
-                  sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
-                  sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
-                  sellUnitPrice.current = data['unit_price']
-                  const a = sellConversionResultR.current
-                  const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
-                  const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
-                  
-                  sellTotalR.current = (a+a2+a3).toLocaleString()
-  
-                  
-                  // setsellConvertAmount(sellConvertAmountP)
-                  sellLowCreditR.current = !sellConvertAmount || sellConvertAmount > +sellAvailableCurrencyR.current
-                  setSellConvertInvalid(Math.random())
-                 
-             }).catch(error=>{
-                 console.log(error);
-             })
-          }
-      }
-   useEffect(() => {
-        if(!buySource.id && currencyList.length>0) changeBuySource("", Constants.USDT_CURRENCY_ID)
-        if(!sellDestination.id && currencyList.length>0) changeSellDestination("", Constants.USDT_CURRENCY_ID)
+    }
+    const changeSellAmount = (value, rerender=true)=>{
+        if (rerender)    
+            computePrices({sellConvertAmountP: value})
+        setSellConvertAmount(value)
+    }
+    const computePrices = ({
+        buyConvertAmountP= buyConvertAmount,
+        sellConvertAmountP= sellConvertAmount,
+        buyConvertAll=undefined
+    })=>{
         
-   }, [])
+        if(tab === "buy"){
+            
+            if(!buyConvertAmountP && !buyConvertAll){
+                buyEndPriceR.current =0
+                buyKarmozdAmountR.current =0
+                buyFixedKarmozdR.current =0
+                buyConversionResultR.current =0
+                buyConversionResultStrR.current = 0
+                buyTotalR.current = 0
+                buyLowCreditR.current = false
+                buyConvertErrorMessage.current = ""
+
+                setBuyConvertInvalid(true)
+                return
+
+            }
+            const data = qs.stringify({
+                'source': String(buySource.id), 
+                'destination': String(buyDestinationR.current.id),
+                'changed': !buyConvertAll && 'destination' || 'source',
+                'source-price': buyConvertAll || '0',
+                'destination-price': !buyConvertAll && buyConvertAmountP || '0'
+            })
+            axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
+               headers:{
+                   "Content-type": "application/x-www-form-urlencoded"
+               }
+           }).then(response=>{
+                if (!response) throw Error("no resp")
+                const {data} = response
+                if(data.message){
+                    buyConvertErrorMessage.current = data.message 
+                    
+                }else
+                    buyConvertErrorMessage.current = ""
+                
+                    
+               
+                const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
+               
+                buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
+                buyKarmozdAmountR.current =  +data["total_fee"] || 0
+                buyFixedKarmozdR.current =  +data["fix_fee"] || 0
+                buyConversionResultR.current =   buyConvertAmountP? +data["source_price"]: 0
+                buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
+                buyUnitPrice.current = data['unit_price']
+                const a = buyConversionResultR.current
+                const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
+                const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
+                
+                buyTotalR.current = (a+a2+a3).toLocaleString()
+
+                if(data.message && data.message.indexOf("خرید")!==-1){
+                    buyConversionResultR.current =   "-"
+                    buyConversionResultStrR.current =  "-"
+                   
+                }
+                if(buyConvertAll){
+                    changeBuyAmount(data["destination_price"], false)
+                    buyConversionResultR.current = +data['source_price']
+                    buyConversionResultStrR.current = data['source_price_str']
+                }
+
+                console.log(buyConversionResultR, buyConversionResultStrR);
+                
+                // setBuyConvertAmount(buyConvertAmountP)
+                buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
+                setBuyConvertInvalid(Math.random())
+               
+           }).catch(error=>{
+               console.log(error);
+           })
+        }else{
+            if(!sellConvertAmountP || String(sellDestination.id) === String(sellSourceR.current.id)){
+                sellEndPriceR.current =0
+                sellKarmozdAmountR.current =0
+                sellFixedKarmozdR.current =0
+                sellConversionResultR.current =0
+                sellConversionResultStrR.current = 0
+                sellTotalR.current = 0
+                sellLowCreditR.current = false
+                sellConvertErrorMessage.current = ""
+
+                setSellConvertInvalid(true)
+                return
+
+            }
+            const data = qs.stringify({
+                'source': String(sellSourceR.current.id), 
+                'destination': String(sellDestination.id),
+                'changed': 'source',
+                'source-price': sellConvertAmountP,
+                'destination-price': '0' 
+            })
+            axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
+               headers:{
+                   "Content-type": "application/x-www-form-urlencoded"
+               }
+           }).then(response=>{
+                if (!response) throw Error("no resp")
+                const {data} = response
+                
+                if(data.message){
+                    sellConvertErrorMessage.current = data.message
+                }else
+                    sellConvertErrorMessage.current = ""
+                
+                    
+                
+                const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
+               
+                sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
+                sellKarmozdAmountR.current =  +data["total_fee"] || 0
+                sellFixedKarmozdR.current =  +data["fix_fee"] || 0
+                sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
+                sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
+                sellUnitPrice.current = data['unit_price']
+                const a = sellConversionResultR.current
+                const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
+                const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
+                
+                sellTotalR.current = (a+a2+a3).toLocaleString()
+
+                
+                // setsellConvertAmount(sellConvertAmountP)
+                console.log(sellConvertAmountP , +sellAvailableCurrencyR.current)
+                sellLowCreditR.current = !sellConvertAmountP || sellConvertAmountP > +sellAvailableCurrencyR.current
+                setSellConvertInvalid(Math.random())
+               
+           }).catch(error=>{
+               console.log(error);
+           })
+        }
+    }
+   useEffect(() => {
+        if(!buySource.id && currencyList.length>0) changeBuySource('',Constants.USDT_CURRENCY_ID)
+        if(!sellDestination.id && currencyList.length>0) changeSellDestination('',Constants.USDT_CURRENCY_ID)
+        
+   }, [currencyList])
    
     return (
         <div className="card">
@@ -326,7 +339,7 @@ function FastBuySell() {
                                     <option value={undefined}>انتخاب</option>
                                         { 
                                         currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                            return   (c.id !== buySource.id) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                            return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                         })
                                     }
                                         
@@ -356,6 +369,13 @@ function FastBuySell() {
                                     </div>:undefined}
                                 </div>
                                 
+                            </div>
+                            <div className=" col-xl-12 mb-3 d-flex align-items-center p-0">
+                                    <small  htmlFor="currency_amount_available">موجودی :</small>
+                                <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(buyAvailableCurrencyR.current).toLocaleString() } {" "} { buySource.small_name_slug  }</span>
+                                { buySource.id &&
+                                    <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeBuyAmount(buyAvailableCurrencyR.current)}}>$</div>
+                                }
                             </div>
                             { buyConversionResultR.current? <>
                                 <div className="mb-3 d-flex justify-content-between flex-wrap">
@@ -407,11 +427,11 @@ function FastBuySell() {
 
                                         { 
                                             currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                            return   (c.id !== sellDestination.id) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                            return  (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                             })
                                         }
                                 </select>
-                                {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap">
+                                {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap pe-2">
                                     <small className="text-danger">اعتبار ناکافی ! </small>
                                     <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
                                 
@@ -448,6 +468,13 @@ function FastBuySell() {
                                     </div>:undefined}
                                 </div>
                                
+                            </div>
+                            <div className={"col-xl-12 mb-3 d-flex align-items-center p-0" + (sellSourceR.current.id?"":" d-none")}>
+                                <small  htmlFor="currency_amount_available">موجودی :</small>
+                                <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(sellConvertAmount).toLocaleString() } {" "} { sellSourceR.current.small_name_slug  }</span>
+                                { sellSourceR.current.id &&
+                                    <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeSellAmount(sellAvailableCurrencyR.current)}}>$</div>
+                                }
                             </div>
                             { sellConversionResultR.current? 
                             <>

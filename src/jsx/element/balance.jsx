@@ -47,7 +47,7 @@ function Balance() {
                         <div className="row">
                             <div className="col-xl-12 col-xxl-6 col-lg-6 px-0">
                                 {balances.length ? <RadialChart balances={balances} names={names} />: undefined}
-                                <h4 className="mt-5">موجودی کل : <strong className="d-block mt-2"> {(+totalBalance).toLocaleString()} تومان</strong></h4> 
+                                <h4 className="mt-5">موجودی کل : <strong className="d-block mt-2"> {Number((+totalBalance).toFixed()).toLocaleString()} تومان</strong></h4> 
                                 <br/>
                               
                             </div>
@@ -68,9 +68,9 @@ function Balance() {
                                             <div className="flex-grow-1">
                                                 <h5 className="m-0">{item.service.small_name_slug}</h5>
                                             </div>
-                                            <div className="text-right">
-                                                <h5 className="m-0">{item.balance} {" "} {item.service.small_name_slug}</h5>
-                                                <span className="w-100 text-left">{(Number(item.balance * item.service.show_price_irt).toFixed()).toLocaleString()} ت</span>
+                                            <div className="text-start">
+                                                <h5 className="m-0">{item.balance}</h5>
+                                                {item.balance!="0"?<span className="w-100 text-left">{(Number(item.balance * item.service.show_price_irt).toFixed()).toLocaleString()} ت</span>:undefined}
                                             </div>
                                         </li>
                                     })}
