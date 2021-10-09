@@ -27,11 +27,12 @@ function Header2() {
 
                                 <div className="d-md-flex d-none   align-items-center justify-contetn-center mx-auto">
                                     <a className="ms-4 text-white" href="http://www.panel.hi-exchange.com">صفحه اصلی</a>
-                                    <Link to="/" className="ms-4 text-white">تبدیل</Link>
+                                    <Link to="/" className="ms-4 text-white">تبدیل ارز</Link>
                                     <Link to="/buy-sell" className="ms-4 text-white">خرید و فروش</Link>
                                     <Link to="#FastOrder" className="ms-4 text-white"  onClick={e=>setFastModal(true)}>
                                          سفارش سریع
                                     </Link>
+                                    <Link to="/wallet" className="text-white ms-4">واریز و برداشت</Link>
                                     <Link to="/settings-invite" className="text-white">معرفی دوستان</Link>
                                 </div>
                                 <div className="dashboard_log">

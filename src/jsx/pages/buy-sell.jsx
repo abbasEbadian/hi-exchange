@@ -212,8 +212,6 @@ function BuySell() {
                     
                 }else
                     buyConvertErrorMessage.current = ""
-                
-                    
                
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
@@ -228,7 +226,9 @@ function BuySell() {
                 const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
                 
                 buyTotalR.current = (a+a2+a3).toLocaleString()
-
+                if(buySource.small_name_slug === "IRT"){
+                    buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
+                }
                 if(data.message && data.message.indexOf("خرید")!==-1){
                     buyConversionResultR.current =   "-"
                     buyConversionResultStrR.current =  "-"

@@ -231,6 +231,9 @@ function FastBuySell() {
                     buyConversionResultStrR.current =  "-"
                    
                 }
+                if(buySource.small_name_slug === "IRT"){
+                    buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
+                }
                 if(buyConvertAll){
                     changeBuyAmount(data["destination_price"], false)
                     buyConversionResultR.current = +data['source_price']
