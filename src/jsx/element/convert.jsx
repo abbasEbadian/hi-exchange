@@ -99,21 +99,19 @@ function Convert() {
         lowCredit.current = false
         
         
-        if(convertAmountP && currencyFromP.small_name_slug ){
-            lowCredit.current =  convertAmountP > currencyAvailableP ;
+        if(convertAmountP && currencyFromP.id ){
+            lowCredit.current =  +convertAmountP > currencyAvailableP ;
             if(lowCredit.current) convertInvalid2 = true;
         }
         
-        if(!currencyFromP.small_name_slug || !currencyToP.small_name_slug || !convertAmountP || lowCredit.current){
+        if(!currencyFromP.id || !currencyToP.id || !convertAmountP || lowCredit.current){
             convertInvalid2 = true;
         }
         
 
-        if(convertInvalid2){
-            setConvertInvalid(true)
-            return
-        }
+        setConvertInvalid(convertInvalid2)
         
+        console.log(convertInvalid2)
 
         let data = qs.stringify({
             'source': String(currencyFromP.id),
@@ -133,8 +131,9 @@ function Convert() {
 
             if(data.message){
                 convertErrorMessage.current = data.message
-                // if(+data.error===1)
-                //     convertInvalid.current = true;
+
+            }else{
+                convertErrorMessage.current = ""
             }
             const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
             
@@ -145,7 +144,6 @@ function Convert() {
                 karmozd:data["fee"],
                 convertResult: Number(data["destination_price"]).toLocaleString()
             }
-            setConvertInvalid(false)
             dispatch({type: "UPDATE_DETAILS", payload: d})
             
         }).catch(err=>{
@@ -201,7 +199,7 @@ function Convert() {
                 </Card.Header>
                 <Card.Body>
                     <div className="buy-sell-widget convert-widget">
-                        <form method="post" name="myform" className="currency_validate row">
+                        <form method="post" name="myform" className="currency_validate row" onSubmit={e=>{e.preventDefault();e.stopPropagation()}   }> 
                             <div className="mb-3 col-xl-4 mb-0">
                                 <label className="form-label" htmlFor="currency_amount">مقدار</label>
                                 <input type="number"  name="currency_amount" className="form-control" onFocus={e=>{changeAmount("")}} value={convertAmount} onChange={(e)=> changeAmount(e.target.value) }
@@ -297,7 +295,7 @@ function Convert() {
                                 }
                                 <div className=" col-12 row flex-column p-0 mt-3">
                                     <div className="d-flex  align-items-end p-0 me-auto col-6">
-                                        <button type="button" name="submit" onClick={handleDetailModalShow}
+                                        <button type="button" name="button" onClick={handleDetailModalShow}
                                             className="btn btn-success px-5 w-100" style={{lineHeight: 1}} disabled={!convertAmount || !currencyFrom.small_name_slug || !currencyTo.small_name_slug ||convertInvalid}>تبدیل کن</button>
                                     </div>
                                 </div>
