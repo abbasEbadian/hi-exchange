@@ -82,7 +82,8 @@ export const userLogin = (credentias, _history ,setIsSubmitting)=>{
             }).catch(err=>{
                 if (err.non_field_errors)
                     toast.error(err.non_field_errors[0], toastOpt)
-                toast.error("کد وارد شده صحیح نمی باشد.", toastOpt)
+                else
+                    toast.error("کد وارد شده صحیح نمی باشد.", toastOpt)
             }).finally(e=>{
                 setIsSubmitting(false);
                 setTimeout(() => {
@@ -167,15 +168,18 @@ export const userUpdateImage =  (data, toast=0, toastOpt=0)=>{
     return dispatch=>{
         return new Promise((resolve, reject)=>{
             axios.post(BASE+"/api/v2/account/document/", data,
-            ).then(data=>{
-                if(toast) toast.success(data.data.message, toastOpt); 
+            ).then(response=>{
+                const {error, message} = response.data 
+                if (+error === 1)
+                    if(toast) toast.error(message, toastOpt); 
+                else{
+                        if(toast) toast.success(message, toastOpt); 
+                }
                 return resolve(200) 
             }).catch(err=>{
-                console.log(err);
                 if(toast) toast.error("با خطا مواجه شد.")
                 return reject(400)
             }).catch(err=>{
-                console.log(err)
                 return reject(400)
             })
         })
