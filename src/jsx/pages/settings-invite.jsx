@@ -55,7 +55,7 @@ function SettingsInvite() {
                                         <table className="table table-responsive-sm px-2 fs-6">
                                             <thead>
                                                 <tr>
-                                                    <th>زدیف</th>
+                                                    <th>ردیف</th>
                                                     <th>شناسه</th>
                                                     <th>همراه</th>
                                                     {/* <th>میزان بازگشت</th>

@@ -102,7 +102,7 @@ export const check_irt_deposit = ({bank_id, order_id, id})=>{
                         }).then(response=>{
                             const {data} = response
                             if(data.error === 1){
-                                return reject({result: "fail", cause: "خطا در قبت تراکنش در سیستم"})
+                                return reject({result: "fail", cause:data.message})
                             }else{
                                 return resolve({result: "success"})
                             }
