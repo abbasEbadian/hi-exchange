@@ -5,16 +5,21 @@ import PageTitle from '../element/page-title'
 import SettingsNav from '../element/settings-nav'
 import {Constants} from '../../Constants'
 import axios from 'axios';
+import Loader from 'react-loader-spinner'
 
 function SettingsInvite() {
-    const [refs, setRefs] = useState([]) 
+    const [refData, setRefData] = useState([]) 
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
+        setLoading(true)
         axios.get(Constants.BASE_URL+"/api/v2/account/referral/").then(response=>{
             const { data } = response
-            setRefs(data)
+            setRefData(data)
         }).catch(error=>{
             console.log(error);
-            
+        }).finally(f=>{
+            setLoading(false)
+
         })
     }, [])
     return (
@@ -38,29 +43,37 @@ function SettingsInvite() {
                                         <h4 className="card-title">فعالیت دوستان</h4>
                                     </div>
                                     
-                                    {refs && refs.length ?
+                                    {
+                                    loading?
+                                        <Loader type="Oval" color="#00BFFF" className="p-4" height={50} width={50} />:   
+                                    refData && refData.users && refData.users.length ?
                                     <div className="table-responsive">
                                         <table className="table table-responsive-sm px-2 fs-6">
                                             <thead>
                                                 <tr>
-                                                    <th>ایمیل</th>
-                                                    <th>تاریخ ثبت نام</th>
-                                                    <th>میزان بازگشت</th>
-                                                    <th>وضعیت</th>
+                                                    <th>زدیف</th>
+                                                    <th>شناسه</th>
+                                                    <th>همراه</th>
+                                                    {/* <th>میزان بازگشت</th>
+                                                    <th>وضعیت</th> */}
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {refs.map((item, idx)=>{
+                                                {refData.users.map((item, idx)=>{
                                                     return <tr key={idx}>
-                                                        <td>{item.email}</td>
-                                                        <td>{item.date}</td>
-                                                        <td>{item.profit}</td>
-                                                        <td>{item.status}</td>
+                                                        <td>{idx+1}</td>
+                                                        <td>{item.id}</td>
+                                                        <td>{item.mobile}</td>
                                                     </tr>
 
                                                 })}
                                             </tbody>
                                         </table>
+                                        <p className="px-4 text-left">
+                                            <span>مقدار بازگشتی :</span>
+                                            {" "}
+                                            <span className="text-success">{refData.total_get}</span>
+                                        </p>
                                         </div>:
                                         <p className="p-4">تا کنون دعوتی نداشته اید</p>
                                     }

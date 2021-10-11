@@ -51,6 +51,9 @@ function Header2() {
                                             <Link to={'./history'} className="dropdown-item">
                                                 <i className="la la-book"></i> تاریخچه واریز و برداشت
                                             </Link>
+                                            <Link to={'./accounts'} className="dropdown-item">
+                                                <i className="la la-history"></i> تاریخچه معاملات
+                                            </Link>
                                             <Link to={'./settings'} className="dropdown-item">
                                                 <i className="la la-cog"></i> تنظیمات
                                             </Link>
