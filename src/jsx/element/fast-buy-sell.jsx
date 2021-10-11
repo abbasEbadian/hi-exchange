@@ -422,105 +422,106 @@ function FastBuySell() {
                         </form>
                     </Tab>
                     <Tab eventKey="sell" title="فروش" >
-                        <form method="post" name="myform" className="currency2_validate">
-                        <div className="mb-3 d-flex align-items-center">
-                                <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز : </label>
-                                <select name='currency' className="form-control w-50" onChange={changeSellSource} >
-                                    <option value={undefined}>انتخاب</option>
+                                                <form method="post" name="myform" className="currency2_validate">
+                                                    <div className="mb-3">
+                                                        <label className="form-label" style={{width:"90px"}}>بازار به :</label>
+                                                        <div className="button-group">
+                                                            <button type="button" className={sellDestination.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeSellDestination(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
+                                                            <button type="button" className={sellDestination.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeSellDestination(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
+                                                        </div>
+                                                            
+                                                    </div>
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز: </label>
+                                                        <select name='currency' className="form-control w-50 px-2 my-3" onChange={changeSellSource} >
+                                                            <option value={undefined}>انتخاب</option>
 
-                                        { 
-                                            currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                            return  (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
-                                            })
-                                        }
-                                </select>
-                                {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap pe-2">
-                                    <small className="text-danger">اعتبار ناکافی ! </small>
-                                    <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
-                                
-                            </div>
+                                                                { 
+                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                                                        return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                    })
+                                                                }
+                                                        </select>
+                                                        {sellLowCreditR.current ?<Link to="/wallet" className="form-text text-muted text-nowrap pe-2">
+                                                            <small className="text-danger">اعتبار ناکافی ! </small>
+                                                            <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
+                                                        
+                                                    </div>
 
-                            <div className="mb-3">
-                                <label className="form-label" style={{width:"90px"}}>ارز دریافتی:</label>
-                                <div className="button-group">
-                                    <button type="button" className={sellDestination.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeSellDestination(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
-                                    <button type="button" className={sellDestination.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeSellDestination(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
-                                </div>
-                                    
-                                </div>
+                                                    
 
-                            <div className="mb-3">
-                                <label className="form-label">
-                                    مقدار
-                                    {sellSourceR.current && sellSourceR.current.id? 
-                                        <>
-                                        <i className="px-2"> {sellSourceR.current.name}</i>    
-                                        مورد نظر
-                                        </>:undefined
-                                }</label>
-                                <div className="input-group">
-                                    <span className={"position-absolute icofont-close-line cursor-poitner " + (!sellConvertAmount?"d-none":undefined)} 
-                                        style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeSellAmount(0)}}></span>
-                                    
-                                    <input type="text" name="currency_amount" className="form-control" onFocus={e=>{changeSellAmount("")}} value={sellConvertAmount} onChange={e=>changeSellAmount(e.target.value)}
-                                        placeholder="" />
-                                    <input type="text" name="usd_amount" className="form-control " value={sellConversionResultStrR.current} readOnly
-                                        placeholder="" />
-                                    {sellDestination.name? <div className="input-group-append p-0">
-                                        <span className="input-group-text">{ sellDestination.name }</span>
-                                    </div>:undefined}
-                                </div>
-                               
-                            </div>
-                            <div className={"col-xl-12 mb-3 d-flex align-items-center p-0" + (sellSourceR.current.id?"":" d-none")}>
-                                <small  htmlFor="currency_amount_available">موجودی :</small>
-                                <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(sellConvertAmount).toLocaleString() } {" "} { sellSourceR.current.small_name_slug  }</span>
-                                { sellSourceR.current.id &&
-                                    <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeSellAmount(sellAvailableCurrencyR.current)}}>$</div>
-                                }
-                            </div>
-                            { sellConversionResultR.current? 
-                            <>
-                                <div className="mb-3 d-flex justify-content-between px-0 flex-wrap">
-                                    <small className="text-nowrap">
-                                        <span>با پرداخت </span>
-                                        <span className="text-success px-2">{sellConvertAmount}</span>
-                                        <span>{sellSourceR.current.name}</span>
-                                    </small>
-                                   <small className="flex-grow-1 text-start text-nowrap">
-                                    <span className="text-success px-2">{sellConversionResultR.current}</span>
-                                        <span className="px-1">{sellDestination.name}</span>
-                                        <span>دریافت میکنید</span>   
-                                   </small>
-                                    
-                                </div>
-                                <div className="col-12 row mb-3 mx-0 ">
-                                    <small className="d-flex justify-content-between px-0 flex-wrap">
-                                        <label className="text-nowrap">قیمت تمام شده هر واحد 
-                                            <i className="px-2">{ sellDestination.name }</i>
-                                            :
-                                        </label>
-                                        <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellSourceR.current.name}</i></span>
-                                    </small>
-                                </div>
-                            </>:undefined}
-                            {sellConvertErrorMessage.current.length>0?
+                                                    <div className="mb-3">
+                                                        <label className="form-label">
+                                                            مقدار
+                                                            {sellSourceR.current && sellSourceR.current.id? 
+                                                                <>
+                                                                <i className="px-2"> {sellSourceR.current.name}</i>    
+                                                                مورد نظر
+                                                                </>:undefined
+                                                        }</label>
+                                                        <div className="input-group">
+                                                            <span className={"position-absolute icofont-close-line cursor-poitner " + (!sellConvertAmount?"d-none":undefined)} 
+                                                                style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeSellAmount(0)}}></span>
+                                                            
+                                                            <input type="text" name="currency_amount" className="form-control" onFocus={e=>{changeSellAmount("")}} value={sellConvertAmount} onChange={e=>changeSellAmount(e.target.value)}
+                                                                placeholder="" />
+                                                            <input type="text" name="usd_amount" className="form-control " value={sellConversionResultStrR.current} readOnly
+                                                                placeholder="" />
+                                                            {sellDestination.name? <div className="input-group-append p-0">
+                                                                <span className="input-group-text">{ sellDestination.name }</span>
+                                                            </div>:undefined}
+                                                        </div>
+                                                       
+                                                    </div>
+                                                    <div className={"col-xl-12 mb-3 d-flex align-items-center p-0" + (sellSourceR.current.id?"":" d-none")}>
+                                                        <small  htmlFor="currency_amount_available">موجودی :</small>
+                                                        <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(sellAvailableCurrencyR.current).toLocaleString() } {" "} { sellSourceR.current.small_name_slug  }</span>
+                                                        { sellSourceR.current.id &&
+                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeSellAmount(sellAvailableCurrencyR.current)}}>$</div>
+                                                        }
+                                                    </div>
+                                                    { sellConversionResultR.current? 
+                                                        <>
+                                                            <div className="mb-3 d-flex justify-content-between px-0 flex-wrap">
+                                                                <small className="text-nowrap">
+                                                                    <span>با پرداخت </span>
+                                                                    <span className="text-success px-2">{sellConvertAmount}</span>
+                                                                    <span>{sellSourceR.current.name}</span>
+                                                                </small>
+                                                            <small className="flex-grow-1 text-start text-nowrap">
+                                                                <span className="text-success px-2">{sellConversionResultR.current}</span>
+                                                                    <span className="px-1">{sellDestination.name}</span>
+                                                                    <span>دریافت میکنید</span>   
+                                                            </small>
+                                                                
+                                                            </div>
+                                                            <div className="col-12 row mb-3 mx-0 ">
+                                                                <small className="d-flex justify-content-between px-0 flex-wrap">
+                                                                    <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                                        <i className="px-2">{ sellDestination.name }</i>
+                                                                        :
+                                                                    </label>
+                                                                    <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellSourceR.current.name}</i></span>
+                                                                </small>
+                                                            </div>
+                                                     </>:undefined}
+                                                    {sellConvertErrorMessage.current.length>0?
                                                         <span className="text-danger" style={{fontSize: "12px"}}> {sellConvertErrorMessage.current} </span>
                                                         :undefined
                                                     }
-                            <button type="button" onClick={handleSellConfirm} name="submit"
-                             disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
-                                className="btn btn-danger w-100 d-flex justify-content-center">فروش
-                                {_creating_order? <Loader
-                                        type="ThreeDots"
-                                        height={25}
-                                        width={40}
-                                        color="#fff"
-                                    ></Loader>:undefined}</button>
-                        </form>
-                    </Tab>
+                                                    <button type="button" onClick={handleSellConfirm} name="submit"
+                                                     disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                        className="btn btn-danger w-100 d-flex justify-content-center">فروش
+                                                        {_creating_order? <Loader
+                                                                type="ThreeDots"
+                                                                height={25}
+                                                                width={40}
+                                                                color="#fff"
+                                                            ></Loader>:undefined}</button>
+                                                </form>
+                                            </Tab>
 
-                  
+                                        
                 </Tabs>
             </div>
 

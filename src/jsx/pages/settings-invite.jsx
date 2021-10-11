@@ -41,6 +41,10 @@ function SettingsInvite() {
                                 <div className="card">
                                     <div className="card-header">
                                         <h4 className="card-title">فعالیت دوستان</h4>
+                                        <span>
+                                            <span>تعداد کل کاربرها: </span>
+                                        <span className="text-info">{refData.user_count}</span>
+                                        </span>
                                     </div>
                                     
                                     {
