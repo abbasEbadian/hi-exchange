@@ -58,7 +58,7 @@ function IndexTransactions({visibleTrancactionCount}) {
                                                             </span>
                                                         }
                                                     </td>
-                                                    <td>{Number(item["amount"]).toLocaleString()}</td>
+                                                    <td>{Number(item["amount"]).toLocaleString()} {" "} {item.service ?item.service .small_name_slug: ""}</td>
                                                     <td>{item["tx_id"]}</td>
                                                     {/* <td>{wallet && wallet.filter(c=>c.id===+item["source"])[0].name}</td>
                                                     <td>{wallet && wallet.filter(c=>c.id===+item["destination"])[0].name}</td> */}

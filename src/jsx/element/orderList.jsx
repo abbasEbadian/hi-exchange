@@ -9,7 +9,7 @@ function OrderList({orders}) {
         <>
         <div className="card mb-0">
         <div className="card-header border-0">
-            <h4 className="card-title">فعالیت ها</h4>
+            <h4 className="card-title">تاریخچه معاملات</h4>
         </div>
         <div className="card-body pt-0">
             <div className="transaction-table">
@@ -19,7 +19,7 @@ function OrderList({orders}) {
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>نوع فعالیت</th>
+                                <th>نوع معامله</th>
                                 <th>ارز</th>
                                 <th>کارت</th>
                                 <th>مبدا</th>

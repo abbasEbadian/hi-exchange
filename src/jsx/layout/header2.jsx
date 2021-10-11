@@ -75,12 +75,7 @@ function Header2() {
                         <Modal.Body>
                             <FastBuySell></FastBuySell>
                         </Modal.Body>
-                        <Modal.Footer>
-                        <button className="text-danger bg-transparent border-0" onClick={e=>setFastModal(false)}>
-                            بستن
-                        </button>
-                        
-                        </Modal.Footer>
+
                     </Modal>
         
         </>
