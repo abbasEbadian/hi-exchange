@@ -51,8 +51,8 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
                                             </td>
-                                            <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
-                                            <td>{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                            <td className="text-danger">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                            <td >{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
                                           </>
                                         :
                                             <>
