@@ -38,8 +38,8 @@ function OrderList({orders}) {
                                                     <span className="badge badge-success">خرید</span>
                                                 </td>
                                                 
-                                                <td>{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
-                                                <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                                <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                                <td dir="ltr" className="text-success  text-end">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
                                             </>
                                         :order.type ==="sell"?
                                             <>
@@ -51,8 +51,8 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
                                             </td>
-                                            <td className="text-danger">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
-                                            <td >{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                            <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                            <td dir="ltr" className=" text-end">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
                                           </>
                                         :
                                             <>
@@ -63,8 +63,8 @@ function OrderList({orders}) {
                                                 <span className="badge badge-warning">تبدیل</span>
                                             </td>
                                            
-                                            <td>{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
-                                            <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                            <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                            <td dir="ltr"className="text-success text-end">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
                                           </>
                                         
                                         }
