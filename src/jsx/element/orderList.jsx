@@ -20,8 +20,6 @@ function OrderList({orders}) {
                             <tr>
                                 <th>#</th>
                                 <th>نوع معامله</th>
-                                <th>ارز</th>
-                                <th>کارت</th>
                                 <th>مبدا</th>
                                 <th>مقصد</th>
                                 <th>وضعیت</th>
@@ -30,24 +28,6 @@ function OrderList({orders}) {
                         <tbody>
                             
                                 {orders.map((order, idx)=>{
-                                    const target = currencyList.filter((item)=>{
-                                        switch (order.type) {
-                                            case "sell":
-                                                return item.id === order.source_asset
-                                            default:
-                                                return item.id === order.destination_asset
-                                        }
-                                    })
-                                    const target2 = currencyList.filter((item)=>{
-                                        switch (order.type) {
-                                            case "purchase":
-                                                return item.id === order.source_asset
-                                            default:
-                                                return item.id === order.destination_asset
-                                        }
-                                    })
-                                    const cuname = target.length ? target[0].small_name_slug : ""
-                                    const cu2name = target2.length ? target2[0].small_name_slug : ""
                                     
                                     return  <tr key={idx}>
                                         {order.type === "purchase"?
@@ -57,14 +37,9 @@ function OrderList({orders}) {
                                                 <td>
                                                     <span className="badge badge-success">خرید</span>
                                                 </td>
-                                                <td>
-                                                    <i className={"cc "+cuname}></i> {cuname}
-                                                </td>
-                                                <td>
-                                                    {order.bank_account || "-"}
-                                                </td>
-                                                <td>{Number(order.source_amount).toLocaleString()} {" "} {cu2name}</td>
-                                                <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {cuname}</td>
+                                                
+                                                <td>{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                                <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
                                             </>
                                         :order.type ==="sell"?
                                             <>
@@ -76,15 +51,9 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
                                             </td>
-                                            <td>
-                                                <i className={"cc "+cuname}></i> {cuname}
-                                            </td>
-                                            <td>
-                                                {order.bank_account || "-"}
-                                            </td>
-                                            <td className="text-danger">{Number(order.source_amount).toLocaleString()} {" "} {cuname}</td>
-                                            <td>{Number(order.destination_amount).toLocaleString()} {" "} {cu2name}</td>
-                                            </>
+                                            <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                            <td>{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                          </>
                                         :
                                             <>
                                             <td><span className="swap-thumb"><i className="icofont-exchange"></i>
@@ -93,15 +62,10 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-warning">تبدیل</span>
                                             </td>
-                                            <td>
-                                                <i className={"cc "+cuname}></i> {cuname}
-                                            </td>
-                                            <td>
-                                                {order.bank_account || "-"}
-                                            </td>
-                                            <td>{Number(order.source_amount).toLocaleString()} {" "} {cu2name}</td>
-                                            <td className="text-warning">{Number(order.destination_amount).toLocaleString()} {" "} {cuname}</td>
-                                            </>
+                                           
+                                            <td>{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
+                                            <td className="text-success">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                          </>
                                         
                                         }
                                         

@@ -57,12 +57,13 @@
     "npm": "6.14.14"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start ",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "sass": "node-sass --watch ./src/scss/style.scss ./src/css/style.css --source-map ./src/css/style.css.map",
-    "dev": "npm start && node proxy.js"
+    "proxy": "node proxy.js",
+    "dev": "npm-run-all start proxy"
   },
   "eslintConfig": {
     "extends": "react-app"
