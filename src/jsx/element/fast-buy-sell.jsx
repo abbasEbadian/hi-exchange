@@ -338,16 +338,16 @@ function FastBuySell() {
 
                             <div className="mb-3 d-flex align-items-center">
                                 <label className="form-label text-nowrap ps-3" style={{width:"90px"}}>انتخاب ارز:</label>
-                                    <Form.Control as="select"  name='currency' className=" mb-3 px-2 w-50" onChange={changeBuyDestination} >
-                                    <option value={undefined}>انتخاب</option>
-                                        { 
-                                        currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                            return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
-                                        })
-                                    }
-                                        
-                                    </Form.Control>
+                                <Form.Control as="select"  name='currency' className=" my-3 px-2 w-50" onChange={changeBuyDestination} >
+                                <option value={undefined}>انتخاب</option>
+                                    { 
+                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                        return  !(buySource.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                    })
+                                }
                                     
+                                </Form.Control>
+        
                             </div>
 
                             <div className="mb-3">
@@ -435,10 +435,9 @@ function FastBuySell() {
                                                         <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز: </label>
                                                         <select name='currency' className="form-control w-50 px-2 my-3" onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
-
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   !(sellDestnation.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>

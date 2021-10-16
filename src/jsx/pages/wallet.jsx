@@ -141,7 +141,10 @@ function Wallet(props) {
             openNocardsModal()
             return 
         }
-        setDepositTxAmount("لطفا مبلغ را به تومان وارد نمایید")
+        if(currency_id === Constants.IRT_CURRENCY_ID)
+            setDepositTxAmount("لطفا مبلغ را به تومان وارد نمایید")
+        else
+            setDepositTxAmount(0)
         if(preDepositModalOpen) closePreDepositModal()
         setDepositModalOpen(true)
     };
@@ -184,7 +187,12 @@ function Wallet(props) {
             const _wallet = wallet.filter(item=>{
                 return item && item.service.id === currencyID
             })
-            dispatch(check_transaction({depositTxID, wallet: _wallet[0].id }, setTransactionResult))
+            dispatch(check_transaction({depositTxID, wallet: _wallet[0].id })).then(({status, text})=>{
+                setTransactionResult({status, text})
+            }).catch(err=>{
+                console.log(err);
+
+            })
         }
     }
 

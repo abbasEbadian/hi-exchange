@@ -354,7 +354,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                                                    return  !(buySource.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -433,10 +433,9 @@ function BuySell() {
                                                         <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز: </label>
                                                         <select name='currency' className="form-control w-50 px-2 my-3" onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
-
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   !(sellDestnation.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>

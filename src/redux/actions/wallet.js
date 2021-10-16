@@ -124,31 +124,29 @@ export const check_irt_deposit = ({bank_id, order_id, id})=>{
     }
 }
 export const check_transaction = ({depositTxID, wallet}, setTransactionResult)=>{
-    return async dispatch=>{
-        dispatch(checking_transaction(true))
-        let status, text;
-        axios.post(Constants.BASE_URL + "/api/v2/wallet/deposit/", {
-            tx_id: depositTxID,
-            wallet: wallet
-        }).then(response=>{
-            const {data} = response
-            if (data.error === 1){
-                text = data.message
-                status = 400
-            }
-            else{
-                let text = "تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد."
-                text = text
-                status = 200
-            }
-        }).catch(err=>{
-            console.log(err);
-            text = 'بررسی با خطا مواجه شد'
-            status = 400
-        }).finally(fn=>{
-            setTransactionResult({status: status, text})
-            dispatch(checking_transaction(false))
+    return dispatch=>{
+        return new Promise((resolve, reject)=>{
+            dispatch(checking_transaction(true))
+            axios.post(Constants.BASE_URL + "/api/v2/wallet/deposit/", {
+                tx_id: depositTxID,
+                wallet: wallet
+            }).then(response=>{
+                const {data} = response
+                if (data.error === 1){
+                    return resolve({status:400, text: data.message})
+                }
+                else{
+                    let text = "تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد."
+                    return resolve({status:200, text})
+                }
+            }).catch(err=>{
+                console.log(err);
+                return resolve({status:40, text:'بررسی با خطا مواجه شد'})
+            }).finally(fn=>{
+                dispatch(checking_transaction(false))
+            })
         })
+       
         
     }
 }
