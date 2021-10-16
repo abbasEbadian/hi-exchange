@@ -435,7 +435,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   !(sellDestnation.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   !(sellDestination.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
