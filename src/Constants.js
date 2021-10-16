@@ -22,7 +22,9 @@ export const Constants = {
         "BTT": "BINANCE:BTTUSDT",
         "REEF": "BINANCE:REEFUSDT",
         "VET": "BINANCE:VETUSDT",
-        "XTZ": "BINANCE:XTZUSDT"
+        "XTZ": "BINANCE:XTZUSDT",
+        "SOL": "BINANCE:SOLUSDT",
+        "ADA": "BINANCE:ADAUSDT",
     }
     
 }

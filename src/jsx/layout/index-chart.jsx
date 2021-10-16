@@ -8,7 +8,12 @@ function IndexChart() {
         setChartList([
             ["BTC", "بیت کوین"],
             ["ETH", "اتریوم"],
-            ["LTC", "لایت کوین"]
+            ["BNB", "بایننس کوین"],
+            ["ADA", "کاردانو"],
+            ["XRP", "ریپل"],
+            ["SOL", "سولانا"],
+            ["DOT", "پولکادات"],
+            ["DOGE", "دوج کوین"],
         ])
     }, [])
     return (
@@ -17,7 +22,7 @@ function IndexChart() {
         <div className="row">
             {chartList.map((item, idx)=>{
                 return <div key={idx} className="col-xl-12 col-lg-12 chart-selector">
-                    <div className={"widget-card"+(selectedChart===item[0] ? " active" : " ") }  onClick={()=>setSelectedChart(item[0])}>
+                    <div className={"widget-card mb-2"+(selectedChart===item[0] ? " active" : " ") }  onClick={()=>setSelectedChart(item[0])}>
                         <div className="d-flex justify-content-between align-items-center">
                             <div className="coin-title d-flex align-items-center w-100 widget-stat">
                                 <span><i className={"cc " + item[0]+"-alt"}></i></span>

@@ -1,20 +1,4 @@
 @charset "UTF-8";
-/*
-    Name: Cheerio  
-    Author: Quixlab
-    Author Portfolio : https://themeforest.net/user/quixlab/portfolio
-    Email: quixlab.com@gmail.com
-
-    Table of Content: 
-
-    1. Abstract
-    2. Bootstrap CSS
-    3. Base
-    4. Layout
-    5. Component
-    6. Pages
-    
-*/
 /*!
  * Bootstrap v5.1.1 (https://getbootstrap.com/)
  * Copyright 2011-2021 The Bootstrap Authors
@@ -10204,6 +10188,13 @@ button.btn-simple {
 .spin, .spin::before {
   animation: spin 2s forwards infinite;
   display: inline-block; }
+
+.transaction-table {
+  font-size: 0.9rem; }
+  .transaction-table th {
+    white-space: nowrap; }
+  .transaction-table td.show {
+    cursor: pointer; }
 
 @-moz-keyframes spin {
   from {

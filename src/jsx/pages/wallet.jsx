@@ -36,7 +36,7 @@ function Wallet(props) {
     const [depositCard, setDepositCard] = useState(undefined)
     const [depositWallet, setDepositWallet] = useState(undefined)
     const [depositTxID, setDepositTxID] = useState("")
-    const [depositTxAmount, setDepositTxAmount] = useState("")
+    const [depositTxAmount, setDepositTxAmount] = useState("لطفا مبلغ را به تومان وارد نمایید")
     const [depositModalOpen, setDepositModalOpen] = useState(false)
     const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
     const [nocardsModalOpen, setNocardsModalOpen] = useState(false)
@@ -141,7 +141,7 @@ function Wallet(props) {
             openNocardsModal()
             return 
         }
-        setDepositTxAmount(0)
+        setDepositTxAmount("لطفا مبلغ را به تومان وارد نمایید")
         if(preDepositModalOpen) closePreDepositModal()
         setDepositModalOpen(true)
     };
@@ -390,7 +390,7 @@ function Wallet(props) {
                                 })}
                             </select>
                             <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مقدار  </label>
-                            <input type="text" className="form-control" onFocus={e=>setDepositTxAmount("")}value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
+                            <input type="text" className="form-control"  onFocus={e=>setDepositTxAmount("")} value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
                         
                         </>:
                         <div className="col-12">
@@ -417,9 +417,7 @@ function Wallet(props) {
                     
                 </Modal.Body>
                 <Modal.Footer>
-                <button className="text-danger bg-transparent border-0"  onClick={closeDepositModal}>
-                    لغو
-                </button>
+                
                 { currencyID === Constants.IRT_CURRENCY_ID ?<>
                     <button className="btn-success btn-sm"  onClick={confirmIRTDeposit} disabled={checking_transaction || !depositTxAmount}>
                         <span>پرداخت</span>
@@ -476,9 +474,7 @@ function Wallet(props) {
                     
                 </Modal.Body>
                 <Modal.Footer>
-                <button className="text-danger bg-transparent border-0" onClick={closeWithdrawModal}>
-                    لغو
-                </button>
+               
                 <button className="btn-success btn-sm d-flex justify-content-center" size="sm" onClick={confirmWithdraw} disabled={!withdrawAmount}>
                     برداشت
                     {checking_transaction?<Loader type="Oval" color="#fff" height={25} width={25}></Loader> :undefined}
@@ -501,9 +497,6 @@ function Wallet(props) {
                     
                 </Modal.Body>
                 <Modal.Footer>
-                <button className="text-danger bg-transparent border-0" onClick={closeNocardsModal}>
-                    بستن
-                </button>
                 <Link className="btn btn-sm btn-success " to="/verify-step-1">احراز هویت</Link>
                 
                 </Modal.Footer>
@@ -515,12 +508,7 @@ function Wallet(props) {
                 <Modal.Body>
                     <OrderList orders={historyOrders}></OrderList>
                 </Modal.Body>
-                <Modal.Footer>
-                <button className="text-danger bg-transparent border-0" onClick={closeSummaryModal}>
-                    بستن
-                </button>
-                
-                </Modal.Footer>
+               
             </Modal>
            
             <Modal  contentClassName="dark" show={validateModalOpen} onHide={() => setValidateModalOpen(false)}>
@@ -559,12 +547,7 @@ function Wallet(props) {
                     
                     
                 </Modal.Body>
-                <Modal.Footer>
-                <button className="text-danger bg-transparent border-0" onClick={()=>setValidateModalOpen(false)}>
-                    بستن
-                </button>
-                
-                </Modal.Footer>
+               
             </Modal>
 
             <Modal contentClassName="dark" show={preDepositModalOpen} onHide={() => setPreDepositModalOpen(false)}>
@@ -617,9 +600,6 @@ function Wallet(props) {
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                <button className="text-danger bg-transparent border-0" onClick={closePreDepositModal}>
-                    بستن
-                </button>
                 <button className="btn btn-sm btn-success " disabled={!address} onClick={openDepositModal}>
                 {fetchingAddress && !address?
                     <Loader type="Oval" color="#fff" height={25} width={25}></Loader> 

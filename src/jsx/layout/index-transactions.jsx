@@ -1,10 +1,21 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
+import {Modal} from 'react-bootstrap'
 
 function IndexTransactions({visibleTrancactionCount}) {
     const transactions = useSelector(state=>state.accounts.transactions)
     const wallet = useSelector(state=>state.accounts.wallet)
     const [ visibleCount, setVisibleCount ] = useState(visibleTrancactionCount)
+
+    const [modalDetail, setModalDetail] = useState({type: "deposit", tx_id: "", address:"" })
+    const [detailModalOpen, setDetailModalOpen] = useState(false)
+
+    const openModal = (id)=>{
+        const tr = transactions.filter((item)=>item&&item.id === id)
+        if (tr && tr.length > 0) 
+            setModalDetail({type: tr[0].type, tx_id: tr[0].tx_id, address:tr[0].wallet_address})
+        setDetailModalOpen(true);
+    }
     // const transactions = useRef([])
     const increaseVisible = ()=>{
         const max = Math.min(transactions.length, visibleCount+visibleTrancactionCount)
@@ -34,8 +45,8 @@ function IndexTransactions({visibleTrancactionCount}) {
                                             <th>مقدار تراکنش</th>
                                             {/* <th>ارز مبدا</th>
                                             <th>ارز مقصد</th> */}
-                                            <th>شماره پیگیری </th>
                                             <th>وضعیت تراکنش</th>
+                                            <th>توضیحات</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -43,8 +54,8 @@ function IndexTransactions({visibleTrancactionCount}) {
                                             return (idx+1) <= visibleCount && <tr key={idx}>
                                                     <td>{idx+1}</td>
                                                     <td>{item["id"]}</td>
-                                                    <td>{new Date(item["published"]).toLocaleString("fa-IR")}</td>
-                                                    <td>
+                                                    <td dir="ltr" className="text-end">{new Date(item["published"]).toLocaleString("fa-IR")}</td>
+                                                    <td className="text-nowrap">
                                                         {item["type"] === "deposit"?
                                                             <span className="badge badge-success">
                                                                 واریز
@@ -57,9 +68,17 @@ function IndexTransactions({visibleTrancactionCount}) {
                                                                 برداشت
                                                             </span>
                                                         }
+                                                        {item.service?
+                                                            (item.service.small_name==='IRT'?
+                                                                <span className="badge badge-danger mx-2">ریالی</span>
+                                                                :
+                                                                <span className="badge badge-danger mx-2">رمزارز</span>
+                                                            )
+                                                            :undefined
+                                                        }
                                                     </td>
                                                     <td dir="ltr" className='text-end'>{Number(item["amount"]).toLocaleString()} {" "} {item.service ?item.service .small_name_slug: ""}</td>
-                                                    <td>{item["tx_id"]}</td>
+                                                    
                                                     {/* <td>{wallet && wallet.filter(c=>c.id===+item["source"])[0].name}</td>
                                                     <td>{wallet && wallet.filter(c=>c.id===+item["destination"])[0].name}</td> */}
                                                     
@@ -76,6 +95,7 @@ function IndexTransactions({visibleTrancactionCount}) {
                                                             (item["status"] === "paying" ? "در حال پرداخت": undefined) ||
                                                             (item["status"] === "accepted" ? "ثبت شده": undefined) 
                                                             }</td>
+                                                    <td className="show" onClick={e=>openModal(item.id)}>مشاهده</td>
                                                     
                                                 </tr>
                                         })}
@@ -96,6 +116,26 @@ function IndexTransactions({visibleTrancactionCount}) {
                     </div>
                 </div>
             </div>
+            <Modal dialogClassName="mx-auto" contentClassName="dark" show={detailModalOpen} onHide={() => setDetailModalOpen(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>توضیحات</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>شماره تراکنش: </p>
+                    <p className="text-success">{modalDetail.tx_id}</p>
+                    {modalDetail.type === 'withdraw'?
+                        <>
+                        <br/>
+                          <p> دریافت کننده: </p>
+                            <p className="text-success">{modalDetail.address}</p>  
+                        </>
+                    :
+                        undefined
+                    
+                    }
+                </Modal.Body>
+            </Modal>
+           
         </>
     )
 }

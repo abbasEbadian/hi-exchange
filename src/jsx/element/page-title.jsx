@@ -7,7 +7,7 @@ function PageTitle() {
     const currentUser = useSelector(state=>state.session.user)
     return (
         <>
-            <div className="page_title">
+            <div className="page_title d-none">
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col-xl-12">

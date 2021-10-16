@@ -45,9 +45,7 @@ function Header2() {
                                             title={ currentUser.first_name + " " + currentUser.last_name }
                                             className="profile_log"
                                         >
-                                            <Link to={'./accounts'} className="dropdown-item">
-                                                <i className="la la-user"></i> حساب کاربری
-                                            </Link>
+                                           
                                             <Link to={'./history'} className="dropdown-item">
                                                 <i className="la la-book"></i> تاریخچه واریز و برداشت
                                             </Link>

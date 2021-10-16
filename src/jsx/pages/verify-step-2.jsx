@@ -14,9 +14,12 @@ function VerifyStep2() {
     const [filename1, setFilename1] = useState("تصویر پرسنلی یا سلفی")
     const [filename2, setFilename2] = useState("کارت ملی ")
     const [filename3, setFilename3] = useState("شناسنامه")
+    const [filename4, setFilename4] = useState("قبض")
     const [file1, setFile1] = useState(undefined)
     const [file2, setFile2] = useState(undefined)
     const [file3, setFile3] = useState(undefined)
+    const [file4, setFile4] = useState(undefined)
+
 
     const [ uploading, setUploading ] = useState(false)
 
@@ -43,6 +46,10 @@ function VerifyStep2() {
                     setFile3(reader.result);
                     setFilename3(filee.name)
                     break
+                case 4:
+                    setFile4(reader.result);
+                    setFilename4(filee.name)
+                    break
                 default: break
             }
 
@@ -61,6 +68,7 @@ function VerifyStep2() {
         data.append('selfie_photo', file1)
         data.append('card', file2)
         data.append('birth_certificate', file3)
+        data.append('bill', file4)
         dispatch(userUpdateImage(data)).then(status=>{
             if(status === 200){
                 setTimeout(() => {
@@ -138,6 +146,19 @@ function VerifyStep2() {
                                                     onChange={e=>handleFile(e, 3)}
                                                 />
                                                 {/* <small className="form-text">اختیاری</small> */}
+                                            </div>
+                                            <div
+                                                className="file-upload-wrapper mt-3"
+                                                data-text={filename4}
+                                            >
+                                                <input
+                                                    name="file-upload-field"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="file-upload-field"
+                                                    onChange={e=>handleFile(e, 4)}
+                                                />
+                                                <small className="form-text">اختیاری</small>
                                             </div>
                                         </div>
                                        

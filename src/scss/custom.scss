@@ -64,6 +64,18 @@ button.btn-simple{
     animation: spin 2s forwards infinite;
     display: inline-block;
 }
+
+.transaction-table{
+    font-size: 0.9rem;
+    th{
+        white-space: nowrap;
+    }
+    td.show{
+        cursor: pointer;
+    }
+}
+
+
 @-moz-keyframes spin {
     from { -moz-transform: rotate(0deg); }
     to { -moz-transform: rotate(360deg); }

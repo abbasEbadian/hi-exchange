@@ -28,7 +28,7 @@ function Accounts() {
                         <div className="col-xl-4 col-lg-4 col-md-6">
                             <div className="card profile_card">
                                 <div className="card-body">
-                                    <div className="d-flex">
+                                    <div className="d-flex border-0 mb-0 pb-0">
                                         <UserAvatar width={"70px"}></UserAvatar>
                                            
                                         <div className="pe-4">
@@ -42,14 +42,7 @@ function Accounts() {
                                         </div>
                                     </div>
 
-                                    <ul className="card-profile__info">
-                                        
-                                        
-                                        <li>
-                                            <h5 className="text-danger ms-4">آخرین ورود</h5>
-                                            <span className="text-danger">3 بهمن 1400 ، ساعت 10</span>
-                                        </li>
-                                    </ul>
+                                   
                                     
                                 </div>
                             </div>

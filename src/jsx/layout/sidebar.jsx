@@ -25,7 +25,7 @@ function Sidebar() {
                         </Link>
                         </li>
                         <li><Link to={"/accounts"} data-toggle="tooltip" data-placement="right" title="حساب">
-                            <span><i className="icofont-user-alt-4"></i></span>
+                            <span><i className="icofont-coins"></i></span>
                         </Link>
                         </li>
                         <li><Link to={"/wallet"} data-toggle="tooltip" data-placement="right" title="کیف پول">
