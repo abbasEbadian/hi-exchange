@@ -230,7 +230,14 @@ input:-internal-autofill-selected {
             background: darken($primary, 10%);
         }
     }
-
+    label {
+        position: absolute;
+        left: 67px;
+        z-index: 11111;
+        top: 14px;
+        color: green;
+        font-size: 0.7rem;
+    }
     input {
         opacity : 0;
         position: absolute;

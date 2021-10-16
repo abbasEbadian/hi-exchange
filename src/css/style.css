@@ -9024,6 +9024,13 @@ input:-internal-autofill-selected {
     border-radius: 5px 0 0 5px; }
   .file-upload-wrapper:hover:before {
     background: #ca9221; }
+  .file-upload-wrapper label {
+    position: absolute;
+    left: 67px;
+    z-index: 11111;
+    top: 14px;
+    color: green;
+    font-size: 0.7rem; }
   .file-upload-wrapper input {
     opacity: 0;
     position: absolute;

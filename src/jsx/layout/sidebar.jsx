@@ -10,9 +10,7 @@ function Sidebar() {
     return (
         <>
             <div className="sidebar">
-                <Link className="brand-logo" to={"/"}>
-                    <img src={require('../../images/logo.png')} alt="" />
-                </Link>
+                
                 <div className="menu">
                     <ul>
                         <li>

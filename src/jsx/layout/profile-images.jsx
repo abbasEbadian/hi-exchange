@@ -2,7 +2,7 @@ import React , {useState } from "react";
 import {  useHistory} from "react-router-dom";
 import Header2 from "../layout/header2";
 import Sidebar from "../layout/sidebar";
-import {useDispatch } from 'react-redux'
+import {useDispatch, useSelector } from 'react-redux'
 import {userUpdateImage} from '../../redux/actions'
 import Loader from 'react-loader-spinner'
 import { toast, ToastContainer } from "react-toastify";
@@ -10,6 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 function ProfileImages({source=undefined}) {
     const dispatch = useDispatch()
     const history = useHistory()
+    const user = useSelector(state=>state.session.user)
     const [filename1, setFilename1] = useState("آپلود تصویر پرسنلی یا سلفی")
     const [filename2, setFilename2] = useState("آپلود تصویر کارت ملی")
     const [filename3, setFilename3] = useState("پلود تصویر شناسنامه")
@@ -99,58 +100,75 @@ function ProfileImages({source=undefined}) {
 
                 <div className="mb-5">
                 
-                    <div
-                        className="file-upload-wrapper"
-                        data-text={filename1}
-                    >
-                        <input
-                            name="file-upload-field"
-                            type="file"
-                            accept="image/*"
-                            className="file-upload-field"
-                            onChange={e=>handleFile(e, 1)}
-                        />
-                    </div>
-                    <div
-                        className="file-upload-wrapper my-3"
-                        data-text={filename2}
-                    >
-                        <input
-                            name="file-upload-field"
-                            type="file"
-                            accept="image/*"
-                            className="file-upload-field"
-                            onChange={e=>handleFile(e, 2)}
-                        />
-                    </div>
-                    <div
-                        className="file-upload-wrapper"
-                        data-text={filename3}
-                    >
-                        <input
-                            name="file-upload-field"
-                            type="file"
-                            accept="image/*"
-                            className="file-upload-field"
-                            onChange={e=>handleFile(e, 3)}
-                        />
-                        {/* <small className="form-text">اختیاری</small> */}
-                    </div>
-                    <div
-                        className="file-upload-wrapper mt-3"
-                        data-text={filename4}
-                    >
-                        <input
-                            name="file-upload-field"
-                            type="file"
-                            accept="image/*"
-                            className="file-upload-field"
-                            onChange={e=>handleFile(e, 4)}
-                        />
-                        <small className="form-text">اختیاری</small>
-                    </div>
+                <div
+                    className="file-upload-wrapper"
+                    data-text={filename1}
+                >
+                    {user.scans&&user.scans.selfie?<label className='form-label text-start'>
+                        <i className="la la-check"></i>
+                        {" آپلود شده "}
+                    </label>:undefined}
+                    <input
+                        name="file-upload-field"
+                        type="file"
+                        accept="image/*"
+                        className="file-upload-field"
+                        onChange={e=>handleFile(e, 1)}
+                    />
                 </div>
-            
+                <div
+                    className="file-upload-wrapper my-3"
+                    data-text={filename2}
+                >
+                    {user.scans&&user.scans.national_card?<label className='form-label text-start'>
+                        <i className="la la-check"></i>
+                        {" آپلود شده "}
+                    </label>:undefined}
+                    <input
+                        name="file-upload-field"
+                        type="file"
+                        accept="image/*"
+                        className="file-upload-field"
+                        onChange={e=>handleFile(e, 2)}
+                    />
+                </div>
+                <div
+                    className="file-upload-wrapper"
+                    data-text={filename3}
+                >
+                    {user.scans&&user.scans.birth_certificate?<label className='form-label text-start'>
+                        <i className="la la-check"></i>
+                        {" آپلود شده "}
+                    </label>:undefined}
+                    <input
+                        name="file-upload-field"
+                        type="file"
+                        accept="image/*"
+                        className="file-upload-field"
+                        onChange={e=>handleFile(e, 3)}
+                    />
+                    {/* <small className="form-text">اختیاری</small> */}
+                </div>
+                <div
+                    className="file-upload-wrapper mt-3"
+                    data-text={filename4}
+                >
+                    {user.scans && user.scans.bill?<label className='form-label text-start'>
+                        <i className="la la-check"></i>
+                        {" آپلود شده "}
+                    </label>:undefined}
+                    <input
+                        name="file-upload-field"
+                        type="file"
+                        accept="image/*"
+                        className="file-upload-field"
+                        onChange={e=>handleFile(e, 4)}
+                    />
+                    <small className="form-text">اختیاری</small>
+                </div>
+            </div>
+        
+          
                 <div className="text-center mt-5">
                     <button
                         type="submit"
@@ -192,6 +210,10 @@ function ProfileImages({source=undefined}) {
                         className="file-upload-wrapper"
                         data-text={filename1}
                     >
+                        {user.scans&&user.scans.selfie?<label className='form-label text-start'>
+                            <i className="la la-check"></i>
+                            {" آپلود شده "}
+                        </label>:undefined}
                         <input
                             name="file-upload-field"
                             type="file"
@@ -204,6 +226,10 @@ function ProfileImages({source=undefined}) {
                         className="file-upload-wrapper my-3"
                         data-text={filename2}
                     >
+                        {user.scans&&user.scans.national_card?<label className='form-label text-start'>
+                            <i className="la la-check"></i>
+                            {" آپلود شده "}
+                        </label>:undefined}
                         <input
                             name="file-upload-field"
                             type="file"
@@ -216,6 +242,10 @@ function ProfileImages({source=undefined}) {
                         className="file-upload-wrapper"
                         data-text={filename3}
                     >
+                        {user.scans&&user.scans.birth_certificate?<label className='form-label text-start'>
+                            <i className="la la-check"></i>
+                            {" آپلود شده "}
+                        </label>:undefined}
                         <input
                             name="file-upload-field"
                             type="file"
@@ -229,6 +259,10 @@ function ProfileImages({source=undefined}) {
                         className="file-upload-wrapper mt-3"
                         data-text={filename4}
                     >
+                        {user.scans && user.scans.bill?<label className='form-label text-start'>
+                            <i className="la la-check"></i>
+                            {" آپلود شده "}
+                        </label>:undefined}
                         <input
                             name="file-upload-field"
                             type="file"
