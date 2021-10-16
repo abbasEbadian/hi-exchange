@@ -164,23 +164,21 @@ export const userUpdateName =  (name)=>{
         })
     }
 }
-export const userUpdateImage =  (data, toast=0, toastOpt=0)=>{
+export const userUpdateImage =  (data, toastOpt=0)=>{
     return dispatch=>{
         return new Promise((resolve, reject)=>{
             axios.post(BASE+"/api/v2/account/document/", data,
             ).then(response=>{
                 const {error, message} = response.data 
-                if (+error === 1)
-                    if(toast) toast.error(message, toastOpt); 
+                console.log(error, message);
+                
+                if (+error === 1){
+                    return resolve({status:400, message})}
                 else{
-                        if(toast) toast.success(message, toastOpt); 
+                    return resolve({status:200, message}) 
                 }
-                return resolve(200) 
             }).catch(err=>{
-                if(toast) toast.error("با خطا مواجه شد.")
-                return reject(400)
-            }).catch(err=>{
-                return reject(400)
+                return resolve({status:400,message: "با خطا مواجه شد."})
             })
         })
     }
