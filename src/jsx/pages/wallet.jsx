@@ -331,7 +331,7 @@ function Wallet(props) {
                                     
                                     {wallet&& wallet.length ? wallet.map((item, idx)=>{
                                         return item && <tr key={idx}> 
-                                            <td> { item.service.small_name } <i className={"me-2 fs-3 cc "+ item.service.small_name_slug}/></td>
+                                            <td><img className="icon"src={item.service.image}></img> <span> { item.service.small_name } </span></td>
                                             <td> { item.service.name } </td>
                                             
                                             <td>{Number(Number(item.balance).toFixed()).toLocaleString()}</td>

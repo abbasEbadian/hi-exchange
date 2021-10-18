@@ -8362,7 +8362,7 @@ button.navbar-toggler {
   display: flex;
   align-items: center; }
   .navbar-brand img {
-    max-width: 120px; }
+    max-width: 80px; }
   .navbar-brand span {
     color: #fff;
     font-weight: 700;
@@ -10138,6 +10138,15 @@ input[type=number] {
 
 #wallet-page table td, #wallet-page table th {
   text-align: center; }
+
+#wallet-page img.icon {
+  width: 30px; }
+  #wallet-page img.icon + span {
+    width: 80px;
+    display: inline-block;
+    text-align: right;
+    padding-right: 8px;
+    white-space: nowrap; }
 
 .chart-selector .widget-card {
   cursor: pointer; }
