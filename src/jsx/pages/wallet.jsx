@@ -575,10 +575,12 @@ function Wallet(props) {
                             <span className="px-2 text-success">{selectedCurrency.service.name}</span>
                             را به کیف پول  
                             </p>
-                            <p className="px-2 text-success my-5">
-                                <span className=" px-2 rounded border-success border">{address}</span>
+                            <p className="px-2 text-success mt-5  rounded border-success border">
+                                <span className=" px-2  wallet-address">{address}</span>
                                 <br/>
-                                <button class=" btn-sm btn-danger fs-6 mt-3"
+                                
+                            </p>
+                                <button class=" btn-sm btn-danger fs-6 my-3 d-block"
                                    onClick={copyToClipboard}
                                 >
                                     {copying? 
@@ -589,7 +591,6 @@ function Wallet(props) {
                                     : "کپی کن !"}
                                     
                                     </button>
-                            </p>
                                 در شبکه
                                 {depositWallet.service && depositWallet.service.network && depositWallet.service.network.realName?
                                 <span className="px-2 fs-5 text-warning" >{depositWallet.service.network.realName} {"("}{depositWallet.service.network.name}{")"}</span>
