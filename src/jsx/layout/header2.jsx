@@ -23,7 +23,7 @@ function Header2() {
                     <div className="row">
                         <div className="col-xl-12">
                             <nav className="navbar navbar-expand-lg navbar-light px-0 justify-content-between">
-                                <Link className="navbar-brand" to={'/'}><img src={require('./../../images/logo.png')} alt="" /></Link>
+                                <a className="navbar-brand" href={'https://www.hi-exchange.com'}><img src={require('./../../images/logo.png')} alt="" /></a>
 
                                 <div className="d-md-flex d-none   align-items-center justify-contetn-center mx-auto">
                                     <a className="ms-4 text-white" href="http://www.panel.hi-exchange.com">صفحه اصلی</a>
