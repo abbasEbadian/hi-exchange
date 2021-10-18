@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector }from 'react-redux'
 import Loader from 'react-loader-spinner'
 function OrderList({orders}) {
-    const {currencyList} = useSelector(state => state.currencies)
+    const currencyList = useSelector(state => state.currencies.currencyList)
     const {getting_orders} = useSelector(state => state.accounts)
     
     return (
@@ -38,8 +38,8 @@ function OrderList({orders}) {
                                                     <span className="badge badge-success">خرید</span>
                                                 </td>
                                                 
-                                                <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
-                                                <td dir="ltr" className="text-success  text-end">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                                <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {currencyList.filter(i=>i.id===order.source_asset)[0].small_name_slug}</td>
+                                                <td dir="ltr" className="text-success  text-end">{Number(order.destination_amount).toLocaleString()} {" "} {currencyList.filter(i=>i.id===order.destination_asset)[0].small_name_slug}</td>
                                             </>
                                         :order.type ==="sell"?
                                             <>
@@ -51,8 +51,8 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
                                             </td>
-                                            <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
-                                            <td dir="ltr" className=" text-end">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                            <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.source_asset)[0].small_name_slug}</td>
+                                            <td dir="ltr" className=" text-end">{Number(order.destination_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.destination_asset)[0].small_name_slug}</td>
                                           </>
                                         :
                                             <>
@@ -63,8 +63,8 @@ function OrderList({orders}) {
                                                 <span className="badge badge-warning">تبدیل</span>
                                             </td>
                                            
-                                            <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {order.source_asset.small_name_slug}</td>
-                                            <td dir="ltr"className="text-success text-end">{Number(order.destination_amount).toLocaleString()} {" "} {order.destination_asset.small_name_slug}</td>
+                                            <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.source_asset)[0].small_name_slug}</td>
+                                            <td dir="ltr"className="text-success text-end">{Number(order.destination_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.destination_asset)[0].small_name_slug}</td>
                                           </>
                                         
                                         }
@@ -76,11 +76,11 @@ function OrderList({orders}) {
                                         :order.status==="accepted"?
                                             <td ><span className="badge badge-success"> ثبت/احراز شده</span></td>
                                         :order.status==="delivered"?
-                                            <td ><span className="badge badge-info"> ارسال شده</span></td>
+                                            <td ><span className="badge badge-info"> موفق</span></td>
                                         :order.status==="suspended"?
-                                            <td ><span className="badge badge-danger"> کنسل شده</span></td>
+                                            <td ><span className="badge badge-danger"> لغو شده</span></td>
                                         :order.status==="canceled"?
-                                            <td ><span className="badge badge-danger"> کنسل شده</span></td>
+                                            <td ><span className="badge badge-danger"> ناموفق</span></td>
                                         :order.status==="deposit"?
                                             <td ><span className="badge badge-danger">درانتظار واریز</span></td>
                                         :order.status==="deposited"?
