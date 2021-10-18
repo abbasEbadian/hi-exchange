@@ -19,13 +19,10 @@ function Sidebar() {
                             </Link>
                         </li>
                         <li><Link to={"/buy-sell"} data-toggle="tooltip" data-placement="right" title="خرید و فروش">
-                            <span><i className="icofont-stack-exchange"></i></span>
-                        </Link>
-                        </li>
-                        <li><Link to={"/accounts"} data-toggle="tooltip" data-placement="right" title="حساب">
                             <span><i className="icofont-coins"></i></span>
                         </Link>
                         </li>
+                       
                         <li><Link to={"/wallet"} data-toggle="tooltip" data-placement="right" title="کیف پول">
                             <span><i className="icofont-wallet"></i></span>
                         </Link>

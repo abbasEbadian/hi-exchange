@@ -7,12 +7,17 @@ import {ToastContainer} from 'react-toastify'
 
 const PersonalInfo = () => {
     const currentUser = useSelector(state=>state.session.user)
-    const [ email, setEmail ] = useState(currentUser.email || "")
-    const [ birth, setBirth ] = useState(currentUser.bithday || "")
-    const [ address, setAddress ] = useState(currentUser.address || "")
+    const [ ncode, setNcode ] = useState("")
+    const [ phnumber, setPhnumber ] = useState("")
+    const [ postal, setPostal ] = useState("")
+    const [ email, setEmail ] = useState("")
+    const [ birth, setBirth ] = useState("")
+    const [ address, setAddress ] = useState("")
     const dispatch = useDispatch()
 
     useEffect(() => {
+        setNcode("")
+        setPhnumber("")
         setEmail(currentUser.email)
         setBirth(currentUser.birthday)
         setAddress(currentUser.address)
@@ -43,6 +48,16 @@ const PersonalInfo = () => {
                     <div className="row">
                         
                         <div className="mb-3 col-xl-6">
+                            <label className="form-label">کدملی</label>
+                            <input type="text" className="form-control" value={ncode || ""} onChange={(e)=>setNcode(e.target.value)}
+                                placeholder="136..." name="ncode" />
+                        </div>
+                        <div className="mb-3 col-xl-6">
+                            <label className="form-label">تلفن ثابت</label>
+                            <input type="text" className="form-control" value={phnumber || ""} onChange={(e)=>setPhnumber(e.target.value)}
+                                placeholder="0215..." name="phnumber" />
+                        </div>
+                        <div className="mb-3 col-xl-6">
                             <label className="form-label">ایمیل</label>
                             <input type="email" className="form-control" value={email || ""} onChange={(e)=>setEmail(e.target.value)}
                                 placeholder="Hello@example.com" name="email" />
@@ -58,7 +73,11 @@ const PersonalInfo = () => {
                                 placeholder="تبریز ولیعصر" name="presentaddress" />
                         </div>
                         
-                        
+                        <div className="mb-3 col-xl-6">
+                            <label className="form-label">کدپستی</label>
+                            <input type="text" className="form-control disabled pointer-events-none" placeholder="51867..." value={postal} 
+                                name="postal"   onChange={(e)=>setPostal(e.target.value)}/>
+                        </div>
                         <div className="mb-3 col-xl-6">
                             <label className="form-label">موبایل</label>
                             <input type="text" className="form-control disabled pointer-events-none" placeholder="1234567890" defaultValue={currentUser.mobile} 
