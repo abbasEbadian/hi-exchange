@@ -196,9 +196,9 @@ function BuySell() {
             const data = qs.stringify({
                 'source': String(buySource.id), 
                 'destination': String(buyDestinationR.current.id),
-                'changed': !buyConvertAll && 'destination' || 'source',
+                'changed': !buyConvertAll ? 'destination' : 'source',
                 'source-price': buyConvertAll || '0',
-                'destination-price': !buyConvertAll && buyConvertAmountP || '0'
+                'destination-price': !buyConvertAll ? buyConvertAmountP : '0'
             })
             axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{

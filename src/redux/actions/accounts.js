@@ -31,13 +31,14 @@ export const fetch_user_all_data = ()=>{
                 if(currencyList === 400) throw new Error(400)
                 setTimeout(() => {
                     
-                    if(!wallet || wallet.length !== currencyList.length ){
-                        dispatch(update_fetching_state(true))
-                        for(let service of currencyList)     
-                        dispatch(generate_wallet(service.id))
-                        dispatch(get_wallet_list())
-                        dispatch(update_fetching_state(false))
-                    }
+                    dispatch(update_fetching_state(true))
+                    for(let service of currencyList) 
+                        if(wallet.filter(item=>item.service.id ===service.id).length === 0){
+                            dispatch(generate_wallet(service.id))
+                        }    
+                    dispatch(get_wallet_list())
+                    dispatch(update_fetching_state(false))
+                    
                 }, 1000);
             }).catch(err=>{
                 console.log(err);
