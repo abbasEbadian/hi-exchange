@@ -20,6 +20,7 @@ function OrderList({orders}) {
                             <tr>
                                 <th>#</th>
                                 <th>نوع معامله</th>
+                                <th>تاریخ</th>
                                 <th>مبدا</th>
                                 <th>مقصد</th>
                                 <th>وضعیت</th>
@@ -46,7 +47,7 @@ function OrderList({orders}) {
                                                 <td>
                                                     <span className="badge badge-success">خرید</span>
                                                 </td>
-                                                
+                                <td dir="ltr" className="text-end">{new Date(order.published).toLocaleString('fa-IR')}</td>
                                                 <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
                                                 <td dir="ltr" className="text-success  text-end">{Number(order.destination_amount).toLocaleString()} {" "} {destination}</td>
                                             </>
@@ -60,6 +61,7 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
                                             </td>
+                                            <td dir="ltr" className="text-end">{new Date(order.published).toLocaleString('fa-IR')}</td>
                                             <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
                                             <td dir="ltr" className=" text-end">{Number(order.destination_amount).toLocaleString()} {" "} {destination}</td>
                                           </>
@@ -71,7 +73,7 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-warning">تبدیل</span>
                                             </td>
-                                           
+                                            <td dir="ltr" className="text-end">{new Date(order.published).toLocaleString('fa-IR')}</td>
                                             <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
                                             <td dir="ltr"className="text-success text-end">{Number(order.destination_amount).toLocaleString()} {" "} {destination}</td>
                                           </>
