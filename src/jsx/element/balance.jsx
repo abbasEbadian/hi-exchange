@@ -64,7 +64,7 @@ function Balance() {
                                     <>
                                     {wallet.map((item, idx)=>{
                                         return idx <5 && <li key={idx} className="d-flex">
-                                            <i className={"cc "+ item.service.small_name_slug + " ms-3"}></i>
+                                            <img src={item.service.image} alt="currecny icon " style={{width:"36px", marginLeft:"10px"}}/>
                                             <div className="flex-grow-1">
                                                 <h5 className="m-0">{item.service.small_name_slug}</h5>
                                             </div>

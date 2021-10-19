@@ -16,10 +16,13 @@ const PersonalInfo = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        setNcode(currentUser.personal_data.national_id)
-        setPhnumber(currentUser.personal_data.address.phone)
-        setPostal(currentUser.personal_data.address.post_code)
-        setAddress(currentUser.personal_data.address.address)
+        if(currentUser.personal_data){
+
+            setNcode(currentUser.personal_data.national_id)
+            setPhnumber(currentUser.personal_data.address.phone)
+            setPostal(currentUser.personal_data.address.post_code)
+            setAddress(currentUser.personal_data.address.address)
+        }
         setEmail(currentUser.email)
         setBirth(currentUser.birthday)
 
@@ -37,8 +40,11 @@ const PersonalInfo = () => {
             birth_certificate_id: "12345",
             post_code: postal
         }
-        dispatch(userUpdatePersonal(data))
-        dispatch(userUpdateDetail())
+        dispatch(userUpdatePersonal(data)).then(e=>{
+            setTimeout(() => {
+                dispatch(userUpdateDetail())
+            }, 2000);
+        })
     }
     return (
         <>
