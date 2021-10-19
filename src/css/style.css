@@ -9447,6 +9447,8 @@ button.btn {
     min-width: 180px; }
     .widget-card .widget-stat i {
       font-size: 24px; }
+    .widget-card .widget-stat img {
+      filter: grayscale(1); }
   .widget-card .widget-title,
   .widget-card .widget-info {
     display: flex;

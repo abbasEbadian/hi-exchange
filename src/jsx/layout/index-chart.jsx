@@ -6,14 +6,14 @@ function IndexChart() {
     const [chartList, setChartList] = useState([])
     useEffect(() => {
         setChartList([
-            ["BTC", "بیت کوین"],
-            ["ETH", "اتریوم"],
-            ["BNB", "بایننس کوین"],
-            ["ADA", "کاردانو"],
-            ["XRP", "ریپل"],
-            ["SOL", "سولانا"],
-            ["DOT", "پولکادات"],
-            ["DOGE", "دوج کوین"],
+            ["BTC", "بیت کوین", 'btc'],
+            ["ETH", "اتریوم", 'eth'],
+            ["BNB", "بایننس کوین", 'bnb'],
+            ["ADA", "کاردانو", 'ada'],
+            ["XRP", "ریپل", 'xrp'],
+            ["SOL", "سولانا", 'sol'],
+            ["DOT", "پولکادات", 'dot'],
+            ["DOGE", "دوج کوین", 'doge'],
         ])
     }, [])
     return (
@@ -25,7 +25,7 @@ function IndexChart() {
                     <div className={"widget-card mb-2"+(selectedChart===item[0] ? " active" : " ") }  onClick={()=>setSelectedChart(item[0])}>
                         <div className="d-flex justify-content-between align-items-center">
                             <div className="coin-title d-flex align-items-center w-100 widget-stat">
-                                <span><i className={"cc " + item[0]+"-alt"}></i></span>
+                                <img src={require(`../../icons/newicon/${item[2]}.png`)}></img>
                                 <h5 className="d-flex w-100 me-2 mb-0 align-items-center">
                                     <span >{item[1]}</span>
                                     <span className="me-auto">{item[0]}</span>

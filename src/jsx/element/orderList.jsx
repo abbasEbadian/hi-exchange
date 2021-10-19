@@ -28,9 +28,18 @@ function OrderList({orders}) {
                         <tbody>
                             
                                 {orders.map((order, idx)=>{
-                                    
+                                    const source = currencyList.filter(i=>i.id===order.source_asset)[0].small_name_slug
+                                    const destination = currencyList.filter(i=>i.id===order.destination_asset)[0].small_name_slug
+                                    const type = ""
+                                    if(!["IRT", "USDT"].includes(source.small_name_slug) && !["IRT", "USDT"].includes(destination.small_name_slug)){
+                                        type = "swap"
+                                    }else if(["IRT", "USDT"].includes(source.small_name_slug) && ["IRT", "USDT"].includes(destination.small_name_slug)){
+                                        type = "IRT" === source.small_name_slug? "buy" : "sell"
+                                    }else{
+                                        type = ["IRT", "USDT"].includes(source.small_name_slug)? "buy": "sell"
+                                    }
                                     return  <tr key={idx}>
-                                        {order.type === "purchase"?
+                                        {type === "buy"?
                                             <>
                                                 <td><span className="buy-thumb"><i className="la la-arrow-up"></i></span>
                                                 </td>
@@ -38,10 +47,10 @@ function OrderList({orders}) {
                                                     <span className="badge badge-success">خرید</span>
                                                 </td>
                                                 
-                                                <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {currencyList.filter(i=>i.id===order.source_asset)[0].small_name_slug}</td>
-                                                <td dir="ltr" className="text-success  text-end">{Number(order.destination_amount).toLocaleString()} {" "} {currencyList.filter(i=>i.id===order.destination_asset)[0].small_name_slug}</td>
+                                                <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
+                                                <td dir="ltr" className="text-success  text-end">{Number(order.destination_amount).toLocaleString()} {" "} {destination}</td>
                                             </>
-                                        :order.type ==="sell"?
+                                        :type ==="sell"?
                                             <>
                                             <td><span className="sold-thumb"><i className="la la-arrow-down"></i>
                                                 </span>
@@ -51,8 +60,8 @@ function OrderList({orders}) {
                                             <td>
                                                 <span className="badge badge-danger">فروش</span>
                                             </td>
-                                            <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.source_asset)[0].small_name_slug}</td>
-                                            <td dir="ltr" className=" text-end">{Number(order.destination_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.destination_asset)[0].small_name_slug}</td>
+                                            <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
+                                            <td dir="ltr" className=" text-end">{Number(order.destination_amount).toLocaleString()} {" "} {destination}</td>
                                           </>
                                         :
                                             <>
@@ -63,8 +72,8 @@ function OrderList({orders}) {
                                                 <span className="badge badge-warning">تبدیل</span>
                                             </td>
                                            
-                                            <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.source_asset)[0].small_name_slug}</td>
-                                            <td dir="ltr"className="text-success text-end">{Number(order.destination_amount).toLocaleString()} {" "} {currencyList.filter(i=>+i.id===+order.destination_asset)[0].small_name_slug}</td>
+                                            <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
+                                            <td dir="ltr"className="text-success text-end">{Number(order.destination_amount).toLocaleString()} {" "} {destination}</td>
                                           </>
                                         
                                         }
@@ -78,7 +87,7 @@ function OrderList({orders}) {
                                         :order.status==="delivered"?
                                             <td ><span className="badge badge-info"> موفق</span></td>
                                         :order.status==="suspended"?
-                                            <td ><span className="badge badge-danger"> لغو شده</span></td>
+                                            <td ><span className="badge badge-danger"> در حال بررسی</span></td>
                                         :order.status==="canceled"?
                                             <td ><span className="badge badge-danger"> ناموفق</span></td>
                                         :order.status==="deposit"?

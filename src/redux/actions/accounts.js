@@ -29,13 +29,16 @@ export const fetch_user_all_data = ()=>{
         dispatch(get_wallet_list()).then(wallet=>{
             dispatch(fetch_currencies()).then(currencyList=>{
                 if(currencyList === 400) throw new Error(400)
-                if(!wallet || wallet.length !== currencyList.length ){
-                    dispatch(update_fetching_state(true))
-                    for(let service of currencyList)     
-                    dispatch(generate_wallet(service .id))
-                    dispatch(get_wallet_list())
-                    dispatch(update_fetching_state(false))
-                }
+                setTimeout(() => {
+                    
+                    if(!wallet || wallet.length !== currencyList.length ){
+                        dispatch(update_fetching_state(true))
+                        for(let service of currencyList)     
+                        dispatch(generate_wallet(service.id))
+                        dispatch(get_wallet_list())
+                        dispatch(update_fetching_state(false))
+                    }
+                }, 1000);
             }).catch(err=>{
                 console.log(err);
             })
