@@ -34,7 +34,7 @@ function Accounts() {
                                         <div className="pe-4">
                                             <h4 className="mb-2">{user.first_name + " " + user.last_name}</h4>
                                             <p className="mb-1"> <span><i className="fa fa-phone ms-2 text-primary"></i></span>
-                                            <span dir="ltr">{user.phone}</span>
+                                            <span dir="ltr">{user.mobile}</span>
                                             </p>
                                             <p className="mb-1"> <span><i className="fa fa-envelope ms-2 text-primary"></i></span>
                                                 {user.email}

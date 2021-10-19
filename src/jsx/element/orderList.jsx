@@ -30,13 +30,13 @@ function OrderList({orders}) {
                                 {orders.map((order, idx)=>{
                                     const source = currencyList.filter(i=>i.id===order.source_asset)[0].small_name_slug
                                     const destination = currencyList.filter(i=>i.id===order.destination_asset)[0].small_name_slug
-                                    const type = ""
-                                    if(!["IRT", "USDT"].includes(source.small_name_slug) && !["IRT", "USDT"].includes(destination.small_name_slug)){
+                                    let type = ""
+                                    if(!["IRT", "USDT"].includes(source) && !["IRT", "USDT"].includes(destination)){
                                         type = "swap"
-                                    }else if(["IRT", "USDT"].includes(source.small_name_slug) && ["IRT", "USDT"].includes(destination.small_name_slug)){
-                                        type = "IRT" === source.small_name_slug? "buy" : "sell"
+                                    }else if(["IRT", "USDT"].includes(source) && ["IRT", "USDT"].includes(destination)){
+                                        type = "IRT" === source? "buy" : "sell"
                                     }else{
-                                        type = ["IRT", "USDT"].includes(source.small_name_slug)? "buy": "sell"
+                                        type = ["IRT", "USDT"].includes(source)? "buy": "sell"
                                     }
                                     return  <tr key={idx}>
                                         {type === "buy"?
@@ -80,20 +80,28 @@ function OrderList({orders}) {
                                         
                                         {order.status==="pending"? 
                                             <td ><span className="badge badge-warning"> درانتظار تکمیل اطلاعات</span></td>
+
                                         :order.status==="unpaid"?
                                             <td ><span className="badge badge-dager">پرداخت نشده</span></td>
+
                                         :order.status==="accepted"?
                                             <td ><span className="badge badge-success"> ثبت/احراز شده</span></td>
+
                                         :order.status==="delivered"?
                                             <td ><span className="badge badge-info"> موفق</span></td>
+                                            
                                         :order.status==="suspended"?
-                                            <td ><span className="badge badge-danger"> در حال بررسی</span></td>
+                                            <td ><span className="badge badge-info"> در حال بررسی</span></td>
+                                            
                                         :order.status==="canceled"?
                                             <td ><span className="badge badge-danger"> ناموفق</span></td>
+
                                         :order.status==="deposit"?
                                             <td ><span className="badge badge-danger">درانتظار واریز</span></td>
+
                                         :order.status==="deposited"?
-                                            <td ><span className="badge badge-info">واریز شده</span></td>
+                                            <td ><span className="badge badge-success">موفق</span></td>
+
                                         :<td ><span className="badge badge-warning"> درانتظار تکمیل اطلاعات</span></td>
                                         }
                                        

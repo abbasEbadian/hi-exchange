@@ -142,7 +142,7 @@ function SettingsSecurity() {
                                                         <i className="fa fa-phone"></i>
                                                     </span>{" "}
                                                     <small dir="ltr" className="L" style={{whiteSpace:"nowrap"}}>
-                                                    {user.phone}
+                                                    {user.mobile}
                                                     </small>
                                                 </h5>
                                                 {user.is_phone_accepted?

@@ -16,11 +16,12 @@ const PersonalInfo = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        setNcode("")
-        setPhnumber("")
+        setNcode(currentUser.personal_data.national_id)
+        setPhnumber(currentUser.personal_data.address.phone)
+        setPostal(currentUser.personal_data.address.post_code)
+        setAddress(currentUser.personal_data.address.address)
         setEmail(currentUser.email)
         setBirth(currentUser.birthday)
-        setAddress(currentUser.address)
 
     }, [currentUser])
     const submitForm = (e)=>{
@@ -31,15 +32,17 @@ const PersonalInfo = () => {
             address,
             first_name: currentUser.first_name,
             last_name: currentUser.last_name,
-            phone: currentUser.mobile,
-            card_id: "1361599723",
-            birth_certificate_id: "12345"
+            phone: phnumber,
+            card_id: ncode,
+            birth_certificate_id: "12345",
+            post_code: postal
         }
         dispatch(userUpdatePersonal(data))
         dispatch(userUpdateDetail())
     }
     return (
-        <div className="card">
+        <>
+       {currentUser && currentUser.personal_data? <div className="card">
             <div className="card-header">
                 <h4 className="card-title">اطلاعات شخصی</h4>
             </div>
@@ -101,8 +104,8 @@ const PersonalInfo = () => {
                     draggable
                     pauseOnHover
                 />       
-        </div>
-                              
+        </div>:undefined} 
+        </>               
     )
 }
 
