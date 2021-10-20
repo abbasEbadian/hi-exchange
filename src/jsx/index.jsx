@@ -45,11 +45,13 @@ axios.interceptors.request.use(
     async config => {
         try{
             const session = await sessionService.loadSession()
-            if (session && session.token && config.url.indexOf("service") === -1) {
+            
+            if (config.url.indexOf("service") === -1 && config.url.indexOf("token/otp") === -1 && session && session.token ) {
                 config.headers['Authorization'] = 'Bearer ' + session.token;
             }
         }catch(err){
             console.log(err);
+            return config
         }
         
         return config
@@ -68,7 +70,11 @@ axios.interceptors.response.use((response) => {
  }, 
  async (error)=> {
      const originalRequest = error.config
+     if(error.response && error.response.status===400&&originalRequest.url.indexOf('/token/otp')>-1){
+         return Promise.reject(error.response.data)
+     }     
      const session = await sessionService.loadSession()
+     
     if (error.response && error.response.status === 401 && originalRequest.url
         .indexOf('refresh') >-1){
             // window.location.href = ('/otp-1');
