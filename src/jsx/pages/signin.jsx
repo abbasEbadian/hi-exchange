@@ -49,8 +49,10 @@ function Signin() {
                     toast.error(error.non_field_errors[0])
             else if(error.password)
                 toast.error(error.password[0])
-            else if(error.message)
-                toast.error(error.message[0])
+            else if(error.message){
+                for(let m of error.message)
+                    toast.error(m)
+            }
 
         }).finally(f=>{
             setIsSubmitting(false)
