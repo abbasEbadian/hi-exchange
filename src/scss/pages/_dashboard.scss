@@ -117,7 +117,9 @@
     @include custommq($min: 1200px, $max: 1350px) {
         padding: 15px 7px;
     }
-
+    span{
+        font-size: 12px;
+    }
     h5 {
         margin-bottom: 5px;
     }
