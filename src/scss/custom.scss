@@ -91,6 +91,15 @@ button.btn-simple{
 
 
 
+@media (max-width: 768px){
+    .convert-details{
+        font-size: 14px;
+    }
+    div#main-wrapper {
+        margin-top: 0;
+    }
+    
+}
 @media (max-width: 400px){
     .convert-details{
         font-size: 14px;

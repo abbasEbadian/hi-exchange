@@ -60,6 +60,7 @@ function Signin() {
     }
     useEffect(() => {
         phoneRef.current.focus()
+        document.body.classList.toggle('signin', true);
     }, [])
 
     return (
@@ -68,7 +69,7 @@ function Signin() {
                 <div className="container h-100">
                     <div className="row justify-content-center h-100 align-items-center">
                         <div className="col-xl-5 col-md-6">
-                            <div className="mini-logo text-center my-5">
+                            <div className="mini-logo text-center my-2 my-md-4">
                                 <Link to={"./"}>
                                     <img
                                         src={require("./../../images/logo.png")}
@@ -76,8 +77,8 @@ function Signin() {
                                     />
                                 </Link>
                             </div>
-                            <div className="auth-form card">
-                                <div className="card-header justify-content-center">
+                            <div className="auth-form card mb-2">
+                                <div className="card-header justify-content-center py-2 py-md-4">
                                     <h4 className="card-title">ورود</h4>
                                 </div>
                                 <div className="card-body">
@@ -111,8 +112,8 @@ function Signin() {
                                             <span  className={"visible icofont-" + (passVisible? "eye-blocked": "eye")} onClick={e=>setPassVisible(s=>!s)} ></span>
                       
                                         </div>
-                                        <div className="row d-flex justify-content-between mt-4 mb-2">
-                                            <div className="mb-3 mb-0">
+                                        <div className="row d-flex justify-content-between mt-4">
+                                            <div className=" ">
                                                 <label className="toggle">
                                                     <input
                                                         ref={rememberRef}
@@ -127,7 +128,7 @@ function Signin() {
                                             </div>
                                            
                                         </div>
-                                        <div className="text-center mt-4">
+                                        <div className="text-center mt-1">
                                             {!isSubmitting ? 
                                                 <button  type="submit" className="btn btn-success w-100 bg-transparent text-primary" disabled={  submitted } >
                                                     {submitted ? "ارسال شد" : "ورود"}

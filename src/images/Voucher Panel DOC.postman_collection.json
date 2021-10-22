@@ -1,0 +1,1102 @@
+{
+	"info": {
+		"_postman_id": "041aeaea-e371-4210-97a8-4515d6675a29",
+		"name": "Voucher Panel DOC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Token",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "mobile",
+									"value": "09392164959",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel/token/create/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"token",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Otp verify",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "mobile",
+									"value": "09392164959",
+									"type": "text"
+								},
+								{
+									"key": "otp",
+									"value": "134563",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel/token/otp/verify/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"token",
+								"otp",
+								"verify",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYzMTg1MzkxOSwianRpIjoiZDkzYWQ3ODljNmVkNGRlMGI3MDk3YTRkZDMxNDg0NzQiLCJ1c2VyX2lkIjoxfQ.KHmfCle9Gw8_dfO7olIj4nplWAM-I22ww2crK9ppxTk",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel/token/refresh/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"token",
+								"refresh",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Register",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "ماکان",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "دوستدار",
+									"type": "text"
+								},
+								{
+									"key": "national_id",
+									"value": "2700264746",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01342529988",
+									"type": "text"
+								},
+								{
+									"key": "mobile",
+									"value": "09202202640",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "makan@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "گیلان، رشت",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel/token/register/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"token",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register complate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "mobile",
+									"value": "09202202640",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "دوستدار",
+									"type": "text"
+								},
+								{
+									"key": "national_id",
+									"value": "2700264746",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01342529988",
+									"type": "text"
+								},
+								{
+									"key": "mobile",
+									"value": "09202202640",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "makan@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "گیلان، رشت",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel/token/register/complate/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"token",
+								"register",
+								"complate",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wallet",
+			"item": [
+				{
+					"name": "wallet list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/business/asset/list/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"asset",
+								"list",
+								""
+							]
+						},
+						"description": "Get a complete list of all wallets in the system for your account."
+					},
+					"response": [
+						{
+							"name": "wallet list",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/business/wallet/list/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"wallet",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 30 Sep 2021 21:56:10 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "551"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"f3d3b601-6913-4f83-b8f9-fa746f29d6b1\",\n        \"balance\": 9900,\n        \"asset\": {\n            \"id\": 1,\n            \"name\": \"بیت کوین\",\n            \"key\": \"BTC\",\n            \"networks\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"بیت کوین\",\n                    \"key\": \"BTC\",\n                    \"addressRegex\": \"12\",\n                    \"memoRegex\": \"\",\n                    \"explore_url\": \"https://www.blockchain.com/btc/tx/\"\n                }\n            ],\n            \"image\": \"http://127.0.0.1:8000/media/BTC.png\",\n            \"decimal\": 0,\n            \"min_buy_amount\": 1,\n            \"min_sell_amount\": 1,\n            \"withdrawFee\": 1,\n            \"is_active\": true,\n            \"is_name_tag\": false,\n            \"is_stablecoin\": false,\n            \"published\": \"2021-09-30T21:44:38Z\"\n        }\n    },\n    {\n        \"id\": \"bf4390f6-8739-4377-aa7d-18117ef7c44d\",\n        \"balance\": 100,\n        \"asset\": null\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "wallet details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/business/wallet/f3d3b601-6913-4f83-b8f9-fa746f29d6b1/details/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"wallet",
+								"f3d3b601-6913-4f83-b8f9-fa746f29d6b1",
+								"details",
+								""
+							]
+						},
+						"description": "Receive individual wallet information for your account."
+					},
+					"response": [
+						{
+							"name": "wallet details",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/business/wallet/f3d3b601-6913-4f83-b8f9-fa746f29d6b1/details/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"wallet",
+										"f3d3b601-6913-4f83-b8f9-fa746f29d6b1",
+										"details",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 30 Sep 2021 21:55:05 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "476"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"f3d3b601-6913-4f83-b8f9-fa746f29d6b1\",\n        \"balance\": 9900,\n        \"asset\": {\n            \"id\": 1,\n            \"name\": \"بیت کوین\",\n            \"key\": \"BTC\",\n            \"networks\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"بیت کوین\",\n                    \"key\": \"BTC\",\n                    \"addressRegex\": \"12\",\n                    \"memoRegex\": \"\",\n                    \"explore_url\": \"https://www.blockchain.com/btc/tx/\"\n                }\n            ],\n            \"image\": \"http://127.0.0.1:8000/media/BTC.png\",\n            \"decimal\": 0,\n            \"min_buy_amount\": 1,\n            \"min_sell_amount\": 1,\n            \"withdrawFee\": 1,\n            \"is_active\": true,\n            \"is_name_tag\": false,\n            \"is_stablecoin\": false,\n            \"published\": \"2021-09-30T21:44:38Z\"\n        }\n    }\n]"
+						}
+					]
+				}
+			],
+			"description": "List of active account wallets"
+		},
+		{
+			"name": "Voucher",
+			"item": [
+				{
+					"name": "voucher list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/business/voucher/list/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"voucher",
+								"list",
+								""
+							]
+						},
+						"description": "Get a list of active vouchers in your account"
+					},
+					"response": [
+						{
+							"name": "voucher list",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/business/voucher/list/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"voucher",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 30 Sep 2021 21:55:15 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "584"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"01799c16-ab8c-4d5f-b586-3f5d4cd2a9c3\",\n        \"amount\": 100,\n        \"asset\": null,\n        \"status\": \"active\"\n    },\n    {\n        \"id\": \"edc32fec-0916-4422-b148-1f12c041e1c5\",\n        \"amount\": 100,\n        \"asset\": {\n            \"id\": 1,\n            \"name\": \"بیت کوین\",\n            \"key\": \"BTC\",\n            \"networks\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"بیت کوین\",\n                    \"key\": \"BTC\",\n                    \"addressRegex\": \"12\",\n                    \"memoRegex\": \"\",\n                    \"explore_url\": \"https://www.blockchain.com/btc/tx/\"\n                }\n            ],\n            \"image\": \"http://127.0.0.1:8000/media/BTC.png\",\n            \"decimal\": 0,\n            \"min_buy_amount\": 1,\n            \"min_sell_amount\": 1,\n            \"withdrawFee\": 1,\n            \"is_active\": true,\n            \"is_name_tag\": false,\n            \"is_stablecoin\": false,\n            \"published\": \"2021-09-30T21:44:38Z\"\n        },\n        \"status\": \"active\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "voucher details",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "dqdqw",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/business/voucher/details/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"voucher",
+								"details",
+								""
+							]
+						},
+						"description": "Get information on a voucher alone,\nTo receive your ID voucher information, place it in the application body with the \"ID\" key."
+					},
+					"response": [
+						{
+							"name": "voucher details",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "edc32fec-0916-4422-b148-1f12c041e1c5",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/business/voucher/details/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"voucher",
+										"details",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 01 Oct 2021 06:07:05 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "634"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"edc32fec-0916-4422-b148-1f12c041e1c5\",\n    \"amount\": 100,\n    \"asset\": {\n        \"id\": 1,\n        \"name\": \"بیت کوین\",\n        \"key\": \"BTC\",\n        \"networks\": [\n            {\n                \"id\": 1,\n                \"name\": \"بیت کوین\",\n                \"key\": \"BTC\",\n                \"addressRegex\": \"12\",\n                \"memoRegex\": \"\",\n                \"explore_url\": \"https://www.blockchain.com/btc/tx/\"\n            }\n        ],\n        \"image\": \"/media/BTC.png\",\n        \"decimal\": 0,\n        \"min_buy_amount\": 1,\n        \"min_sell_amount\": 1,\n        \"withdrawFee\": 1,\n        \"is_active\": true,\n        \"is_name_tag\": false,\n        \"is_stablecoin\": false,\n        \"published\": \"2021-09-30T21:44:38Z\"\n    },\n    \"status\": \"used\",\n    \"status_details\": null,\n    \"published\": \"2021-09-30T21:55:11.657967Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "voucher generate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amout",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "asset",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/business/voucher/generate/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"voucher",
+								"generate",
+								""
+							]
+						},
+						"description": "With this web service, you can create a special voucher according to the balance of the user account that you have in the system, and provide it to your users."
+					},
+					"response": [
+						{
+							"name": "voucher generate",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "amount",
+											"value": "100",
+											"type": "text"
+										},
+										{
+											"key": "asset",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/business/voucher/generate/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"voucher",
+										"generate",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 30 Sep 2021 21:55:11 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "279"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": 0,\n    \"id\": \"edc32fec-0916-4422-b148-1f12c041e1c5\",\n    \"status\": \"active\",\n    \"amount\": 100,\n    \"message\": \"کد ووچر شما با موفقیت ایجاد گردید.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "voucher redeem",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amout",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "asset",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/business/voucher/redeem/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"voucher",
+								"redeem",
+								""
+							]
+						},
+						"description": "With this web service, you can read other people's voucher code, after reading the voucher code, the voucher balance will be automatically deposited in your wallet."
+					},
+					"response": [
+						{
+							"name": "voucher redeem",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "01799c16-ab8c-4d5f-b586-3f5d4cd2a9c3",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/business/voucher/redeem/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"voucher",
+										"redeem",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 30 Sep 2021 21:56:03 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "POST, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "230"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": 0,\n    \"id\": \"01799c16-ab8c-4d5f-b586-3f5d4cd2a9c3\",\n    \"message\": \"کد ووچر شما با موفقیت ثبت گردید.\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Web services available for the port section"
+		},
+		{
+			"name": "Assets",
+			"item": [
+				{
+					"name": "asset list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/business/asset/list/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"asset",
+								"list",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "asset list",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Token c14df0bbd5735ba40c81c6ba793836bdfe14a6fd",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/business/asset/list/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"asset",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 30 Sep 2021 21:46:52 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "405"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"بیت کوین\",\n        \"key\": \"BTC\",\n        \"networks\": [\n            {\n                \"id\": 1,\n                \"name\": \"بیت کوین\",\n                \"key\": \"BTC\",\n                \"addressRegex\": \"12\",\n                \"memoRegex\": \"\",\n                \"explore_url\": \"https://www.blockchain.com/btc/tx/\"\n            }\n        ],\n        \"image\": \"http://127.0.0.1:8000/media/BTC.png\",\n        \"decimal\": 0,\n        \"min_buy_amount\": 1,\n        \"min_sell_amount\": 1,\n        \"withdrawFee\": 1,\n        \"is_active\": true,\n        \"is_name_tag\": false,\n        \"is_stablecoin\": false,\n        \"published\": \"2021-09-30T21:44:38Z\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "asset details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/business/asset/1/details/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"business",
+								"asset",
+								"1",
+								"details",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "asset details",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/business/asset/1/details/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"business",
+										"asset",
+										"1",
+										"details",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Mon, 11 Oct 2021 08:28:03 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.6"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "403"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"بیت کوین\",\n    \"key\": \"BTC\",\n    \"networks\": [\n        {\n            \"id\": 1,\n            \"name\": \"بیت کوین\",\n            \"key\": \"BTC\",\n            \"addressRegex\": \"12\",\n            \"memoRegex\": \"\",\n            \"explore_url\": \"https://www.blockchain.com/btc/tx/\"\n        }\n    ],\n    \"image\": \"http://127.0.0.1:8000/media/BTC.png\",\n    \"decimal\": 0,\n    \"min_buy_amount\": 1,\n    \"min_sell_amount\": 1,\n    \"withdrawFee\": 1,\n    \"is_active\": true,\n    \"is_name_tag\": false,\n    \"is_stablecoin\": false,\n    \"published\": \"2021-09-30T21:44:38Z\"\n}"
+						}
+					]
+				}
+			],
+			"description": "View the list of usable currencies in the system"
+		}
+	]
+}

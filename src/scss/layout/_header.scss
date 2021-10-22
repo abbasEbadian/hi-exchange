@@ -344,8 +344,8 @@ button.navbar-toggler {
     }
 }
 @media (max-width: 768px){
-    body{
-        padding-bottom: 58px;
+    body:not(.signin){
+        padding-bottom: 72px;
     }
     .header{
         left: 0;

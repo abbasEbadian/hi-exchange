@@ -165,8 +165,13 @@ export const create_order = ({
                 }).then(response=>{
                     if(!response) throw Error(401)
                     if(response.data.error === 1)
-                    toast.error(response.data.message)
-                    else toast.success(response.data.message)
+                        toast.info("سفارش شما ثبت شد.")
+                    else {
+                        if(type === "buy")
+                            toast.success("سفارش خرید شما با موفقیت انجام شد.")
+                        else
+                            toast.success("سفارش فروش شما با موفقیت انجام شد.")
+                    }
                     dispatch(fetch_user_all_data())
                 }).catch(err=>{
                     if (err === 401){

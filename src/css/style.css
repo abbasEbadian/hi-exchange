@@ -8547,8 +8547,8 @@ button.navbar-toggler {
     max-width: 200px; } }
 
 @media (max-width: 768px) {
-  body {
-    padding-bottom: 58px; }
+  body:not(.signin) {
+    padding-bottom: 72px; }
   .header {
     left: 0; }
     .header .navbar-brand {
@@ -10246,6 +10246,12 @@ button.btn-simple {
     transform: rotate(0deg); }
   to {
     transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .convert-details {
+    font-size: 14px; }
+  div#main-wrapper {
+    margin-top: 0; } }
 
 @media (max-width: 400px) {
   .convert-details {
