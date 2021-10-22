@@ -169,7 +169,7 @@ export const check_withdraw = ({sourceWallet, Destwallet, amount}, setWithdrawMo
             if (data.error === 1)
                 toast.error(data.message)
             else{
-                toast.success("تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد.")
+                toast.success(data.message)
             }
         }).catch(err=>{
             console.log(err);
@@ -192,7 +192,7 @@ export const check_withdraw_irt = ({card_id, amount=0}, setWithdrawModalOpen, to
             if (data.error === 1)
                 toast.error(data.message)
             else{
-                toast.success("تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد.")
+                toast.success(data.message)
             }
         }).catch(err=>{
             console.log(err);

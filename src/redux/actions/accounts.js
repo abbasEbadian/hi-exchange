@@ -166,7 +166,7 @@ export const create_order = ({
                     if(!response) throw Error(401)
                     if(response.data.error === 1)
                     toast.error(response.data.message)
-                    else toast.success("درخواست شما ثبت شد.بعد از تایید کارشناسان ، اعمال خواهد شد.")
+                    else toast.success(response.data.message)
                     dispatch(fetch_user_all_data())
                 }).catch(err=>{
                     if (err === 401){
