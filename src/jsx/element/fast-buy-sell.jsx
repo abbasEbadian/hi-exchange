@@ -13,6 +13,9 @@ import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
+
+
+
 function FastBuySell() {
     const dispatch = useDispatch()
 
@@ -42,6 +45,7 @@ function FastBuySell() {
 
     const buyLowCreditR = useRef(false)
     const sellLowCreditR = useRef(false)
+    const buyTransactionFee = useRef(0)
 
     const buyConversionResultR = useRef(0)
     const buyConversionResultStrR = useRef(0)
@@ -54,6 +58,8 @@ function FastBuySell() {
     const sellEndPriceR = useRef(0)
     const sellKarmozdAmountR = useRef(0)
     const sellFixedKarmozdR = useRef(0)
+    const sellTransactionFee = useRef(0)
+
     const sellTotalR = useRef(0)
     const buyUnitPrice = useRef(0)
     const sellUnitPrice = useRef(0)
@@ -180,6 +186,7 @@ function FastBuySell() {
                 buyEndPriceR.current =0
                 buyKarmozdAmountR.current =0
                 buyFixedKarmozdR.current =0
+                buyTransactionFee.current = 0
                 buyConversionResultR.current =0
                 buyConversionResultStrR.current = 0
                 buyTotalR.current = 0
@@ -193,9 +200,9 @@ function FastBuySell() {
             const data = qs.stringify({
                 'source': String(buySource.id), 
                 'destination': String(buyDestinationR.current.id),
-                'changed': !buyConvertAll && 'destination' || 'source',
+                'changed': !buyConvertAll ? 'destination' : 'source',
                 'source-price': buyConvertAll || '0',
-                'destination-price': !buyConvertAll && buyConvertAmountP || '0'
+                'destination-price': !buyConvertAll ? buyConvertAmountP : '0'
             })
             axios.post(Constants.BASE_URL + "/api/v2/order/calculator/", data, {
                headers:{
@@ -209,30 +216,27 @@ function FastBuySell() {
                     
                 }else
                     buyConvertErrorMessage.current = ""
-                
-                    
                
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
                 buyKarmozdAmountR.current =  +data["total_fee"] || 0
+                buyTransactionFee.current =  +data["fee"] || 0
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
                 buyConversionResultR.current =   buyConvertAmountP? +data["source_price"]: 0
                 buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
                 buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
-                const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
-                const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
+                const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
                 
-                buyTotalR.current = (a+a2+a3).toLocaleString()
-
+                buyTotalR.current = (a+a2).toLocaleString()
+                if(buySource.small_name_slug === "IRT"){
+                    buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
+                }
                 if(data.message && data.message.indexOf("خرید")!==-1){
                     buyConversionResultR.current =   "-"
                     buyConversionResultStrR.current =  "-"
                    
-                }
-                if(buySource.small_name_slug === "IRT"){
-                    buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
                 }
                 if(buyConvertAll){
                     changeBuyAmount(data["destination_price"], false)
@@ -240,7 +244,6 @@ function FastBuySell() {
                     buyConversionResultStrR.current = data['source_price_str']
                 }
 
-                console.log(buyConversionResultR, buyConversionResultStrR);
                 
                 // setBuyConvertAmount(buyConvertAmountP)
                 buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
@@ -254,6 +257,7 @@ function FastBuySell() {
                 sellEndPriceR.current =0
                 sellKarmozdAmountR.current =0
                 sellFixedKarmozdR.current =0
+                sellTransactionFee.current = 0
                 sellConversionResultR.current =0
                 sellConversionResultStrR.current = 0
                 sellTotalR.current = 0
@@ -290,15 +294,20 @@ function FastBuySell() {
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
                 sellKarmozdAmountR.current =  +data["total_fee"] || 0
+                sellTransactionFee.current =  +data["fee"] || 0
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 sellUnitPrice.current = data['unit_price']
                 const a = sellConversionResultR.current
-                const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
-                const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
-                
-                sellTotalR.current = (a+a2+a3).toLocaleString()
+                const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
+                if(sellDestination.small_name === "IRT"){
+                    let v = a + sellKarmozdAmountR.current 
+                    sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()
+                    sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
+                }else{
+                    sellTotalR.current = (a+a2).toLocaleString()
+                }
 
                 
                 // setsellConvertAmount(sellConvertAmountP)
