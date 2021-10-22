@@ -136,7 +136,7 @@ export const check_transaction = ({depositTxID, wallet}, setTransactionResult)=>
                     return resolve({status:400, text: data.message})
                 }
                 else{
-                    let text = "تراکنش شما ثبت شد.بعد از تایید کارشناسان ما اعمال خواهد شد."
+                    let text = data.message
                     return resolve({status:200, text})
                 }
             }).catch(err=>{

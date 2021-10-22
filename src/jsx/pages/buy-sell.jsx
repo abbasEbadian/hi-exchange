@@ -15,6 +15,15 @@ import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 import FastBuySell from '../element/fast-buy-sell';
 
+function compute_fee(unit, unit_price, source_amount) {
+    unit_price = String(unit_price || "").replace(/,/g, '');
+    source_amount = String(source_amount || "").replace(/,/g, '');
+    const tot = Number(unit_price) * Number(source_amount)
+    if(isNaN(tot)) return 0
+    if(unit === "IRT") return Number(tot.toFixed()).toLocaleString('fa-IR')
+    return tot
+}
+
 function BuySell() {
     const dispatch = useDispatch()
 
@@ -50,11 +59,14 @@ function BuySell() {
     const buyEndPriceR = useRef(0)
     const buyKarmozdAmountR = useRef(0)
     const buyFixedKarmozdR = useRef(0)
+    const buyTransactionFee = useRef(0)
+
     const buyTotalR = useRef(0)
     const sellConversionResultR = useRef(0)
     const sellConversionResultStrR = useRef(0)
     const sellEndPriceR = useRef(0)
     const sellKarmozdAmountR = useRef(0)
+    const sellTransactionFee = useRef(0)
     const sellFixedKarmozdR = useRef(0)
     const sellTotalR = useRef(0)
 
@@ -183,6 +195,7 @@ function BuySell() {
                 buyEndPriceR.current =0
                 buyKarmozdAmountR.current =0
                 buyFixedKarmozdR.current =0
+                buyTransactionFee.current = 0
                 buyConversionResultR.current =0
                 buyConversionResultStrR.current = 0
                 buyTotalR.current = 0
@@ -217,15 +230,15 @@ function BuySell() {
                
                 buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
                 buyKarmozdAmountR.current =  +data["total_fee"] || 0
+                buyTransactionFee.current =  +data["fee"] || 0
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
                 buyConversionResultR.current =   buyConvertAmountP? +data["source_price"]: 0
                 buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
                 buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
-                const a2 = buyDestinationR.current.show_price_irt * buyKarmozdAmountR.current
-                const a3 = buyDestinationR.current.show_price_irt * buyFixedKarmozdR.current
+                const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
                 
-                buyTotalR.current = (a+a2+a3).toLocaleString()
+                buyTotalR.current = (a+a2).toLocaleString()
                 if(buySource.small_name_slug === "IRT"){
                     buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
                 }
@@ -240,7 +253,6 @@ function BuySell() {
                     buyConversionResultStrR.current = data['source_price_str']
                 }
 
-                console.log(buyConversionResultR, buyConversionResultStrR);
                 
                 // setBuyConvertAmount(buyConvertAmountP)
                 buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
@@ -254,6 +266,7 @@ function BuySell() {
                 sellEndPriceR.current =0
                 sellKarmozdAmountR.current =0
                 sellFixedKarmozdR.current =0
+                sellTransactionFee.current = 0
                 sellConversionResultR.current =0
                 sellConversionResultStrR.current = 0
                 sellTotalR.current = 0
@@ -290,15 +303,20 @@ function BuySell() {
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
                 sellKarmozdAmountR.current =  +data["total_fee"] || 0
+                sellTransactionFee.current =  +data["fee"] || 0
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 sellUnitPrice.current = data['unit_price']
                 const a = sellConversionResultR.current
-                const a2 = sellDestination.show_price_irt * sellKarmozdAmountR.current
-                const a3 = sellDestination.show_price_irt * sellFixedKarmozdR.current
-                
-                sellTotalR.current = (a+a2+a3).toLocaleString()
+                const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
+                if(sellDestination.small_name === "IRT"){
+                    let v = a + sellKarmozdAmountR.current 
+                    sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()
+                    sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
+                }else{
+                    sellTotalR.current = (a+a2).toLocaleString()
+                }
 
                 
                 // setsellConvertAmount(sellConvertAmountP)
@@ -578,11 +596,15 @@ function BuySell() {
                                                     {/* </tr> */}
                                                     <tr>
                                                         <td>فی ثابت</td>
-                                                        <td>{buyFixedKarmozdR.current || 0} {" "} {buyDestinationR.current.name}</td>
+                                                        <td>{buyFixedKarmozdR.current || 0} {" "} {buyDestinationR.current.name}
+                                                        <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)} {" "} {buySource.small_name_slug})</small>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>فی  تراکنش</td>
-                                                        <td>{buyKarmozdAmountR.current || 0} {" "} {buyDestinationR.current.name}</td>
+                                                        <td>{buyTransactionFee.current || 0} {" "} {buyDestinationR.current.name}
+                                                        <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current)} {" "} {buySource.small_name_slug})</small>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
@@ -591,7 +613,7 @@ function BuySell() {
                                                    
                                                     <tr>
                                                         <td> مجموع</td>
-                                                        <td> {buyTotalR.current} {" "}  {buySource.name}</td>
+                                                        <td> {compute_fee(buySource.small_name_slug, 1, buyTotalR.current)} {" "}  {buySource.name}</td>
                                                     </tr>
                                                 </tbody>
                                          
@@ -612,15 +634,22 @@ function BuySell() {
                                                     {/* </tr> */}
                                                     <tr>
                                                         <td>فی ثابت</td>
-                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellDestination.name}</td>
+                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellDestination.name}
+                                                        
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>فی  تراکنش</td>
-                                                        <td>{sellKarmozdAmountR.current || 0} {" "} {sellDestination.name}</td>
+                                                        <td>{sellTransactionFee.current || 0} {" "} {sellDestination.name}
+                                                        
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
-                                                        <td>{sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSourceR.current.name}</td>
+                                                        <td>{sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSourceR.current.name}
+                                                        <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(sellDestination.small_name_slug, 1, sellConversionResultR.current)} {" "} {sellDestination.small_name_slug})</small>
+
+                                                        </td>
                                                     </tr>
                                                     {/* <tr>
                                                         <td>وت</td>
