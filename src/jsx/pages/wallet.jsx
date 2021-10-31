@@ -483,7 +483,7 @@ function Wallet(props) {
                 </Modal.Body>
                 <Modal.Footer>
                
-                <button className="btn-success btn-sm d-flex justify-content-center" size="sm" onClick={confirmWithdraw} disabled={!withdrawAmount}>
+                <button className="btn-success btn-sm d-flex justify-content-center" size="sm" onClick={confirmWithdraw} disabled={!withdrawAmount || withdrawWallet.balance===0}>
                     برداشت
                     {checking_transaction?<Loader type="Oval" color="#fff" height={25} width={25}></Loader> :undefined}
 
@@ -505,7 +505,7 @@ function Wallet(props) {
                     
                 </Modal.Body>
                 <Modal.Footer>
-                <Link className="btn btn-sm btn-success " to="/verify-step-1">احراز هویت</Link>
+                <Link className="btn btn-sm btn-success " to="/settings-account">افزودن کارت </Link>
                 
                 </Modal.Footer>
             </Modal>

@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { userLogin, userSignup, userForget } from '../../redux/actions'
 import Loader from 'react-loader-spinner'
 import { connect, useDispatch } from 'react-redux'
+
 function Otp2({userLogin}) {
 
     const [otpType, setOtpType] =  useState("login")
@@ -34,7 +35,6 @@ function Otp2({userLogin}) {
     
 
     const resetAuth = e=>{
-        
         if(otpType === "login")
             _history.push('/signin')
         else if(otpType === 'signup')

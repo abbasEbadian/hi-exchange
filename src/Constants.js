@@ -18,7 +18,7 @@ export const Constants = {
         "LTC": "BINANCE:LTCUSDT",
         "XRP": "BINANCE:XRPUSDT",
         "LINK": "BINANCE:LINKUSDT",
-        "XML": "XML",
+        "XLM": "BINANCE:XLMUSDT",
         "BTT": "BINANCE:BTTUSDT",
         "REEF": "BINANCE:REEFUSDT",
         "VET": "BINANCE:VETUSDT",

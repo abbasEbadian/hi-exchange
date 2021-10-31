@@ -97,7 +97,7 @@ export const add_credit_card = ({card, shaba, bank}, toast)=>{
             if(data.error === 1){
                 toast.warn(data.message)
             }else{
-                toast.success(data.message)
+                toast.success("کارت شما ثبت شد و بعد از تایید، به لیست کارت ها اضافه خواهد شد.")
                 dispatch(fetch_accounts())
             }
             if(!data.error){

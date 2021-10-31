@@ -309,7 +309,8 @@ function BuySell() {
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 sellUnitPrice.current = data['unit_price']
                 const a = sellConversionResultR.current
-                const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
+                // const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
+                const a2 = sellKarmozdAmountR.current
                 if(sellDestination.small_name === "IRT"){
                     let v = a + sellKarmozdAmountR.current 
                     sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()

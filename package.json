@@ -59,7 +59,7 @@
   },
   "scripts": {
     "start": "concurrently  \"react-scripts start\"  \"node proxy.js\"",
-    "build": "concurrently  \"react-scripts build\"  \"node proxy.js\"",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "sass": "node-sass --watch ./src/scss/style.scss ./src/css/style.css --source-map ./src/css/style.css.map",
