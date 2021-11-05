@@ -9,6 +9,10 @@ div.modal-dialog.modal-90w{
     width: 90% ;
     max-width :unset
 }
+div.modal-dialog.modal-100w{
+    width: 100% ;
+    max-width :unset
+}
 div.modal .close{
     background: none;
     border: none;
@@ -75,7 +79,9 @@ button.btn-simple{
     }
 }
 
-
+.border-gray{
+    border-color: #3d4d57;
+}
 @-moz-keyframes spin {
     from { -moz-transform: rotate(0deg); }
     to { -moz-transform: rotate(360deg); }

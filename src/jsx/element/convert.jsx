@@ -111,7 +111,6 @@ function Convert() {
 
         setConvertInvalid(convertInvalid2)
         
-        console.log(convertInvalid2)
 
         let data = qs.stringify({
             'source': String(currencyFromP.id),
@@ -139,7 +138,7 @@ function Convert() {
             
             const d ={
                 endPrice: Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2),
-                karmozdAmount: data["total_fee"],
+                karmozdAmount: Number(data["total_fee"]),
                 fixedKarmozd: data["fix_fee"],
                 karmozd:data["fee"],
                 convertResult: Number(data["destination_price"]).toLocaleString()
@@ -326,23 +325,23 @@ function Convert() {
                             <span className="text-success fs-5">{convertAmount}</span>  {currencyFrom.name}
                             </span>  
                         </div>
-                        <div className="detail-row">
+                        {/* <div className="detail-row">
                         <span>کارمزد انتقال</span>
                             <span>
-                                {convertDetails.karmozd} {" "} { currencyTo.name }
+                                { convertDetails.fixedKarmozd } {" "} { currencyTo.name }  
                             </span>  
-                        </div>
+                        </div> */}
                         <div className="detail-row">
                         <span>کارمزد انجام تراکنش</span>
 
                             <span>
-                                { convertDetails.fixedKarmozd } {" "} { currencyTo.name }  
+                                {convertDetails.karmozdAmount} {" "} { currencyFrom.name }
                             </span>  
                         </div>
                         <div className="detail-row">
                             <span>مبلغ نهایی سفارش</span>
                             <span>
-                                { Number(convertFeeToIrt(currencyTo.id , +convertDetails.karmozdAmount) + (+convertAmount)).toLocaleString()  } {" "} { currencyFrom.name } 
+                                { Number(String(convertAmount).replace(/,/g, "")) + Number(convertDetails.karmozdAmount) } {" "} { currencyFrom.name } 
                             </span>  
                         </div>
                         <div className="col-12 mt-4">

@@ -7,6 +7,7 @@
 @import url('../icons/material-design-iconic-font/css/materialdesignicons.min.css');
 @import url('../icons/cryptocoins/css/cryptocoins.css');
 @import url('../icons/cryptocoins/css/cryptocoins-colors.css');
+
 @font-face {
 
     font-family: farsi-numbers;
@@ -15,10 +16,24 @@
     url('https://farsifont.github.io/iransans-farsi-numbers/woff2/IRANSansWeb(FaNum)_Black.woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/
     url('https://farsifont.github.io/iransans-farsi-numbers/woff/IRANSansWeb(FaNum)_Black.woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/
     url('https://farsifont.github.io/iransans-farsi-numbers/ttf/IRANSansWeb(FaNum)_Black.ttf') format('truetype');
-font-weight: 100;
+        font-weight: 100;
     unicode-range: U+30-39;
     }
 
+    @font-face {
+        font-family: IranYekan;
+        font-style: normal;
+        font-weight: normal;
+        src: url('https://farsifont.github.io/iranyekan/eot/iranyekanwebregular.eot');
+        src: url('https://farsifont.github.io/iranyekan/eot/iranyekanwebregular.eot?#iefix') format('embedded-opentype'), /* IE6-8 */ 
+        url('https://farsifont.github.io/iranyekan/woff2/iranyekanwebregular.woff2') format('woff2'), /* FF39+,Chrome36+, Opera24+*/ 
+        url('https://farsifont.github.io/iranyekan/woff/iranyekanwebregular.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/ 
+        url('https://farsifont.github.io/iranyekan/ttf/iranyekanwebregular.ttf') format('truetype');
+    }
+    
+    body {
+        font-family: farsi-numbers, IranYekan, roboto, Arial !important;
+    }
 // @font-face {
 //     font-family: Vazir;
 //     src: url('Vazir-Thin.eot');

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link, useHistory} from "react-router-dom";
+import { Link, useHistory, useLocation} from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 // import {userSignup} from '../../redux/actions'
 import axios from "axios";
@@ -7,6 +7,7 @@ import Loader from "react-loader-spinner";
 import qs from 'qs'
 import { Constants } from "../../Constants";
 function Signup() {
+    const {referral} = useLocation()
     const [first_name, setFirstName] = useState("")
     const [last_name, setLastName] = useState("")
     const [mobile, setMobile] = useState("")
@@ -14,7 +15,7 @@ function Signup() {
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
     const referralRef = useRef("")
-
+    
     const history = useHistory();
 
     const handleSignup =(e)=>{
@@ -76,9 +77,14 @@ function Signup() {
         
         // dispatch(userSignup(creds, history))
     }
+    React.useEffect(() => {
+        console.log(window.location.search.indexOf("referral")>-1)  
+            referralRef.current.value = window.location.search.split("=")[1]
+    }, [])
     return (
         <>
-            <div className="authincation section-padding">
+            <div className="authincation ">
+            
                 <div className="container h-100">
                     <div className="row justify-content-center h-100 align-items-center">
                         <div className="col-xl-5 col-md-6">
@@ -138,11 +144,10 @@ function Signup() {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label">شماره موبایل معرف</label>
+                                            <label className="form-label">کد معرف</label>
                                             <input
                                                 type="number"
                                                 className="form-control"
-                                                placeholder="09...."
                                                 name="number"
                                                 ref={referralRef}
                                             />
@@ -177,7 +182,7 @@ function Signup() {
                                             حساب کاربری دارید؟{" "}
                                             <Link
                                                 className="text-primary"
-                                                to={"otp-1"}
+                                                to={"/signin"}
                                             >
                                                 ورود
                                             </Link>

@@ -41,10 +41,14 @@ export const fetch_currencies = ()=>{
     return  dispatch=>{
         return new Promise((resolve, reject)=>{
             axios.get(Constants.BASE_URL + "/api/v2/service/list/", {})
-            .then(data=>{
-                dispatch(update_currencies(data.data))
-                dispatch(update_convert_rates(convertToRates(data.data)));
-                return resolve(data.data)
+            .then(res=>{
+                let {data} = res
+                data = data.map((item)=>{
+                    return item.name !== "تتر شبکه ترون"? item: {...item, name: "تتر"}
+                })
+                dispatch(update_currencies(data))
+                dispatch(update_convert_rates(convertToRates(data)));
+                return resolve(data)
             }).catch(error=>{
                 console.log(error);
                 return reject(400)

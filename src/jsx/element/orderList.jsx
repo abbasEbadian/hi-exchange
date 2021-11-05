@@ -18,7 +18,7 @@ function OrderList({orders}) {
                     <table className="table mb-0 table-responsive-sm">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th>شماره تراکنش</th>
                                 <th>نوع معامله</th>
                                 <th>تاریخ</th>
                                 <th>مبدا</th>
@@ -40,6 +40,7 @@ function OrderList({orders}) {
                                         type = ["IRT", "USDT"].includes(source)? "buy": "sell"
                                     }
                                     return  <tr key={idx}>
+                                        <td>{order.id || "-"}</td>
                                         {type === "buy"?
                                             <>
                                                 <td><span className="buy-thumb"><i className="la la-arrow-up"></i></span>

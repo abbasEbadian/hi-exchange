@@ -331,7 +331,7 @@ function Wallet(props) {
                                     
                                     {wallet&& wallet.length ? wallet.map((item, idx)=>{
                                         return item && <tr key={idx}> 
-                                            <td><img className="icon"src={item.service.image}></img> <span> { item.service.small_name } </span></td>
+                                            <td><img className="icon"src={item.service.image} alt="coin"></img> <span> { item.service.small_name } </span></td>
                                             <td> { item.service.name } </td>
                                             
                                             <td>{Number(Number(item.balance).toFixed()).toLocaleString()}</td>
@@ -477,6 +477,7 @@ function Wallet(props) {
                         <span className="px-2 text-success fs-5">{withdrawWallet?withdrawWallet.service.name:undefined}</span>
                         </label>
                         <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>
+                        <small className='cursor-pointer' onClick={e=>setWithdrawAmount(withdrawWallet.balance)}>انتخاب کل موجودی</small>
                     </div>
                     
                     

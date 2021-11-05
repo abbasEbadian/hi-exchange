@@ -6,10 +6,11 @@ import SettingsNav from '../element/settings-nav'
 import {Constants} from '../../Constants'
 import axios from 'axios';
 import Loader from 'react-loader-spinner'
-
+import {Alert} from 'react-bootstrap'
 function SettingsInvite() {
     const [refData, setRefData] = useState([]) 
     const [loading, setLoading] = useState(false)
+    const [copying, setCopying] = useState(false)
     useEffect(() => {
         setLoading(true)
         axios.get(Constants.BASE_URL+"/api/v2/account/referral/").then(response=>{
@@ -22,6 +23,36 @@ function SettingsInvite() {
 
         })
     }, [])
+    const copyToClipboard = (text)=>{
+        setCopying(true)
+        if (window.clipboardData && window.clipboardData.setData) {
+            // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+            return window.clipboardData.setData("Text", text);
+    
+        }
+        else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+            var textarea = document.createElement("textarea");
+            textarea.textContent = text;
+            textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+            }
+            catch (ex) {
+                console.warn("Copy to clipboard failed.", ex);
+                return false;
+            }
+            finally {
+                document.body.removeChild(textarea);
+                setTimeout(() => {
+                    setCopying(false)
+                }, 2000);
+            }
+        }
+        
+        
+    }
     return (
         <>
         <Header2 />
@@ -81,6 +112,17 @@ function SettingsInvite() {
                                         </div>:
                                         <p className="p-4">تا کنون دعوتی نداشته اید</p>
                                     }
+                                    <div className="card-footer">
+                                        <p>لینک دعوت شما: </p>
+                                        <Alert  variant={"primary"} className='mb-1 text-start  bg-transparent text-success  border-gray'>
+                                            {Constants.REFERRAL_BASE + (refData.referral || 123456 )}
+                                        </Alert>
+                                        <a onClick={e=>copyToClipboard(Constants.REFERRAL_BASE + (refData.referral || 123456 ))} className="pb-3text-success px-2 mb-3">
+                                            <small>کپی</small>
+                                        </a>
+                                        {copying?<small>کپی شد</small>: undefined}
+
+                                    </div>
                                 </div>
                             </div>
                         </div>

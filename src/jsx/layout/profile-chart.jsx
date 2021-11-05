@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import TradingViewWidget from 'react-tradingview-widget';
-import { Themes } from 'react-tradingview-widget';
+
 import axios from 'axios';
 import Loader from 'react-loader-spinner'
-import {Constants} from '../../Constants'
+import Chart from '../element/chart'
 function ProfileChart({ selectedChart}) {
     const base = "http://127.0.0.1:5000/cryptocurrency/quotes/latest?symbol="
     const [info, setInfo] = useState({})
@@ -23,20 +22,7 @@ function ProfileChart({ selectedChart}) {
         <div className="card profile_chart transparent">
             <div className="card-body p-0">
                 {/* <AreaChart /> */}
-                <div style={{minHeight: 400+"px"}}>
-
-                <TradingViewWidget 
-                    symbol={Constants.TW_SYMBOL[selectedChart]}
-                    theme={Themes.DARK}
-                    locale="fa_IR"
-                    width={"100%"}
-                    height={400}
-                    hide_top_toolbar={false}
-                    hide_side_toolbar={false}
-                    allow_symbol_change={false}
-                    withdateranges={true}
-                    />
-                </div>
+                <Chart selectedChart={selectedChart}/>
                 <div className="chart-content text-center mt-3">
                     <div className="row">
                     {[["price", "قیمت", "$"],
