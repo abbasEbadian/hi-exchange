@@ -18,6 +18,7 @@ function Wallet(props) {
     
     const dispatch = useDispatch() 
     const {wallet, checking_transaction, is_fetching, checking_irt_deposit } = useSelector(state => state.wallet)
+    const user  = useSelector(state => state.session.user)
     const [copying, setCopying] = useState(false)
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
@@ -45,6 +46,7 @@ function Wallet(props) {
     const [validateModalOpen, setValidateModalOpen] = useState(false)
     const [syncStates, setSyncStates] = useState(fill(Array(20), false))
     const [historyOrders, setHistoyOrders] = useState([])
+    const [showNotVerifiedModal, setShowNotVerifiedModal] = useState(false)
     const depositRef = useRef(0)
     /** 
      *  Predeposit :  displaying currency wallet address
@@ -54,12 +56,18 @@ function Wallet(props) {
      *  SummaryModal : history of selected currency
      *  confirmIRTDeposit : when user clicks "PAY" 
     */
+    const openNotVerifiedModal = ()=>setShowNotVerifiedModal(true)
+    const closeNotVerifiedModal = ()=>setShowNotVerifiedModal(false)
     const closePreDepositModal = () => {
         setAddress("")
         setPreDepositModalOpen(false)
     }
     const openPreDepositModal = (currency_id) => {
         
+        if(user&&user.authentication_status !== "accepted"){
+            openNotVerifiedModal()
+            return
+        }
         const _wallet = wallet.filter(item=>{
             return item && item.service.id === currency_id
         })
@@ -152,6 +160,10 @@ function Wallet(props) {
 
 
     const openWithdrawModal = (currency_id) => {
+        if(user&&user.authentication_status !== "accepted"){
+            openNotVerifiedModal()
+            return
+        }
         if(validCards.length === 0 && currency_id === Constants.IRT_CURRENCY_ID){
             openNocardsModal()
             return 
@@ -398,7 +410,7 @@ function Wallet(props) {
                                 })}
                             </select>
                             <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مقدار  </label>
-                            <input type="text" className="form-control"  onFocus={e=>setDepositTxAmount("")} value={depositTxAmount} onChange={e=>setDepositTxAmount(e.target.value)}/>
+                            <input type="text" className="form-control"  onFocus={e=>setDepositTxAmount("")} value={depositTxAmount} onChange={e=>setDepositTxAmount(Number(String(e.target.value).replace(/,/g,"")).toLocaleString())}/>
                         
                         </>:
                         <div className="col-12">
@@ -476,7 +488,9 @@ function Wallet(props) {
                         <label htmlFor="card-select" className="form-label">مقدار برداشت از 
                         <span className="px-2 text-success fs-5">{withdrawWallet?withdrawWallet.service.name:undefined}</span>
                         </label>
-                        <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>
+                        {currencyID == Constants.IRT_CURRENCY_ID ?
+                        <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(Number(String(e.target.value).replace(/,/g,"")).toLocaleString())}/>
+                        :<input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>}
                         <small className='cursor-pointer' onClick={e=>setWithdrawAmount(withdrawWallet.balance)}>انتخاب کل موجودی</small>
                     </div>
                     
@@ -507,6 +521,20 @@ function Wallet(props) {
                 </Modal.Body>
                 <Modal.Footer>
                 <Link className="btn btn-sm btn-success " to="/settings-account">افزودن کارت </Link>
+                
+                </Modal.Footer>
+            </Modal>
+            <Modal show={showNotVerifiedModal} onHide={closeNotVerifiedModal} className="convert-detail-modal">
+                <Modal.Header closeButton>
+                <Modal.Title>حساب احراز هویت نشده</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                        <p>برای انجام واریز و برداشت لطفا ابتدا نسبت به احراز هویت حساب خود اقدام نمایید.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                <Link className="btn btn-sm btn-success " to="/verify-step-1">
+                    احراز هویت
+                </Link>
                 
                 </Modal.Footer>
             </Modal>

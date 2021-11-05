@@ -1,11 +1,11 @@
 
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-
+import {Constants} from '../../Constants'
 
 const RadialChart = ({ balances, names }) =>{  
-    const names2 = names.filter((c,i)=>i<5)
-    const balances2 = balances.filter((c,i)=>i<5)    
+    const names2 = names.filter((c,i)=>i<Constants.radialChartCount)
+    const balances2 = balances.filter((c,i)=>i<Constants.radialChartCount)    
     const chart_details = {
         series: balances2, 
         options: {
@@ -83,9 +83,14 @@ const RadialChart = ({ balances, names }) =>{
             },
             colors: [
                 'rgba(137, 22, 255,1)',
-                'rgba(137, 22, 255,0.7)',
-                'rgba(137, 22, 255,0.3)',
-                'rgba(137, 22, 255,0.1)'
+                'rgba(145, 25, 255,0.9)',
+                'rgba(150, 30, 255,0.8)',
+                'rgba(155, 35, 255,0.7)',
+                'rgba(160, 40, 255,0.6)',
+                'rgba(165, 45, 255,0.5)',
+                'rgba(170, 50, 255,0.4)',
+                'rgba(175, 55, 255,0.3)',
+                'rgba(180, 60, 255,0.2)'
             ],
 
             

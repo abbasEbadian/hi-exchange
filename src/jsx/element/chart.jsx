@@ -20,12 +20,12 @@ function Chart({selectedChart}) {
                 withdateranges={true}
                 />
             <div className='d-block'>
-                <a onClick={e=>setShow(true)}><small>نمایش تمام صقحه</small></a>
+                <a onClick={e=>setShow(true)}><small>نمایش تمام صفحه</small></a>
 
             </div>
             <Modal dialogClassName="modal-100w"  contentClassName="dark"     show={show} fullscreen={true} onHide={() => setShow(false)}>
                 <Modal.Header closeButton>
-                <Modal.Title>تمودار  {selectedChart}</Modal.Title>
+                <Modal.Title>نمودار  {selectedChart}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                 <TradingViewWidget 

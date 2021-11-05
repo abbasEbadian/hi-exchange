@@ -6,6 +6,8 @@ import {Modal} from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux'
 import { userUpdatePersonal } from "../../redux/actions";
 import {ToastContainer, toast} from 'react-toastify'
+import {Constants} from '../../Constants'
+import axios from 'axios'
 
 function VerifyStep1() {
     const dispatch = useDispatch()
@@ -20,15 +22,42 @@ function VerifyStep1() {
     const emailRef = useRef("")
 
     const [confirmed, setConfirmed] = useState("")
+    const [verifyCode, setVerifyCode] = useState("")
+    const [showVerify, setShowVerify] = useState("")
     const [conditionalModal, setConditionalModal] = useState(false)
 
     const openConditionalModal = ()=>setConditionalModal(true)
     const closeConditionalModal = ()=>setConditionalModal(false)
-
-    const submit = (e)=>{
+    const openVerify = (e) => {
         e.preventDefault()
         e.stopPropagation()
-
+        axios.get(Constants.BASE_URL+"/api/v2/account/verify/phone/")
+        .then(resp=>{
+            const {data} = resp
+            if (data.error === 1){
+                toast.error(data.message)
+            }
+        })
+        .catch(err=>console.log(err))
+        .finally(f=>{
+            setShowVerify(true)   
+        })
+    }
+    const verifyTheCode = ()=>{
+        axios.post(Constants.BASE_URL+"/api/v2/account/verify/phone/complete/", {otp: verifyCode})
+        .then(resp=>{
+            const {data} = resp
+            if (data.error === 1){
+                toast.error(data.message)
+            }else{
+                setShowVerify(false)
+                submit()
+            }
+        })
+        .catch(err=>console.log(err))
+    }
+    const submit = ()=>{
+        
         const data = {
             card_id: nationalCodeRef.current.value,
             email: emailRef.current.value,
@@ -39,6 +68,7 @@ function VerifyStep1() {
             first_name: user.first_name,
             last_name: user.last_name,
         }
+        
         dispatch(userUpdatePersonal(data)).then(response=>{
             if(response === "sent"){
                setTimeout(() => {
@@ -60,7 +90,7 @@ function VerifyStep1() {
                                 <div className="card-body">
                                     <form
                                         action="#"
-                                        onSubmit={submit}
+                                        onSubmit={openVerify}
                                         className="identity-upload"
                                     >
                                         <div className="identity-content">
@@ -189,6 +219,29 @@ function VerifyStep1() {
                     
                     </Modal.Footer>
                 </Modal>
+                  <Modal  contentClassName="dark" show={showVerify} onHide={() => setShowVerify(false)}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>کد تایید</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <p>لطفا کد تایید ارسال شده را وارد نمایید.</p>
+                        <div className="mb-4">
+                            <label htmlFor="code" className="pb-2">کد تایید</label>
+                            <input type="text" name="code" value={verifyCode} onChange={e=>setVerifyCode(e.target.value)} className="form-control"/>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <button
+                            onClick={verifyTheCode}
+                            className={"btn btn-success ps-5 pe-5 " + (!verifyCode?"disabled":"")}
+                            disabled={!verifyCode}
+                            type="button"
+                        >
+                            بررسی 
+                        </button>
+                    </Modal.Footer>
+               
+                 </Modal>
             </div>
         </>
     );

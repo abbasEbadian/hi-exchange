@@ -2,8 +2,9 @@
 export const Constants = {
     IRT_CURRENCY_ID: 12,
     USDT_CURRENCY_ID: 14,
+    radialChartCount: 9,
     BASE_URL: "https://hi-exchange.com",
-    REFERRAL_BASE: "http://www.panel.hi-exchange.com/?signup=",
+    REFERRAL_BASE: "http://www.panel.hi-exchange.com/signup?referral=",
     TW_SYMBOL:{
         "BTC": "BINANCE:BTCUSDT",
         "USDT": "POLONIEX:ETHUSDT",

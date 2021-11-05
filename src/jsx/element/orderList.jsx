@@ -43,10 +43,10 @@ function OrderList({orders}) {
                                         <td>{order.id || "-"}</td>
                                         {type === "buy"?
                                             <>
-                                                <td><span className="buy-thumb"><i className="la la-arrow-up"></i></span>
-                                                </td>
-                                                <td>
-                                                    <span className="badge badge-success">خرید</span>
+                                             
+                                                <td className="d-flex align-items-center">
+                                                <span className="buy-thumb"><i className="la la-arrow-up"></i></span>
+                                                    <span className="badge badge-success mx-2">خرید</span>
                                                 </td>
                                 <td dir="ltr" className="text-end">{new Date(order.published).toLocaleString('fa-IR')}</td>
                                                 <td dir="ltr" className="text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
@@ -54,13 +54,11 @@ function OrderList({orders}) {
                                             </>
                                         :type ==="sell"?
                                             <>
-                                            <td><span className="sold-thumb"><i className="la la-arrow-down"></i>
-                                                </span>
-                                            </td>
-                                            
 
-                                            <td>
-                                                <span className="badge badge-danger">فروش</span>
+                                            <td className="d-flex align-items-center">
+                                                <span className="sold-thumb"><i className="la la-arrow-down"></i>
+                                                </span>
+                                                <span className="badge badge-danger mx-2">فروش</span>
                                             </td>
                                             <td dir="ltr" className="text-end">{new Date(order.published).toLocaleString('fa-IR')}</td>
                                             <td dir="ltr"className="text-danger  text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>
@@ -68,11 +66,11 @@ function OrderList({orders}) {
                                           </>
                                         :
                                             <>
-                                            <td><span className="swap-thumb"><i className="icofont-exchange"></i>
+                                      
+                                            <td className="d-flex align-items-center">
+                                            <span className="swap-thumb"><i className="icofont-exchange"></i>
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <span className="badge badge-warning">تبدیل</span>
+                                                <span className="badge badge-warning mx-2">تبدیل</span>
                                             </td>
                                             <td dir="ltr" className="text-end">{new Date(order.published).toLocaleString('fa-IR')}</td>
                                             <td dir="ltr" className=" text-end">{Number(order.source_amount).toLocaleString()} {" "} {source}</td>

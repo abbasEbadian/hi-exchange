@@ -72,43 +72,30 @@ function SettingsInvite() {
                                 <div className="card">
                                     <div className="card-header">
                                         <h4 className="card-title">فعالیت دوستان</h4>
-                                        <span>
-                                            <span>تعداد کل کاربرها: </span>
-                                        <span className="text-info">{refData.user_count}</span>
-                                        </span>
                                     </div>
                                     
                                     {
                                     loading?
                                         <Loader type="Oval" color="#00BFFF" className="p-4" height={50} width={50} />:   
-                                    refData && refData.users && refData.users.length ?
+                                    refData  ?
                                     <div className="table-responsive">
                                         <table className="table table-responsive-sm px-2 fs-6">
                                             <thead>
                                                 <tr>
-                                                    <th>ردیف</th>
-                                                    <th>شناسه</th>
-                                                    <th>همراه</th>
-                                                    {/* <th>میزان بازگشت</th>
-                                                    <th>وضعیت</th> */}
+                                                    <th>تعداد افراد دعوت شده توسط شما</th>
+                                                    <th>میزان درآمد شما</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {refData.users.map((item, idx)=>{
-                                                    return <tr key={idx}>
-                                                        <td>{idx+1}</td>
-                                                        <td>{item.id}</td>
-                                                        <td>{item.mobile}</td>
-                                                    </tr>
-
-                                                })}
+                                                <td>{refData.user_count}</td>
+                                                <td>{refData.total_get}</td>
                                             </tbody>
                                         </table>
-                                        <p className="px-4 text-left">
+                                        {/* <p className="px-4 text-left">
                                             <span>مقدار بازگشتی :</span>
                                             {" "}
                                             <span className="text-success">{refData.total_get}</span>
-                                        </p>
+                                        </p> */}
                                         </div>:
                                         <p className="p-4">تا کنون دعوتی نداشته اید</p>
                                     }

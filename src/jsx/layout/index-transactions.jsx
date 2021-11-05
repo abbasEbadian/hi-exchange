@@ -38,7 +38,6 @@ function IndexTransactions({visibleTrancactionCount}) {
                                 <table className="table mb-0 table-responsive-sm">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
                                             <th>شماره تراکنش</th>
                                             <th>تاریخ تراکنش</th>
                                             <th>نوع تراکنش</th>
@@ -52,7 +51,6 @@ function IndexTransactions({visibleTrancactionCount}) {
                                     <tbody>
                                         {transactions.map((item, idx)=>{
                                             return (idx+1) <= visibleCount && <tr key={idx}>
-                                                    <td>{idx+1}</td>
                                                     <td>{item["id"]}</td>
                                                     <td dir="ltr" className="text-end">{new Date(item["published"]).toLocaleString("fa-IR")}</td>
                                                     <td className="text-nowrap">
@@ -70,9 +68,9 @@ function IndexTransactions({visibleTrancactionCount}) {
                                                         }
                                                         {item.service?
                                                             (item.service.small_name==='IRT'?
-                                                                <span className="badge badge-danger mx-2">ریالی</span>
+                                                                <span className="badge badge-info mx-2">ریالی</span>
                                                                 :
-                                                                <span className="badge badge-danger mx-2">رمزارز</span>
+                                                                <span className="badge badge-info mx-2">رمزارز</span>
                                                             )
                                                             :undefined
                                                         }

@@ -14,6 +14,7 @@ import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 import FastBuySell from '../element/fast-buy-sell';
+import Chart from '../element/chart'
 
 function compute_fee(unit, unit_price, source_amount) {
     unit_price = String(unit_price || "").replace(/,/g, '');
@@ -526,7 +527,7 @@ function BuySell() {
 
                                 </div>
                             </div>
-                            <p className="p-4">کاربر گرامی، لطفا در خرید و فروش خود نهایت دقت را داشته باشید. صرافی های اکسچنج هیچ مسئولیتی در قبال سود و زیان شما در معاملات ندارد.</p>
+                            <p className="p-4">کاربر گرامی، لطفا در خرید و فروش خود نهایت دقت را داشته باشید. صرافی های اکسچنج هیچ مسئولیتی در قبال سود و زیان شما در معاملات ندارد.ضمنا توجه کنید که در روزهای پر نوسان، مقدار نمایش‌ داده شده تقریبی بوده و مقدار دقیق پس از تایید کارشناسان مشخص می‌شود.</p>
                         </div>
                         <div className="col-xl-7 col-lg-7 col-md-12">
                             <div className="card">
@@ -540,17 +541,7 @@ function BuySell() {
                                                     :<span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[buyDestinationR.current.small_name_slug]}
-                                                    theme={Themes.DARK}
-                                                    locale="fa_IR"
-                                                    width={"100%"}
-                                                    height={400}
-                                                    hide_top_toolbar={false}
-                                                    hide_side_toolbar={false}
-                                                    allow_symbol_change={false}
-                                                    withdateranges={true}
-                                                    />
+                                                <Chart selectedChart={buyDestinationR.current.small_name_slug}/>
                                                 </div>
                                                     </>
                                                 :
@@ -562,17 +553,7 @@ function BuySell() {
                                                 :<span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
                                                 }
                                             <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                <TradingViewWidget 
-                                                    symbol={Constants.TW_SYMBOL[sellSourceR.current.small_name_slug]}
-                                                    theme={Themes.DARK}
-                                                    locale="fa_IR"
-                                                    width={"100%"}
-                                                    height={400}
-                                                    hide_top_toolbar={false}
-                                                    hide_side_toolbar={false}
-                                                    allow_symbol_change={false}
-                                                    withdateranges={true}
-                                                    />
+                                                <Chart selectedChart={sellSourceR.current.small_name_slug}/>
                                                 </div> </>:
                                                 undefined
                                             }
@@ -596,15 +577,31 @@ function BuySell() {
                                                         <td>{ buyConvertRate } {buySource.name}</td> */}
                                                     {/* </tr> */}
                                                     <tr>
-                                                        <td>فی ثابت</td>
+                                                        <td>کارمزد  ثابت</td>
                                                         <td>{buyFixedKarmozdR.current || 0} {" "} {buyDestinationR.current.name}
-                                                        <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)} {" "} {buySource.small_name_slug})</small>
+                                                        <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "}
+                                                        {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)} {" "} {buySource.small_name_slug})
+                                                         </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>فی  تراکنش</td>
+                                                        <td>کارمزد   تراکنش</td>
                                                         <td>{buyTransactionFee.current || 0} {" "} {buyDestinationR.current.name}
-                                                        <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current)} {" "} {buySource.small_name_slug})</small>
+                                                        <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current)} {" "} {buySource.small_name_slug})
+                                                        </small>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>مجموع کارمزد</td>
+                                                        <td>{buyKarmozdAmountR.current || 0} {" "} {buyDestinationR.current.name}
+                                                        <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)} {" "} {buySource.small_name_slug})
+                                                        </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -613,8 +610,15 @@ function BuySell() {
                                                     </tr>
                                                    
                                                     <tr>
-                                                        <td> مجموع</td>
-                                                        <td> {compute_fee(buySource.small_name_slug, 1, buyTotalR.current)} {" "}  {buySource.name}</td>
+                                                        <td>میزان دریافتی شما</td>
+                                                        
+                                                        <td>
+                                                        {buyConvertAmount-buyKarmozdAmountR.current} {" "}  {buyDestinationR.current.name}
+                                                        <small style={{color:"green", fontSize:"12px"}}> 
+                                                            (معادل 
+                                                            {buyConversionResultR.current - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current) } {" "}  {buySource.name})
+                                                        </small>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                          
@@ -634,21 +638,39 @@ function BuySell() {
                                                         <td>{ buyConvertRate } {buySource.name}</td> */}
                                                     {/* </tr> */}
                                                     <tr>
-                                                        <td>فی ثابت</td>
-                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellDestination.name}
-                                                        
+                                                        <td>کارمزد  ثابت</td>
+                                                        <td>{sellFixedKarmozdR.current || 0} {" "} {sellSourceR.current.name}
+                                                        <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "}
+                                                        {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellFixedKarmozdR.current)} {" "} {sellDestination.small_name_slug})
+                                                         </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>فی  تراکنش</td>
-                                                        <td>{sellTransactionFee.current || 0} {" "} {sellDestination.name}
-                                                        
+                                                        <td>کارمزد  تراکنش</td>
+                                                        <td>{sellTransactionFee.current || 0} {" "} {sellSourceR.current.name}
+                                                        <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "}
+                                                        {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellTransactionFee.current)} {" "} {sellDestination.small_name_slug})
+                                                         </small>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>مجموع کارمزد</td>
+                                                        <td>{sellKarmozdAmountR.current || 0} {" "} {sellSourceR.current.name}
+                                                         <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "}
+                                                        {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)} {" "} {sellDestination.small_name_slug})
+                                                         </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
                                                         <td>{sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSourceR.current.name}
-                                                        <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(sellDestination.small_name_slug, 1, sellConversionResultR.current)} {" "} {sellDestination.small_name_slug})</small>
+                                                        {/* <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(sellDestination.small_name_slug, 1, sellConversionResultR.current)} {" "} {sellDestination.small_name_slug})</small> */}
 
                                                         </td>
                                                     </tr>
@@ -659,8 +681,15 @@ function BuySell() {
                                                         </td>
                                                     </tr> */}
                                                     <tr>
-                                                        <td> مجموع</td>
-                                                        <td> {sellTotalR.current} {" "}  {sellDestination.name}</td>
+                                                        <td> مبلغ دریافتی شما</td>
+                                                        <td> 
+                                                        {sellConversionResultR.current - compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)} {" "}  {sellDestination.name}
+                                                        <br/>
+                                                        <small style={{color:"green", fontSize:"12px"}}>
+                                                        (معادل {" "}
+                                                        {sellConvertAmount - sellKarmozdAmountR.current } {" "} {sellSourceR.current.small_name_slug})
+                                                         </small>
+                                                        </td>
                                                     </tr>
                                                 </tbody>}
                                                </table>
