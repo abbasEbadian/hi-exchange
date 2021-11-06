@@ -11,13 +11,14 @@ function ProfileChart({ selectedChart}) {
         axios.get(base + selectedChart)
         .then(res=>{
             const {data} = res;
-            setInfo(data);
+            setInfo(data.data);
             
         }).catch(err=>{
             console.log(err);
             
         })
-    }, [selectedChart])    
+    }, [selectedChart])
+        
     return (
         <div className="card profile_chart transparent">
             <div className="card-body p-0">
