@@ -7,10 +7,12 @@ import {Constants} from '../../Constants'
 import axios from 'axios';
 import Loader from 'react-loader-spinner'
 import {Alert} from 'react-bootstrap'
+import {useSelector} from 'react-redux'
 function SettingsInvite() {
     const [refData, setRefData] = useState([]) 
     const [loading, setLoading] = useState(false)
     const [copying, setCopying] = useState(false)
+    const user  = useSelector(state => state.session.user)
     useEffect(() => {
         setLoading(true)
         axios.get(Constants.BASE_URL+"/api/v2/account/referral/").then(response=>{
@@ -102,9 +104,9 @@ function SettingsInvite() {
                                     <div className="card-footer">
                                         <p>لینک دعوت شما: </p>
                                         <Alert  variant={"primary"} className='mb-1 text-start  bg-transparent text-success  border-gray'>
-                                            {Constants.REFERRAL_BASE + (refData.referral || 123456 )}
+                                            {Constants.REFERRAL_BASE + (refData.referral_code || 123456 )}
                                         </Alert>
-                                        <a onClick={e=>copyToClipboard(Constants.REFERRAL_BASE + (refData.referral || 123456 ))} className="pb-3text-success px-2 mb-3">
+                                        <a onClick={e=>copyToClipboard(Constants.REFERRAL_BASE + (refData.referral_code || 123456 ))} className="pb-3text-success px-2 mb-3">
                                             <small>کپی</small>
                                         </a>
                                         {copying?<small>کپی شد</small>: undefined}

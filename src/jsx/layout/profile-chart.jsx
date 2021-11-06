@@ -10,7 +10,7 @@ function ProfileChart({ selectedChart}) {
         setInfo({})
         axios.get(base + selectedChart)
         .then(res=>{
-            const {data} = res.data;
+            const {data} = res;
             setInfo(data);
             
         }).catch(err=>{

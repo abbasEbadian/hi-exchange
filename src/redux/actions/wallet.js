@@ -32,8 +32,8 @@ export const get_wallet_list = ()=>{
             axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
                 if(!res) throw Error(401)
                 
-                const d = res.data                
-                const newData = [
+                const d = res.data.filter(item=>item&&item.service)                
+                let newData = [
                     d.find(item => item.service.id === Constants.IRT_CURRENCY_ID),
                     d.find(item => item.service.id === Constants.USDT_CURRENCY_ID),
                     ...d.filter(item => ![Constants.IRT_CURRENCY_ID,
@@ -44,7 +44,7 @@ export const get_wallet_list = ()=>{
                 return resolve(d)
                 
             }).catch(err=>{
-                console.log("wallet401");
+                console.log("wallet401", err);
             }).finally(f=>{
                 dispatch(update_fetching_state(false))
             })
