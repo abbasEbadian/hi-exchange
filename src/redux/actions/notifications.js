@@ -41,6 +41,7 @@ export const mark_notifications_asread = ()=>{
         axios.post(Constants.BASE_URL + "/api/v2/notification/readAll/").then(response=>{
             if (!response) throw new Error(401)
             const {data} = response 
+            dispatch(get_unread_notifications())
         }).catch(error=>{
             console.log(error);
             

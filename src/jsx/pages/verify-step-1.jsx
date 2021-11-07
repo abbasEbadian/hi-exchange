@@ -36,6 +36,8 @@ function VerifyStep1() {
             const {data} = resp
             if (data.error === 1){
                 toast.error(data.message)
+            }else{
+                toast.info(data.message)
             }
         })
         .catch(err=>console.log(err))
