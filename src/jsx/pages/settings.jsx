@@ -9,8 +9,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { sessionService } from 'redux-react-session'
 import { userUpdateAvatar } from '../../redux/actions'
 import {  toast } from 'react-toastify';
-import Loader from 'react-loader-spinner';
-import UserAvatar from '../element/userAvatar';
 import ResetPassword from '../element/ResetPassword';
 import { Constants } from '../../Constants';
 import ProfileImages from '../layout/profile-images';
@@ -18,13 +16,8 @@ import ProfileImages from '../layout/profile-images';
 
 function Settings() {
     const [name, setName] = useState("");
-    const currentUser = useSelector(state=>state.session.user)
-    const {updaing_avatar} = useSelector(state=>state.userManager)
     const dispatch = useDispatch()
     const avatarRef = useRef(undefined)
-    const cardRef = useRef(undefined)
-    const birthRef = useRef(undefined)
-    const billRef = useRef(undefined)
 
     
     let token = ""

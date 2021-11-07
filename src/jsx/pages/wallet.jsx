@@ -210,7 +210,7 @@ function Wallet(props) {
                 wallet: withdrawWallet.id,
                 amount: withdrawAmount,
                 otp: verifyCode
-            }, setWithdrawModalOpen, toast))
+            }, setShowVerify, toast))
         }else{
 
             dispatch(check_withdraw({
@@ -218,7 +218,7 @@ function Wallet(props) {
                 Destwallet: withdrawWalletText, 
                 amount: withdrawAmount,
                 otp: verifyCode
-            }, setWithdrawModalOpen, toast))
+            }, setShowVerify, toast))
         }
     }
 
@@ -695,7 +695,9 @@ function Wallet(props) {
                             disabled={!verifyCode}
                             type="button"
                         >
-                            بررسی 
+                            {checking_transaction?
+                                <Loader  type="ThreeDots" color="#fff" height={25} width={35} />:
+                            <span> بررسی </span>}
                         </button>
                     </Modal.Footer>
                

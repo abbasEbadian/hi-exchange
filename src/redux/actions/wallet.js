@@ -157,7 +157,7 @@ export const checking_transaction = (is_checking)=>{
     }
 }
 
-export const check_withdraw = ({sourceWallet, Destwallet, amount, otp}, setWithdrawModalOpen, toast)=>{
+export const check_withdraw = ({sourceWallet, Destwallet, amount, otp}, setShowVerify, toast)=>{
     return dispatch=>{
         dispatch(checking_transaction(true))
         axios.post(Constants.BASE_URL + "/api/v2/wallet/withdrawal/", {
@@ -169,13 +169,13 @@ export const check_withdraw = ({sourceWallet, Destwallet, amount, otp}, setWithd
             if (data.error === 1)
                 toast.error(data.message)
             else{
+                setShowVerify(false)
                 toast.success(data.message)
             }
         }).catch(err=>{
             console.log(err);
             toast.error("خطا هنگام ثبت درخواست .لطفا بعدا تلاش نمایید.")
         }).finally(fn=>{
-            setWithdrawModalOpen(false)
             dispatch(checking_transaction(false))
         })
     }
