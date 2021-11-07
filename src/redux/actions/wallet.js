@@ -157,13 +157,14 @@ export const checking_transaction = (is_checking)=>{
     }
 }
 
-export const check_withdraw = ({sourceWallet, Destwallet, amount}, setWithdrawModalOpen, toast)=>{
+export const check_withdraw = ({sourceWallet, Destwallet, amount, otp}, setWithdrawModalOpen, toast)=>{
     return dispatch=>{
         dispatch(checking_transaction(true))
         axios.post(Constants.BASE_URL + "/api/v2/wallet/withdrawal/", {
             id: sourceWallet,
             wallet: Destwallet,
-            amount: String(amount)
+            amount: String(amount),
+            otp
         }).then(response=>{
             const {data} = response
             if (data.error === 1)
@@ -180,13 +181,14 @@ export const check_withdraw = ({sourceWallet, Destwallet, amount}, setWithdrawMo
         })
     }
 }
-export const check_withdraw_irt = ({card_id, amount=0}, setWithdrawModalOpen, toast)=>{
+export const check_withdraw_irt = ({card_id, otp, amount=0}, setWithdrawModalOpen, toast)=>{
     return dispatch=>{
         dispatch(checking_transaction(true))
         axios.post(Constants.BASE_URL + "/api/v2/wallet/manage/", {
             bank_id: String(card_id),
             amount: String(amount),
-            type: "2"
+            type: "2",
+            otp
         }).then(response=>{
             const {data} = response
             if (data.error === 1)

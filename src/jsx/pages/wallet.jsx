@@ -48,6 +48,10 @@ function Wallet(props) {
     const [historyOrders, setHistoyOrders] = useState([])
     const [showNotVerifiedModal, setShowNotVerifiedModal] = useState(false)
     const depositRef = useRef(0)
+    const [showVerify, setShowVerify] = useState("")
+    const [verifyCode, setVerifyCode] = useState("")
+
+
     /** 
      *  Predeposit :  displaying currency wallet address
      *  Nocards Modal : when user has no cards
@@ -93,6 +97,29 @@ function Wallet(props) {
 
         })
 
+    }
+        const openVerify = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        axios.get(Constants.BASE_URL+"/api/v2/wallet/withdrawal/otp/")
+        .then(resp=>{
+            const {data} = resp
+            if (data.error === 1){
+                toast.error(data.message)
+            }else{
+                setWithdrawModalOpen(false)
+                toast.info(data.message)
+                setTimeout(() => {
+                setShowVerify(true) 
+                }, 2000);
+            }
+        })
+        .catch(err=>console.log(err))
+        .finally(f=>{  
+        })
+    }
+    const verifyTheCode = ()=>{
+       confirmWithdraw()
     }
 
     const closeNocardsModal = () => setNocardsModalOpen(false)
@@ -181,14 +208,16 @@ function Wallet(props) {
             dispatch(check_withdraw_irt({
                 card_id: withdrawCard.id, 
                 wallet: withdrawWallet.id,
-                amount: withdrawAmount
+                amount: withdrawAmount,
+                otp: verifyCode
             }, setWithdrawModalOpen, toast))
         }else{
 
             dispatch(check_withdraw({
                 sourceWallet: withdrawWallet.id,
                 Destwallet: withdrawWalletText, 
-                amount: withdrawAmount
+                amount: withdrawAmount,
+                otp: verifyCode
             }, setWithdrawModalOpen, toast))
         }
     }
@@ -498,7 +527,7 @@ function Wallet(props) {
                 </Modal.Body>
                 <Modal.Footer>
                
-                <button className="btn-success btn-sm d-flex justify-content-center" size="sm" onClick={confirmWithdraw} disabled={!withdrawAmount || withdrawWallet.balance===0}>
+                <button className="btn-success btn-sm d-flex justify-content-center" size="sm" onClick={openVerify} disabled={!withdrawAmount || withdrawWallet.balance===0}>
                     برداشت
                     {checking_transaction?<Loader type="Oval" color="#fff" height={25} width={25}></Loader> :undefined}
 
@@ -648,7 +677,29 @@ function Wallet(props) {
                 
                 </Modal.Footer>
             </Modal>
-       
+             <Modal  contentClassName="dark" show={showVerify} onHide={() => setShowVerify(false)}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>کد تایید</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <p>لطفا کد تایید ارسال شده را وارد نمایید.</p>
+                        <div className="mb-4">
+                            <label htmlFor="code" className="pb-2">کد تایید</label>
+                            <input type="text" name="code" value={verifyCode} onChange={e=>setVerifyCode(e.target.value)} className="form-control"/>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <button
+                            onClick={verifyTheCode}
+                            className={"btn btn-success ps-5 pe-5 " + (!verifyCode?"disabled":"")}
+                            disabled={!verifyCode}
+                            type="button"
+                        >
+                            بررسی 
+                        </button>
+                    </Modal.Footer>
+               
+                 </Modal>
         </>
     )
 }

@@ -386,8 +386,8 @@ function BuySell() {
                                                         <label className="form-label">مقدار 
                                                             {buyDestinationR.current && buyDestinationR.current.id? 
                                                                 <>
-                                                                <i className="px-2"> {buyDestinationR.current.name}</i>    
-                                                                مورد نظر
+                                                                <i className="px-2"> {" "}{buyDestinationR.current.name}{" "}</i>    
+                                                                    مورد نظر
                                                                 </>:undefined
                                                         }
                                                         </label>
