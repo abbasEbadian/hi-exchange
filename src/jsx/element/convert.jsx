@@ -271,6 +271,7 @@ function Convert() {
                                         <small className="px-0">
                                             <label>کارمزد :</label>
                                             <span className="text-success px-2 fs-4">{ convertDetails.karmozdAmount }</span>
+                                            {currencyTo.name}
                                         </small>
                                     </div>
 
@@ -339,9 +340,9 @@ function Convert() {
                             </span>  
                         </div>
                         <div className="detail-row">
-                            <span>مبلغ نهایی سفارش</span>
+                            <span>میزان ارز دریافتی</span>
                             <span>
-                                { Number(String(convertAmount).replace(/,/g, "")) + Number(convertDetails.karmozdAmount) } {" "} { currencyFrom.name } 
+                                { Number(String(convertDetails.convertResult).replace(/,/g, ""))  } {" "} { currencyTo.name } 
                             </span>  
                         </div>
                         <div className="col-12 mt-4">
