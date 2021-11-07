@@ -38,11 +38,11 @@ function VerifyStep1() {
                 toast.error(data.message)
             }else{
                 toast.info(data.message)
+                setShowVerify(true) 
             }
         })
         .catch(err=>console.log(err))
-        .finally(f=>{
-            setShowVerify(true)   
+        .finally(f=>{  
         })
     }
     const verifyTheCode = ()=>{
