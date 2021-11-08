@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dropdown, Badge } from 'react-bootstrap';
+import { Dropdown, Badge, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import {Link} from 'react-router-dom'
 import TimeAgo from 'react-timeago'
@@ -25,10 +25,20 @@ function NotificationWidget() {
 
             <Dropdown.Menu >
                 {notifications.length? 
-                    notifications.map((item, idx)=>{
+                    notifications.slice(0, 5).map((item, idx)=>{
                         return <div className="dropdown-item notif-item" key={idx} >
-                            <span to="/notifications">{item.text}</span>
-                            <small style={{fontSize:"12px"}}><TimeAgo date={item.published} formatter={formatter}></TimeAgo></small>
+                        <OverlayTrigger
+                          key={"bottom"}
+                          placement={"bottom"}
+                          overlay={
+                            <Tooltip>
+                              {item.text}
+                            </Tooltip>
+                          }
+                        >
+                          <Link to="/notifications" style={{fontSize:"14px"}}>{item.text}</Link>
+                        </OverlayTrigger>
+                            <small style={{fontSize:"11px"}}><TimeAgo date={item.published} formatter={formatter}></TimeAgo></small>
                         </div>
                     })
                     :

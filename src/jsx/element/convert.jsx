@@ -336,11 +336,11 @@ function Convert() {
                         <span>کارمزد انجام تراکنش</span>
 
                             <span>
-                                {convertDetails.karmozdAmount} {" "} { currencyFrom.name }
+                                {convertDetails.karmozdAmount} {" "} { currencyTo.name }
                             </span>  
                         </div>
                         <div className="detail-row">
-                            <span>میزان ارز دریافتی</span>
+                            <span>میزان دریافتی شما</span>
                             <span>
                                 { Number(String(convertDetails.convertResult).replace(/,/g, ""))  } {" "} { currencyTo.name } 
                             </span>  

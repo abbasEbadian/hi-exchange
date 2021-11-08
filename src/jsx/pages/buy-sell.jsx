@@ -16,13 +16,24 @@ import { Constants } from '../../Constants';
 import FastBuySell from '../element/fast-buy-sell';
 import Chart from '../element/chart'
 
-function compute_fee(unit, unit_price, source_amount) {
+function compute_fee(unit, unit_price, source_amount, subfrom=undefined) {
+    if(!unit_price )return 0
     unit_price = String(unit_price || "").replace(/,/g, '');
     source_amount = String(source_amount || "").replace(/,/g, '');
     const tot = Number(unit_price) * Number(source_amount)
+    console.log(tot);
+    
+    console.log(unit, unit_price, source_amount);
+    
     if(isNaN(tot)) return 0
-    if(unit === "IRT") return Number(tot.toFixed()).toLocaleString('fa-IR')
-    return tot
+    if(subfrom){
+        if(unit === "IRT") 
+            return Number( Number(subfrom -tot).toFixed()).toLocaleString("fa-IR")
+        return subfrom - tot 
+    }
+    if(unit === "IRT") 
+        return Number(tot.toFixed()).toLocaleString("fa-IR")
+    return  tot 
 }
 
 function BuySell() {
@@ -683,7 +694,7 @@ function BuySell() {
                                                     <tr>
                                                         <td> مبلغ دریافتی شما</td>
                                                         <td> 
-                                                        {sellConversionResultR.current - compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)} {" "}  {sellDestination.name}
+                                                            {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current, sellConversionResultR.current )} {" "}  {sellDestination.name}
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
