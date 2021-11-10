@@ -204,6 +204,8 @@ function Wallet(props) {
     
 
     const confirmWithdraw= ()=>{
+        console.log(withdrawCard);
+        
         if(currencyID === Constants.IRT_CURRENCY_ID){
             dispatch(check_withdraw_irt({
                 card_id: withdrawCard.id, 
@@ -240,11 +242,13 @@ function Wallet(props) {
     const changeDepositCard = (e)=>{
         const selected = e.target.value
         localStorage.setItem("deposit_card_id", selected)
-        setDepositCard(cards.filter(item=>item.id === selected))
+        setDepositCard(cards.filter(item=>item.id === selected)[0])
     }
     const changeWithdrawCard = (e)=>{
         const selected = e.target.value
-        setWithdrawCard(cards.filter(item=>item.id === selected))
+        const sel = cards.filter(item=>+item.id === +selected)[0]
+        setWithdrawCard(sel)        
+        
     }
 
     const statusMessage = {
@@ -506,7 +510,8 @@ function Wallet(props) {
                     :
                         <>
                             <label htmlFor="card-select" className="form-label">انتخاب کارت</label>
-                            <select className="form-control" name="card-select" value={withdrawCard} onChange={changeWithdrawCard}>
+                            <select className="form-control" name="card-select" value={withdrawCard.id} onChange={changeWithdrawCard}>
+                                <option value="0">انتخاب کارت</option>
                                 {validCards.map((item, idx)=>{
                                     return <option value={item.id} key={idx}>{item.card} {"-"} {item.bank}</option>
                                 })}
@@ -677,7 +682,7 @@ function Wallet(props) {
                 
                 </Modal.Footer>
             </Modal>
-             <Modal  contentClassName="dark" show={showVerify} onHide={() => setShowVerify(false)}>
+             <Modal  contentClassName="dark" show={showVerify} onHide={() => setShowVerify(false)} backdrop='static'>
                     <Modal.Header closeButton>
                     <Modal.Title>کد تایید</Modal.Title>
                     </Modal.Header>
