@@ -17,13 +17,27 @@ import FastBuySell from '../element/fast-buy-sell';
 import Chart from '../element/chart'
 
 function compute_fee(unit, unit_price, source_amount, subfrom=undefined) {
-    if(!unit_price )return 0
+    if(!unit_price || source_amount.length===0 )return 0
     unit_price = String(unit_price || "").replace(/,/g, '');
     source_amount = String(source_amount || "").replace(/,/g, '');
     const tot = Number(unit_price) * Number(source_amount)
-    console.log(tot);
     
-    console.log(unit, unit_price, source_amount);
+    if(isNaN(tot)) return 0
+    if(subfrom){
+        if(unit === "IRT") 
+            return Number( Number(subfrom -tot).toFixed()).toLocaleString("fa-IR")
+        return subfrom - tot 
+    }
+    if(unit === "IRT") 
+        return Number(tot.toFixed()).toLocaleString("fa-IR")
+    return  tot 
+}
+// for sale
+function compute_fees(unit, unit_price, source_amount, subfrom=undefined) {
+    if(!unit_price || source_amount.length===0 )return 0
+    unit_price = String(unit_price || "").replace(/,/g, '');
+    source_amount = String(source_amount || "").replace(/,/g, '');
+    const tot = Number(source_amount)/ Number(unit_price)
     
     if(isNaN(tot)) return 0
     if(subfrom){
@@ -385,7 +399,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                    return  !(buySource.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                                                    return  ((buySource.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20"].includes(c.small_name)) || (buySource.small_name === 'IRT' && c.small_name_slug!=="IRT"))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                                                 })
                                                             }
                                                                 
@@ -466,7 +480,7 @@ function BuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   !(sellDestination.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   ((sellDestination.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
@@ -510,11 +524,20 @@ function BuySell() {
                                                     </div>
                                                     {sellConversionResultR.current? <div className="col-12 row mb-3 mx-0 ">
                                                     <small className="d-flex justify-content-between px-0 flex-wrap">
-                                                        <label className="text-nowrap">قیمت تمام شده هر واحد 
-                                                            <i className="px-2">{ sellDestination.name }</i>
+                                                        {sellDestination.id !== Constants.IRT_CURRENCY_ID?
+                                                            <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                                <i className="px-2">{ sellDestination.name }</i>
+                                                                :
+                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellSourceR.current.name}</i></span>
+                                                            </label>
                                                             :
-                                                        </label>
-                                                        <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellSourceR.current.name}</i></span>
+                                                             <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                                <i className="px-2">{ sellSourceR.current.name }</i>
+                                                                :
+                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellSourceR.current.show_price_irt }</span>  <i>{ sellDestination.name}</i></span>
+                                                            </label>
+                                                        }
+                                                        
                                                     </small>
                                                     </div>:undefined}
                                                     {sellConvertErrorMessage.current.length>0?
@@ -523,7 +546,7 @@ function BuySell() {
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
                                                      disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
-                                                        className="btn btn-danger w-100 d-flex justify-content-center">فروش
+                                                        className="btn btn-crimson w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -625,9 +648,10 @@ function BuySell() {
                                                         
                                                         <td>
                                                         {buyConvertAmount-buyKarmozdAmountR.current} {" "}  {buyDestinationR.current.name}
-                                                        <small style={{color:"green", fontSize:"12px"}}> 
+                                                        <small style={{color:"green", fontSize:"12px"}}>
                                                             (معادل 
-                                                            {buyConversionResultR.current - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current) } {" "}  {buySource.name})
+                                                            {Number(buyConversionResultR.current) - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)} 
+                                                            {" "}  {buySource.name})
                                                         </small>
                                                         </td>
                                                     </tr>
@@ -654,7 +678,7 @@ function BuySell() {
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
-                                                        {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellFixedKarmozdR.current)} {" "} {sellDestination.small_name_slug})
+                                                        {compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellFixedKarmozdR.current)} {" "} {sellDestination.small_name_slug})
                                                          </small>
                                                         </td>
                                                     </tr>
@@ -664,7 +688,7 @@ function BuySell() {
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
-                                                        {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellTransactionFee.current)} {" "} {sellDestination.small_name_slug})
+                                                        {compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellTransactionFee.current)} {" "} {sellDestination.small_name_slug})
                                                          </small>
                                                         </td>
                                                     </tr>
@@ -674,7 +698,7 @@ function BuySell() {
                                                          <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
-                                                        {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)} {" "} {sellDestination.small_name_slug})
+                                                        {compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)} {" "} {sellDestination.small_name_slug})
                                                          </small>
                                                         </td>
                                                     </tr>
@@ -692,9 +716,9 @@ function BuySell() {
                                                         </td>
                                                     </tr> */}
                                                     <tr>
-                                                        <td> مبلغ دریافتی شما</td>
+                                                        <td> میزان دریافتی شما</td>
                                                         <td> 
-                                                            {compute_fee(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current, sellConversionResultR.current )} {" "}  {sellDestination.name}
+                                                            {compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current, sellConversionResultR.current )} {" "}  {sellDestination.name}
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}

@@ -525,7 +525,13 @@ function Wallet(props) {
                         {currencyID == Constants.IRT_CURRENCY_ID ?
                         <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(Number(String(e.target.value).replace(/,/g,"")).toLocaleString())}/>
                         :<input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>}
-                        <small className='cursor-pointer' onClick={e=>setWithdrawAmount(withdrawWallet.balance)}>انتخاب کل موجودی</small>
+                        <div>
+                            <small className='cursor-pointer' onClick={e=>setWithdrawAmount(withdrawWallet.balance)}>انتخاب کل موجودی</small>
+                            :
+                            <small>{withdrawWallet.balance}</small>
+                        </div>
+                        
+
                     </div>
                     
                     

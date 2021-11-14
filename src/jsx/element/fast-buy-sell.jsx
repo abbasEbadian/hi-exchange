@@ -293,8 +293,8 @@ function FastBuySell() {
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
-                sellKarmozdAmountR.current =  +data["total_fee"] || 0
-                sellTransactionFee.current =  +data["fee"] || 0
+                sellKarmozdAmountR.current =  Math.round(1000*+data["total_fee"])/1000 || 0
+                sellTransactionFee.current =  Math.round(1000*+data["fee"])/1000 || 0
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
@@ -351,7 +351,7 @@ function FastBuySell() {
                                 <option value={undefined}>انتخاب</option>
                                     { 
                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                        return  !(buySource.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID)&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                        return  ((buySource.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20"].includes(c.small_name)) || (buySource.small_name !== 'USDT-TRC20'))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                     })
                                 }
                                     
@@ -446,7 +446,7 @@ function FastBuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   !(sellDestination.small_name === 'USDT-TRC20' && c.small_name==="USDT-ERC20") && (c.id !== Constants.USDT_CURRENCY_ID) && (c.id !== Constants.IRT_CURRENCY_ID) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   ((sellDestination.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
@@ -519,7 +519,7 @@ function FastBuySell() {
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
                                                      disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
-                                                        className="btn btn-danger w-100 d-flex justify-content-center">فروش
+                                                        className="btn btn-crimson w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}

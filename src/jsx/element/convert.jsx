@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import Timer from './Timer'
 import axios from 'axios'
 import qs from 'qs'
+import {Constants} from '../../Constants'
 function Convert() {
     const dispatch = useDispatch();
     const convertDetails = useSelector(state=>state.indexConverter.details);
@@ -23,6 +24,7 @@ function Convert() {
     const handleDetailModalClose = () => setShowDetailModal(false);
     const handleDetailModalShow = () => setShowDetailModal(true);
     const lowCredit = useRef(false)
+    const karmozdUnit = useRef(false)
     const convertErrorMessage = useRef("")
     const [orderMessage, setOrderMessage] = useState("")
     
@@ -145,6 +147,12 @@ function Convert() {
             }
             dispatch({type: "UPDATE_DETAILS", payload: d})
             
+            if([ Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyToP.id) && ![Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyFromP.id) ){
+                karmozdUnit.current = currencyFromP.name
+            }else{
+                karmozdUnit.current = currencyToP.name
+            }
+            
         }).catch(err=>{
             console.log(err);
             
@@ -258,7 +266,9 @@ function Convert() {
                                             <span className="text-nowrap flex-grow-1 text-start">
                                                 <span className="text-nowrap me-auto ms-2">
                                                     <span className="text-success px-1 fs-4">{ convertDetails.convertResult }</span>
+                                                    {" "}
                                                     <span className="px-1">{ currencyTo.name }</span>
+                                                    {" "}
                                                 </span>
                                                 <span>
                                                 دریافت می کنید
@@ -270,19 +280,34 @@ function Convert() {
                                     <div className="col-12 row mb-3 mx-0">
                                         <small className="px-0">
                                             <label>کارمزد :</label>
-                                            <span className="text-success px-2 fs-4">{ convertDetails.karmozdAmount }</span>
-                                            {currencyTo.name}
+                                            <span className="text-success px-2 fs-4">                                            
+                                                {Math.round(100*convertDetails.karmozdAmount)/100 }
+                                                {" "}
+                                               
+                                            </span>
+                                            {karmozdUnit.current}
                                         </small>
                                     </div>
 
                                     <div className="col-12 row mb-3 mx-0 ">
-                                        <small className="d-flex justify-content-between px-0 flex-wrap">
-                                            <label className="text-nowrap">قیمت تمام شده هر واحد 
-                                                <i className="px-2">{ currencyTo.name }</i>
-                                                :
-                                            </label>
-                                            <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ convertDetails.endPrice }</span>  <i>{ currencyFrom.name}</i></span>
-                                        </small>
+                                    <small className="d-flex justify-content-between px-0 flex-wrap">
+                                                        {currencyTo.id !== Constants.IRT_CURRENCY_ID?<>
+                                                           <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                                <i className="px-2">{ currencyTo.name }</i>
+                                                                :
+                                                            </label>
+                                                            <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ convertDetails.endPrice }</span>  <i>{ currencyFrom.name}</i></span>
+                                                            </>
+                                                            :
+                                                             <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                                <i className="px-2">{ currencyFrom.name }</i>
+                                                                :
+                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ currencyFrom.show_price_irt }</span>  <i>{ currencyTo.name}</i></span>
+                                                            </label>
+                                                        }
+                                                        
+                                                    </small>
+
                                     </div>
                                     
                                    
@@ -336,7 +361,7 @@ function Convert() {
                         <span>کارمزد انجام تراکنش</span>
 
                             <span>
-                                {convertDetails.karmozdAmount} {" "} { currencyTo.name }
+                                {Math.round(100*convertDetails.karmozdAmount)/100} {" "} { karmozdUnit.current }
                             </span>  
                         </div>
                         <div className="detail-row">

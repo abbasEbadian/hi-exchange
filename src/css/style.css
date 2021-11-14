@@ -10251,6 +10251,10 @@ button.btn-simple {
 .border-gray {
   border-color: #3d4d57; }
 
+.btn-crimson {
+  background: linear-gradient(160deg, crimson, #dd3557);
+  color: white; }
+
 @-moz-keyframes spin {
   from {
     -moz-transform: rotate(0deg); }
