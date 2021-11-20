@@ -25,6 +25,7 @@ function VerifyStep1() {
     const [verifyCode, setVerifyCode] = useState("")
     const [showVerify, setShowVerify] = useState("")
     const [conditionalModal, setConditionalModal] = useState(false)
+    const [already, setAlready] = useState(false)
 
     const openConditionalModal = ()=>setConditionalModal(true)
     const closeConditionalModal = ()=>setConditionalModal(false)
@@ -79,8 +80,12 @@ function VerifyStep1() {
             }
         })
     }
-    return (
-        <>
+    React.useEffect(() => {
+        if(user&&user.personal_data&&user.personal_data.address&&user.personal_data.address.phone){
+            setAlready(true)
+        }
+    }, [user])
+    return (<>
             <Header2 />
             <Sidebar />
 
@@ -88,7 +93,13 @@ function VerifyStep1() {
                 <div className="container h-100">
                     <div className="row justify-content-center h-100 align-items-center">
                         <div className="col-xl-5 col-md-6">
-                            <div className="auth-form card">
+                            {already?<>
+                                <div className="card">
+                                    <div className="card-body">
+                                        شماره شما از قبل تایید شده یا در حال بررسی می باشد.
+                                    </div>
+                                </div>
+                            </>:<div className="auth-form card">
                                 <div className="card-body">
                                     <form
                                         action="#"
@@ -168,7 +179,7 @@ function VerifyStep1() {
                                         </div>
                                     </form>
                                 </div>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>

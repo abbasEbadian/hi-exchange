@@ -13,7 +13,7 @@ function ProfileImages({source=undefined}) {
     const user = useSelector(state=>state.session.user)
     const [filename1, setFilename1] = useState("آپلود تصویر پرسنلی یا سلفی")
     const [filename2, setFilename2] = useState("آپلود تصویر کارت ملی")
-    const [filename3, setFilename3] = useState("پلود تصویر شناسنامه")
+    const [filename3, setFilename3] = useState("آپلود تصویر شناسنامه")
     const [filename4, setFilename4] = useState("آپلود تصویر قبض")
     const [file1, setFile1] = useState(undefined)
     const [file2, setFile2] = useState(undefined)
@@ -59,7 +59,6 @@ function ProfileImages({source=undefined}) {
         };
     }
         
-
     const handleSubmit = (e)=>{
         setUploading(true)
         e.preventDefault()
@@ -277,8 +276,8 @@ function ProfileImages({source=undefined}) {
                 <div className="text-center mt-5">
                     <button
                         type="submit"
-                        className={"btn btn-success w-100 d-flex justify-content-center align-items-center " + (!file1 || !file2 || !file3?"disabled":undefined)}
-                        disabled={!file1 || !file2 || !file3?"disabled":undefined}
+                        className={"btn btn-success w-100 d-flex justify-content-center align-items-center " + (!(file1 || (user.scans&&user.scans.selfie)) || !(file2 || (user.scans&&user.scans.national_card))|| !(file3 || (user.scans&&user.scans.birth_certificate))?"disabled":undefined)}
+                        disabled={!(file1 || (user.scans&&user.scans.selfie)) || !(file2 || (user.scans&&user.scans.national_card))|| !(file3 || (user.scans&&user.scans.birth_certificate))?"disabled":undefined}
                     >
                         ارسال
                         {uploading?
