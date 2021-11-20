@@ -351,7 +351,7 @@ function FastBuySell() {
                                 <option value={undefined}>انتخاب</option>
                                     { 
                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                        return  ((buySource.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20"].includes(c.small_name)) || (buySource.small_name !== 'USDT-TRC20'))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                        return  ((buySource.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20","USDT-ERC20"].includes(c.small_name)) || (buySource.small_name !== 'USDT-TRC20'))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                     })
                                 }
                                     
@@ -446,7 +446,7 @@ function FastBuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   ((sellDestination.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   ((sellDestination.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20", "USDT-ERC20"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
