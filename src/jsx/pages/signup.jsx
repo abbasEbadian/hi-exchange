@@ -7,7 +7,6 @@ import Loader from "react-loader-spinner";
 import qs from 'qs'
 import { Constants } from "../../Constants";
 function Signup() {
-    const {referral} = useLocation()
     const [first_name, setFirstName] = useState("")
     const [last_name, setLastName] = useState("")
     const [mobile, setMobile] = useState("")

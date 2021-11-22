@@ -15,25 +15,45 @@ import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 import FastBuySell from '../element/fast-buy-sell';
 import Chart from '../element/chart'
-
+const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+function irt(num) {
+    const t = Number(Number(p2e(String(num).replace(/٬/g, ''))).toFixed()).toLocaleString('fa-IR')
+    console.log("irt",t);
+    
+    return t
+}
+function rnd(num) {  
+    let num2 = String(num)
+    .replace(/,/g, '') 
+    .replace(/،/g, '') 
+    .replace(/٬/g, '') 
+    num2 = p2e(num2) 
+    
+    return String(num).indexOf("٬")>-1? irt(Math.round(Number(num2)*1000)/1000):Math.round(Number(num2)*1000)/1000
+}
 function compute_fee(unit, unit_price, source_amount, subfrom=undefined) {
     if(!unit_price || source_amount.length===0 )return 0
     unit_price = String(unit_price || "").replace(/,/g, '');
     source_amount = String(source_amount || "").replace(/,/g, '');
     const tot = Number(unit_price) * Number(source_amount)
+    console.log("tot", tot);
     
     if(isNaN(tot)) return 0
     if(subfrom){
         if(unit === "IRT") 
-            return Number( Number(subfrom -tot).toFixed()).toLocaleString("fa-IR")
+            return irt(subfrom -tot)
         return subfrom - tot 
     }
-    if(unit === "IRT") 
-        return Number(tot.toFixed()).toLocaleString("fa-IR")
+    if(unit === "IRT") {
+        console.log("in",irt(tot));
+        
+        return irt(tot)
+    }
     return  tot 
 }
 // for sale
 function compute_fees(unit, unit_price, source_amount, subfrom=undefined) {
+    
     if(!unit_price || source_amount.length===0 )return 0
     unit_price = String(unit_price || "").replace(/,/g, '');
     source_amount = String(source_amount || "").replace(/,/g, '');
@@ -108,7 +128,15 @@ function BuySell() {
 
 
     const buyUnitPrice = useRef(0)
+    const buyFeeUnit = useRef("")
+    const buyFeeUnitEqual = useRef("")
+    const buyFixedFeeEqual = useRef(0)
+    const buyVariableFeeEqual = useRef(0)
+    const buyTotalFeeEqual = useRef(0)
+    const buyFinalValue = useRef(0)
+    const buyFinalValueEqual = useRef(0)
     const sellUnitPrice = useRef(0)
+    const sellFeeUnit = useRef("")
 
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
@@ -264,6 +292,28 @@ function BuySell() {
                 const a = buyConversionResultR.current
                 const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
                 
+                buyFeeUnit.current = buyDestinationR.current.name
+                buyFeeUnitEqual.current = buySource.small_name_slug
+                buyFixedFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)
+                buyVariableFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current) 
+                buyTotalFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current) 
+                buyFinalValue.current = buyConvertAmountP-buyKarmozdAmountR.current
+                buyFinalValueEqual.current = Number(buyConversionResultR.current) - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
+
+                if(buySource.id === Constants.IRT_CURRENCY_ID && buyDestinationR.current.name.indexOf("تتر") >-1){
+                    buyFixedFeeEqual.current = buyFixedKarmozdR.current/ +buyUnitPrice.current 
+                    buyVariableFeeEqual.current =   (buyTransactionFee.current / +buyUnitPrice.current) 
+                    buyTotalFeeEqual.current = buyKarmozdAmountR.current / +buyUnitPrice.current
+                    buyFinalValue.current = buyConvertAmountP - (buyKarmozdAmountR.current / buyDestinationR.current.show_price_irt)
+                    buyFinalValueEqual.current = irt(buyFinalValue.current  * buyDestinationR.current.show_price_irt)
+                    buyFeeUnit.current = buySource.name
+                    buyFeeUnitEqual.current = buyDestinationR.current.small_name_slug
+
+                    buyFixedKarmozdR.current = irt(buyFixedKarmozdR.current)
+                    buyTransactionFee.current = irt(buyTransactionFee.current)
+                    buyKarmozdAmountR.current = irt(buyKarmozdAmountR.current)
+                }
+
                 buyTotalR.current = (a+a2).toLocaleString()
                 if(buySource.small_name_slug === "IRT"){
                     buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
@@ -280,6 +330,8 @@ function BuySell() {
                 }
 
                 
+
+
                 // setBuyConvertAmount(buyConvertAmountP)
                 buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
                 setBuyConvertInvalid(Math.random())
@@ -617,29 +669,29 @@ function BuySell() {
                                                     {/* </tr> */}
                                                     <tr>
                                                         <td>کارمزد  ثابت</td>
-                                                        <td>{buyFixedKarmozdR.current || 0} {" "} {buyDestinationR.current.name}
+                                                        <td>{buyFixedKarmozdR.current || 0} {" "} {buyFeeUnit.current}
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
-                                                        {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)} {" "} {buySource.small_name_slug})
+                                                        {rnd(buyFixedFeeEqual.current)} {" "} {buyFeeUnitEqual.current} )
                                                          </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>کارمزد   تراکنش</td>
-                                                        <td>{buyTransactionFee.current || 0} {" "} {buyDestinationR.current.name}
+                                                        <td>{buyTransactionFee.current || 0} {" "} {buyFeeUnit.current}
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
-                                                        (معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current)} {" "} {buySource.small_name_slug})
+                                                        (معادل {" "} {rnd(buyVariableFeeEqual.current)} {" "} {buyFeeUnitEqual.current})
                                                         </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>مجموع کارمزد</td>
-                                                        <td>{buyKarmozdAmountR.current || 0} {" "} {buyDestinationR.current.name}
+                                                        <td>{buyKarmozdAmountR.current || 0} {" "} {buyFeeUnit.current}
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
-                                                        (معادل {" "} {compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)} {" "} {buySource.small_name_slug})
+                                                        (معادل {" "} {rnd(buyTotalFeeEqual.current)} {" "} {buyFeeUnitEqual.current})
                                                         </small>
                                                         </td>
                                                     </tr>
@@ -652,10 +704,12 @@ function BuySell() {
                                                         <td>میزان دریافتی شما</td>
                                                         
                                                         <td>
-                                                        {buyConvertAmount-buyKarmozdAmountR.current} {" "}  {buyDestinationR.current.name}
+                                                        {buyFinalValue.current} {" "}  {buyDestinationR.current.name}
+                                                        <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                             (معادل 
-                                                            {Number(buyConversionResultR.current) - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)} 
+                                                            {" "}
+                                                            {rnd(buyFinalValueEqual.current)} 
                                                             {" "}  {buySource.name})
                                                         </small>
                                                         </td>

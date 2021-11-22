@@ -12,7 +12,6 @@ function SettingsInvite() {
     const [refData, setRefData] = useState([]) 
     const [loading, setLoading] = useState(false)
     const [copying, setCopying] = useState(false)
-    const user  = useSelector(state => state.session.user)
     useEffect(() => {
         setLoading(true)
         axios.get(Constants.BASE_URL+"/api/v2/account/referral/").then(response=>{

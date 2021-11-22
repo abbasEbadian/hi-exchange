@@ -10,7 +10,6 @@ import { Constants } from '../../Constants'
 
 function Forget() {
     const [phone, setPhone] = useState("");
-    const dispatch = useDispatch()
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const [submitted, setSubmitted] = useState(false); 
     const history = useHistory()

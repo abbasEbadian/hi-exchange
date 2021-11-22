@@ -10,7 +10,6 @@ import SettingsAccount from './pages/settings-account';
 import SettingsInvite from './pages/settings-invite';
 import AddBankAccount from './pages/add-bank-acc';
 import AddDebitCard from './pages/add-debit-card';
-import Locked from './pages/lock';
 import Otp1 from './pages/otp-1';
 import Otp2 from './pages/otp-2';
 import PrivacyPolicy from './pages/privacy-policy';
@@ -126,7 +125,7 @@ axios.interceptors.response.use((response) => {
 const Index = ()=> {
     const {checked, authenticated} = useSelector(state => state.session)
     const dispatch = useDispatch()
-    const wallet = useSelector(state => state.wallet.wallet)
+
     useEffect(() => {
         if(authenticated){
             dispatch(fetch_user_all_data())

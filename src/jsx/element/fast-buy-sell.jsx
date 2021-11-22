@@ -1,16 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form, Modal} from 'react-bootstrap';
+import {  Tab, Tabs, Form} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import PageTitle from '../element/page-title';
-import Header2 from '../layout/header2';
-import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
 import { creating_order, create_order } from '../../redux/actions';
-import TradingViewWidget from 'react-tradingview-widget';
-import { Themes } from 'react-tradingview-widget';
 import qs from 'qs'
 import axios from 'axios';
-import {toast, ToastContainer} from 'react-toastify'
+import {toast} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 
@@ -41,7 +36,6 @@ function FastBuySell() {
 
     const buyDestinationR = useRef({small_name_slug: undefined})
 
-    const sellDestinationR = useRef({small_name_slug: undefined})
 
     const buyLowCreditR = useRef(false)
     const sellLowCreditR = useRef(false)
@@ -64,9 +58,6 @@ function FastBuySell() {
     const buyUnitPrice = useRef(0)
     const sellUnitPrice = useRef(0)
 
-    const buyConvertValidR = useRef(false)
-    const sellConvertValidR = useRef(false)
-
     const buyAmountRef = useRef(0)
     // const sellConvertValidR = useRef(false)
 
@@ -74,7 +65,6 @@ function FastBuySell() {
     const [selectedChart1, setSelectedChart1] = useState()
     const [selectedChart2, setSelectedChart2] = useState()
 
-    const [fastModal, setFastModal] = useState(false)
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
         const _wallet = wallet && wallet.length? 

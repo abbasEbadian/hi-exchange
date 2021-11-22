@@ -11,7 +11,6 @@ import { toast, ToastContainer} from 'react-toastify'
 import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
 import axios from 'axios';
-import {useLocation, useHistory} from 'react-router-dom'
 import {fill} from 'lodash'
 
 function Wallet(props) {
@@ -128,7 +127,6 @@ function Wallet(props) {
     const closeDepositModal = () => setDepositModalOpen(false)
     const closeWithdrawModal = () => setWithdrawModalOpen(false)
 
-    const closeSummaryModal = () => setSummaryModalOpen(false)
     const openSummaryModal = (currency_id) => {    
         const o = orders.filter(item=>{
             return item.destination_asset === currency_id || item.source_asset === currency_id
@@ -251,20 +249,6 @@ function Wallet(props) {
         
     }
 
-    const statusMessage = {
-        "1": "پرداخت انجام نشده است",
-        "2": `  پردا خت ناموفق  بوده است `,
-        "3":  "خطا رخ داده است",
-        "4": " 	بلوکه شده",
-        "5":" 	برگشت به پرداخت کننده",
-        "6":" 	برگشت خورده سیستمی",
-        "7":" 	انصراف از پرداخت",
-        "8":" 	به درگاه پرداخت منتقل شد",
-        "10": 	"در انتظار تایید پرداخت",
-        "100": 	"پرداخت تایید شده است",
-        "101": 	"پرداخت قبلا تایید شده است",
-        "200": 	"به دریافت کننده واریز شد",
-    }
 
    
     /**
