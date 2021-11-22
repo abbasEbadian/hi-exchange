@@ -135,8 +135,15 @@ function BuySell() {
     const buyTotalFeeEqual = useRef(0)
     const buyFinalValue = useRef(0)
     const buyFinalValueEqual = useRef(0)
+
     const sellUnitPrice = useRef(0)
     const sellFeeUnit = useRef("")
+    const sellFeeUnitEqual = useRef("")
+    const sellFixedFeeEqual = useRef(0)
+    const sellVariableFeeEqual = useRef(0)
+    const sellTotalFeeEqual = useRef(0)
+    const sellFinalValue = useRef(0)
+    const sellFinalValueEqual = useRef(0)
 
     const handleBuyConfirm = ()=>{
         dispatch(creating_order(true))
@@ -242,7 +249,6 @@ function BuySell() {
         sellConvertAmountP= sellConvertAmount,
         buyConvertAll=undefined
     })=>{
-        
         if(tab === "buy"){
             
             if(!buyConvertAmountP && !buyConvertAll){
@@ -279,7 +285,8 @@ function BuySell() {
                     
                 }else
                     buyConvertErrorMessage.current = ""
-               
+                buyConvertAmountP = buyConvertAll ? +data["destination_price"] :buyConvertAmountP
+
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
@@ -287,7 +294,7 @@ function BuySell() {
                 buyTransactionFee.current =  +data["fee"] || 0
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
                 buyConversionResultR.current =   buyConvertAmountP? +data["source_price"]: 0
-                buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
+                buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0                
                 buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
                 const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
@@ -324,9 +331,9 @@ function BuySell() {
                    
                 }
                 if(buyConvertAll){
-                    changeBuyAmount(data["destination_price"], false)
                     buyConversionResultR.current = +data['source_price']
                     buyConversionResultStrR.current = data['source_price_str']
+                    changeBuyAmount(data["destination_price"], false)
                 }
 
                 
@@ -389,6 +396,27 @@ function BuySell() {
                 const a = sellConversionResultR.current
                 // const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
                 const a2 = sellKarmozdAmountR.current
+                sellFeeUnit.current = sellDestination.name
+                sellFeeUnitEqual.current = sellSourceR.current.small_name_slug
+                sellFixedFeeEqual.current = compute_fees(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellFixedKarmozdR.current)
+                sellVariableFeeEqual.current = compute_fees(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellTransactionFee.current) 
+                sellTotalFeeEqual.current = compute_fees(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current) 
+                sellFinalValue.current = sellConvertAmountP-sellKarmozdAmountR.current
+                sellFinalValueEqual.current = Number(sellConversionResultR.current) - compute_fee(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)
+
+                if(sellSourceR.current.id === Constants.IRT_CURRENCY_ID && sellDestination.name.indexOf("تتر") >-1){
+                    sellFixedFeeEqual.current = sellFixedKarmozdR.current/ +sellUnitPrice.current 
+                    sellVariableFeeEqual.current =   (sellTransactionFee.current / +sellUnitPrice.current) 
+                    sellTotalFeeEqual.current = sellKarmozdAmountR.current / +sellUnitPrice.current
+                    sellFinalValue.current = sellConvertAmountP - (sellKarmozdAmountR.current / sellDestination.show_price_irt)
+                    sellFinalValueEqual.current = irt(sellFinalValue.current  * sellDestination.show_price_irt)
+                    sellFeeUnit.current = sellSourceR.current.name
+                    sellFeeUnitEqual.current = sellDestination.small_name_slug
+
+                    sellFixedKarmozdR.current = irt(sellFixedKarmozdR.current)
+                    sellTransactionFee.current = irt(sellTransactionFee.current)
+                    sellKarmozdAmountR.current = irt(sellKarmozdAmountR.current)
+                }
                 if(sellDestination.small_name === "IRT"){
                     let v = a + sellKarmozdAmountR.current 
                     sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()
