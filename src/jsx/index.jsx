@@ -131,12 +131,7 @@ const Index = ()=> {
             dispatch(fetch_user_all_data())
             dispatch(fetch_currencies())
         }
-        // if(!wallet || !wallet.length){
-        //     setTimeout(() => {
-        //         if(!wallet)
-        //         dispatch(fetch_user_all_data())
-        //     }, 1000);
-        // }
+      
         
     }, [authenticated, dispatch])
 

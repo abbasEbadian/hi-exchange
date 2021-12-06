@@ -294,7 +294,7 @@ function Convert() {
 
                                     <div className="col-12 row mb-3 mx-0 ">
                                     <small className="d-flex justify-content-between px-0 flex-wrap">
-                                                        {currencyTo.id !== Constants.IRT_CURRENCY_ID?<>
+                                                        {currencyTo.id !== Constants.IRT_CURRENCY_ID && currencyTo.id !== Constants.USDT_CURRENCY_ID?<>
                                                            <label className="text-nowrap">قیمت تمام شده هر واحد 
                                                                 <i className="px-2">{ currencyTo.name }</i>
                                                                 :
@@ -305,7 +305,10 @@ function Convert() {
                                                              <label className="text-nowrap">قیمت تمام شده هر واحد 
                                                                 <i className="px-2">{ currencyFrom.name }</i>
                                                                 :
-                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ currencyFrom.show_price_irt }</span>  <i>{ currencyTo.name}</i></span>
+                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">
+                                                                    {currencyTo.id === Constants.IRT_CURRENCY_ID ?currencyFrom.show_price_irt: convertDetails.endPrice}
+                                                                    
+                                                                    </span>  <i>{ currencyTo.name}</i></span>
                                                             </label>
                                                         }
                                                         
