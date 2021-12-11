@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form, Modal} from 'react-bootstrap';
+import {  Tab, Tabs, Form} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
 import { creating_order, create_order, create_schedule } from '../../redux/actions';
-import TradingViewWidget from 'react-tradingview-widget';
-import { Themes } from 'react-tradingview-widget';
 import qs from 'qs'
 import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
-import FastBuySell from '../element/fast-buy-sell';
 import Chart from '../element/chart'
 const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
 function irt(num) {
@@ -86,13 +83,8 @@ function BuySell() {
     const [buySource, setBuySource] = useState({})
 
     // Schedule
-    const [scheduleSource, setScheduleSource] = useState(0)
-    const [scheduleDestinaton, setScheduleDestinaton] = useState(0)
-    const [scheduleAmount, setScheduleAmount] = useState(0)
-    const [schedulePrice, setSchedulePrice] = useState(0)
-    const [scheduleAvailableAmount, setScheduleAvailableAmount] = React.useState(0)
-    const [scheduleLowCredit, setScheduleLowCredit] = React.useState(0)
-    const [selectedChart3, setSelectedChart3] = React.useState(0)
+    const [buySchedulePrice, setBuySchedulePrice] = useState(0)
+    const [sellSchedulePrice, setSellSchedulePrice] = useState(0)
 
     const [sellDestination, setSellDestination ] = useState({})
 
@@ -127,15 +119,11 @@ function BuySell() {
     const sellFixedKarmozdR = useRef(0)
     const sellTotalR = useRef(0)
 
-    const buyConvertValidR = useRef(false)
-    const sellConvertValidR = useRef(false)
-
     const buyAmountRef = useRef(0)
     // const sellConvertValidR = useRef(false)
 
 
-    const [selectedChart1, setSelectedChart1] = useState()
-    const [selectedChart2, setSelectedChart2] = useState()
+    const [lastChartName, setLastChartName] = useState()
 
 
     const buyUnitPrice = useRef(0)
@@ -157,37 +145,74 @@ function BuySell() {
     const sellFinalValueEqual = useRef(0)
 
     const handleBuyConfirm = ()=>{
-        dispatch(creating_order(true))
-        const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
-        const data= {
-            source_price: buyConversionResultStrR.current,
-            destination_price: String(buyConvertAmount),
-            source_asset: String(buySource.id),
-            destination_asset: String(buyDestinationR.current.id),
-            wallet: _wallet,
-            description: "" ,
-            type:"buy"
+        if(buySchedulePrice > 0){
+            dispatch(create_schedule({
+                asset: buySource.id,
+                pair: buyDestinationR.current.id,
+                amount: buyConvertAmount,
+                price: buySchedulePrice,
+                type: "buy"
+            })).then(({result, message})=>{
+                if(result==="success")
+                    toast.success(message)
+                else
+                toast.error(message)
+            }).catch(err=>{
+                console.log(err);
+                toast.error("خطا در برقراری با سرور")
+            })
+        }else{
+
+            dispatch(creating_order(true))
+            const _wallet = wallet && wallet.length? 
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
+            const data= {
+                source_price: buyConversionResultStrR.current,
+                destination_price: String(buyConvertAmount),
+                source_asset: String(buySource.id),
+                destination_asset: String(buyDestinationR.current.id),
+                wallet: _wallet,
+                description: "" ,
+                type:"buy"
+            }
+            dispatch(create_order(data, toast))
         }
-        dispatch(create_order(data, toast))
     }
     const handleSellConfirm = ()=>{
-        dispatch(creating_order(true))
-        const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
-        const data= {
-            source_price: String(sellConvertAmount),
-            destination_price: sellConversionResultStrR.current,
-            source_asset: String(sellSourceR.current.id),
-            destination_asset: String(sellDestination.id),
-            wallet: _wallet,
-            changed:"source",
-            description: "" ,
-            type:"sell"
-        }
+        if(sellSchedulePrice > 0){
+            dispatch(create_schedule({
+                asset: sellSourceR.current.id,
+                pair: sellDestination.id,
+                amount: sellConvertAmount,
+                price: sellSchedulePrice,
+                type: "sell"
+            })).then(({result, message})=>{
+                if(result==="success")
+                    toast.success(message)
+                else
+                toast.error(message)
+            }).catch(err=>{
+                console.log(err);
+                toast.error("خطا در برقراری با سرور")
+            })
+        }else{
+            dispatch(creating_order(true))
+            const _wallet = wallet && wallet.length? 
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
+            const data= {
+                source_price: String(sellConvertAmount),
+                destination_price: sellConversionResultStrR.current,
+                source_asset: String(sellSourceR.current.id),
+                destination_asset: String(sellDestination.id),
+                wallet: _wallet,
+                changed:"source",
+                description: "" ,
+                type:"sell"
+            }
         dispatch(create_order(data, toast))
+        }
     }
     
 
@@ -216,7 +241,7 @@ function BuySell() {
         buyDestinationR.current = selectedCurrency;
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        setSelectedChart1(selectedCurrency)
+        setLastChartName(selectedCurrency)
         computePrices({buyConvertAmountP: 0})
 
     }
@@ -225,7 +250,7 @@ function BuySell() {
         sellLowCreditR.current = false
         setSellDestination(selectedCurrency)
         setSellConvertAmount(0)
-        setSelectedChart1(selectedChart2)
+        setLastChartName(selectedCurrency.small_name_slug)
         computePrices({sellConvertAmountP: 0})
     }
     const changeSellSource = (e)=>{
@@ -240,7 +265,7 @@ function BuySell() {
         sellAvailableCurrencyR.current = av
         sellLowCreditR.current = false
         setSellConvertAmount(0)
-        setSelectedChart2(selectedCurrency)
+        setLastChartName(selectedCurrency.small_name_slug)
 
         computePrices({sellConvertAmountP: 0})
     }
@@ -456,38 +481,8 @@ function BuySell() {
     const handleSelect = (key)=>{
             setTab(key)   
     }
-    const doSchedule = (e)=>{
-        e.preventDefault()
-        e.stopPropagation()
-      
-        
-        dispatch(create_schedule({
-            asset: scheduleSource.id,
-            pair: scheduleDestinaton,
-            amount: scheduleAvailableAmount,
-            price: schedulePrice,
-            type: "swap"
-        })).then(({result, message})=>{
-            if(result==="success")
-                toast.success(message)
-            else
-            toast.error(message)
-        }).catch(err=>{
-            console.log(err);
-            toast.error("خطا در برقراری با سرور")
-        })
-    }
-    const changeScheduleSource = (selectedCurrency)=>{
-        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1){
-            return;
-        }
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
-        setScheduleSource(selectedCurrency)
-        let av = get_available(selectedCurrency.id)
-        setScheduleAvailableAmount(av)
-        setScheduleLowCredit(false)
-        setSelectedChart3(selectedCurrency)
-    }
+    
+    
     return (
         <>
             <Header2 />
@@ -506,7 +501,7 @@ function BuySell() {
                                             <Tab eventKey="buy" title="خرید">
                                                 <form action="#" method="post" name="myform" className="currency_validate">
                                                     <div className="mb-3">
-                                                        <label className="form-label"style={{width:"90px"}}>بازار به :</label>
+                                                        <label className="form-label"style={{width:"110px"}}>بازار به :</label>
                                                         <div className="button-group">
                                                             <button type="button" className={buySource.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeBuySource(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
                                                             <button type="button" className={buySource.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeBuySource(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
@@ -517,13 +512,13 @@ function BuySell() {
                                                     </div>
 
                                                     <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label text-nowrap ps-3" style={{width:"90px"}}>انتخاب ارز:</label>
+                                                        <label className="form-label text-nowrap ps-3" style={{width:"110px"}}>انتخاب ارز:</label>
                                                             <Form.Control as="select"  name='currency' className=" my-3 px-2 w-50" onChange={changeBuyDestination} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                 currencyList && currencyList.length && currencyList.map((c, idx)=>{
                                                                     return  (
-                                                                            (buySource.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20", "USDT-ERC20"].includes(c.small_name))
+                                                                            (buySource.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name))
                                                                             || 
                                                                             (buySource.small_name === 'IRT' && c.small_name_slug!=="IRT")
                                                                         )
@@ -534,7 +529,12 @@ function BuySell() {
                                                             </Form.Control>
                                                             
                                                     </div>
-
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"110px"}} >خرید در قیمت:</label>
+                                                        <input className="form-control w-50" type="number"
+                                                            onClick={e=>setBuySchedulePrice("")}
+                                                            name="price" value={buySchedulePrice} onChange={e=>setBuySchedulePrice(e.target.value)}/>
+                                                    </div>
                                                     <div className="mb-3">
                                                         <label className="form-label">مقدار 
                                                             {buyDestinationR.current && buyDestinationR.current.id? 
@@ -581,7 +581,7 @@ function BuySell() {
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
                                                     disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
-                                                            خرید
+                                                            {buySchedulePrice>0? "ایجاد سفارش خرید": "خرید"}
                                                             {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -595,7 +595,7 @@ function BuySell() {
                                             <Tab eventKey="sell" title="فروش" >
                                                 <form method="post" name="myform" className="currency2_validate">
                                                     <div className="mb-3">
-                                                        <label className="form-label" style={{width:"90px"}}>بازار به :</label>
+                                                        <label className="form-label" style={{width:"110px"}}>بازار به :</label>
                                                         <div className="button-group">
                                                             <button type="button" className={sellDestination.id===Constants.USDT_CURRENCY_ID?"active":""} onClick={e=>changeSellDestination(e, Constants.USDT_CURRENCY_ID)}>تتر</button>
                                                             <button type="button" className={sellDestination.id===Constants.IRT_CURRENCY_ID ?"active":""} onClick={e=>changeSellDestination(e, Constants.IRT_CURRENCY_ID)}>تومان</button>
@@ -603,12 +603,12 @@ function BuySell() {
                                                             
                                                     </div>
                                                     <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>انتخاب ارز: </label>
+                                                        <label className="form-label  text-nowrap" style={{width:"110px"}}>انتخاب ارز: </label>
                                                         <select name='currency' className="form-control w-50 px-2 my-3" onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   ((sellDestination.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20", "USDT-ERC20"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   ((sellDestination.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
@@ -619,7 +619,12 @@ function BuySell() {
                                                     </div>
 
                                                     
-
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"110px"}} > فروش در قیمت:</label>
+                                                        <input className="form-control w-50" type="number"
+                                                            onClick={e=>setSellSchedulePrice("")}
+                                                            name="price" value={sellSchedulePrice} onChange={e=>setSellSchedulePrice(e.target.value)}/>
+                                                    </div>
                                                     <div className="mb-3">
                                                         <label className="form-label">
                                                             مقدار
@@ -674,7 +679,9 @@ function BuySell() {
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
                                                      disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
-                                                        className="btn btn-crimson w-100 d-flex justify-content-center">فروش
+                                                        className="btn btn-crimson w-100 d-flex justify-content-center">
+                                                            {sellSchedulePrice>0? "ایجاد سفارش فروش": "فروش"}
+
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -683,61 +690,7 @@ function BuySell() {
                                                             ></Loader>:undefined}</button>
                                                 </form>
                                             </Tab>
-                                            <Tab eventKey="schedule" title="زمان بندی">
-                                                <form method="post" name="myform" className="currency2_validate" onSubmit={doSchedule}>
-                                                    <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>ارز مورد نظر:</label>
-                                                        <select name='asset' className="form-control w-50 px-2 my-3" value={scheduleSource.id} onChange={e=>changeScheduleSource(e.target.value)}>
-                                                            <option value={0}>انتخاب</option>
-                                                                { 
-                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return    c.id!==Constants.IRT_CURRENCY_ID &&  <option key={idx} value={c.id}> {c.name} </option>
-                                                                    })
-                                                                }
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>تبدیل به: </label>
-                                                        <select name='pair' className="form-control w-50 px-2 my-3" value={scheduleDestinaton} onChange={e=>setScheduleDestinaton(e.target.value)}>
-                                                            <option value={undefined}>انتخاب</option>
-                                                                { 
-                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return    <option key={idx} value={c.id}> {c.name}</option>
-                                                                    })
-                                                                }
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}> مقدار:</label>
-                                                        <div className=" w-50" >
-                                                        <input className="form-control " type="number"
-                                                            onClick={e=>setScheduleAmount("")}
-                                                            name={"amount"} value={scheduleAmount} onChange={e=>setScheduleAmount(e.target.value)}/>
-                                                            { scheduleSource.id &&(
-                                                                <div className="d-flex align-items-center m-2"> 
-                                                                    <span>موجودی: {scheduleAvailableAmount}</span>                         
-                                                                    <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{setScheduleAmount(scheduleAvailableAmount)}}>$</div>
-                                                                </div>
-                                                            )
-                                                            }
-                                                        </div>
-
-                                                    </div>
-                                                    <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"90px"}} >در قیمت:</label>
-                                                        <input className="form-control w-50" type="number"
-                                                            onClick={e=>setSchedulePrice("")}
-                                                            name="price" value={schedulePrice} onChange={e=>setSchedulePrice(e.target.value)}/>
-                                                    </div>
-                                                    <button type="submit" 
-                                                        className="btn btn-primary w-100 d-flex justify-content-center">ایجاد
-                                                        {creating_schedule? <Loader
-                                                                type="ThreeDots"
-                                                                height={25}
-                                                                width={40}
-                                                                color="#fff"
-                                                            ></Loader>:undefined}</button>
-                                                </form>
+                                            <Tab eventKey="schedule" title="سفارشات باز" tabClassName={"fs-13"}>
                                             </Tab>
                                         </Tabs>
                                     </div>
@@ -750,41 +703,14 @@ function BuySell() {
                             <div className="card">
                                 <div className="card-body">
                                     <div className="buyer-seller">
-                                        <div className="d-flex flex-column mb-3">
-                                            {tab === "buy" && buyDestinationR.current.id? 
-                                            <>
-                                                {chartOpen ?
+                                        <div className="d-flex flex-column mb-3 border-bottom pb-1">
+                                            {chartOpen ?
                                                     <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
                                                     :<span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                <Chart selectedChart={buyDestinationR.current.small_name_slug}/>
+                                                <Chart selectedChart={lastChartName}/>
                                                 </div>
-                                                    </>
-                                                :
-                                                undefined
-                                            }{tab === "sell" && sellSourceR.current.id? 
-                                            <>
-                                             {chartOpen ?
-                                                <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                :<span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                }
-                                            <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                <Chart selectedChart={sellSourceR.current.small_name_slug}/>
-                                                </div> </>:
-                                                undefined
-                                            }
-                                            {tab === "schedule" && scheduleSource.id? 
-                                            <>
-                                             {chartOpen ?
-                                                <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                :<span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                }
-                                            <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                <Chart selectedChart={scheduleSource.small_name_slug}/>
-                                                </div> </>:
-                                                undefined
-                                            }
                                             
 
                                         </div>
@@ -930,7 +856,7 @@ function BuySell() {
                                             </table>
                                             </div>
                                         :<div className="schedules-container">
-                                            <h5>خرید و فروش های زمان بندی شده</h5>
+                                            <h5 >سفارشات باز</h5>
                                             {schedules.length?
                                                 schedules.map((item, idx)=>{
                                                     return <div>idx</div>
