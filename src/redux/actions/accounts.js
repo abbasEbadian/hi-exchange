@@ -48,6 +48,7 @@ export const fetch_user_all_data = ()=>{
         })
     }
 }
+
 export const fetch_accounts = ()=>{
     return dispatch =>{
         axios.get(BASE+ "/api/v2/bank/list/").then(response=>{

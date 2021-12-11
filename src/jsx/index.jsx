@@ -103,7 +103,7 @@ axios.interceptors.response.use((response) => {
                         axios.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.access
      
                         // 3) return originalRequest object with Axios.
-                        document.location.reload()
+                        // document.location.reload()
                         return axios(originalRequest);
                     })
 
