@@ -640,8 +640,9 @@ function Wallet(props) {
                             <div className="col-12 mb-3 position-relative">
                             <label htmlFor="card-select" className="form-label">شبکه</label>
                             <select type="text" className="form-control mb-2" value={depositNetwork} onChange={e=>changeDepositNetwork(e.target.value)}>
-                                <option value="">انتخاب</option>
-                                {networks.length? networks.map((item, idx)=>{
+                                <option value={""}>انتخاب</option>
+                                
+                                {depositWallet&&depositWallet.service? depositWallet.service.network.map((item, idx)=>{
                                     return <option value={item.id}>{item.name} {" "}({item.realName})</option>
                                 }):undefined}
                             </select>
