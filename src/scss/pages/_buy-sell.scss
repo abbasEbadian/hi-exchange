@@ -34,6 +34,10 @@
                     background: $danger-gradient;
                     color     : white;
                 }
+                &.active:nth-of-type(3) {
+                    background: $primary-gradient;
+                    color     : #111;
+                }
             }
         }
     }

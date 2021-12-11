@@ -7,7 +7,7 @@
     z-index   : 1000;
     transition: all 0.3s ease-in;
     background: $body-bg;
-    // box-shadow: 0 1px 13px -1px #0008;
+    box-shadow: 11px 0 14px #0003;
 
     // border-bottom: 1px solid $border-color;
     @include respond('phone-land') {

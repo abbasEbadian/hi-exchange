@@ -11,6 +11,7 @@ export const GETTING_ORDERS =  "GETTING_ORDERS"
 export const CREATING_ORDER =  "CREATING_ORDER"
 export const UPDATE_TRANSACTIONS =  "UPDATE_TRANSACTIONS"
 export const UPDATE_NETWORKS =  "UPDATE_NETWORKS"
+export const UPDATE_SCHEDULES =  "UPDATE_SCHEDULES"
 
 
 const BASE = Constants.BASE_URL
@@ -52,6 +53,18 @@ export const fetch_user_all_data = ()=>{
     }
 }
 
+// export const fetch_schedules = ()=>{
+//     return dispatch =>{
+//         axios.get(BASE+ "/api/v2/schedule/list/").then(response=>{
+            
+//             if(!response) throw Error(401)
+//             const {data} = response
+//             dispatch(update_schedules(data))
+//         }).catch(error=>{
+//             console.log("fetch accounts", 401);
+//         })
+//     }
+// }
 export const fetch_networks = ()=>{
     return dispatch =>{
         axios.get(BASE+ "/api/v2/network/list/").then(response=>{
@@ -129,6 +142,12 @@ export const update_accounts = (accounts)=>{
     return {
         type: UPDATE_ACCOUNTS,
         payload: accounts
+    }
+}
+export const update_schedules = (schedules)=>{
+    return {
+        type: UPDATE_SCHEDULES,
+        payload: schedules
     }
 }
 export const update_orders = (orders)=>{

@@ -5,7 +5,8 @@ import {
     CHECKING_WITHDRAW,
     UPDATE_NETWORK_LIST,
     CHECKING_IRT_DEPOSIT,
-    GENERATING_IRT_DEPOSIT_LINK
+    GENERATING_IRT_DEPOSIT_LINK,
+    CREATING_SCHEDULE
 
 } from '../actions'
 
@@ -16,6 +17,7 @@ const init_state = {
     checking_transaction: false,
     checking_withdraw: false,
     checking_irt_deposit: false,
+    creating_schedule: false,
     generating_irt_deposit_link: false
 }
 export const wallet = (state=init_state, action)=>{
@@ -55,6 +57,11 @@ export const wallet = (state=init_state, action)=>{
             return {
                 ...state,
                 checking_withdraw: action.payload
+            }
+        case CREATING_SCHEDULE:
+            return {
+                ...state,
+                creating_schedule: action.payload
             }
 
         default:

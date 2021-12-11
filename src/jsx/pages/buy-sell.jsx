@@ -5,7 +5,7 @@ import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
-import { creating_order, create_order } from '../../redux/actions';
+import { creating_order, create_order, create_schedule } from '../../redux/actions';
 import TradingViewWidget from 'react-tradingview-widget';
 import { Themes } from 'react-tradingview-widget';
 import qs from 'qs'
@@ -74,6 +74,7 @@ function BuySell() {
     const dispatch = useDispatch()
 
     const {currencyList}  = useSelector(state => state.currencies)
+    const {schedules, creating_schedule}  = useSelector(state => state.accounts)
     const wallet  = useSelector(state => state.wallet.wallet)
     const _creating_order  = useSelector(state => state.accounts.creating_order)
     const [tab, setTab] = useState("buy")
@@ -83,6 +84,16 @@ function BuySell() {
     const [buyConvertInvalid, setBuyConvertInvalid] = useState(0)
     const [sellConvertInvalid, setSellConvertInvalid] = useState(0)
     const [buySource, setBuySource] = useState({})
+
+    // Schedule
+    const [scheduleSource, setScheduleSource] = useState(0)
+    const [scheduleDestinaton, setScheduleDestinaton] = useState(0)
+    const [scheduleAmount, setScheduleAmount] = useState(0)
+    const [schedulePrice, setSchedulePrice] = useState(0)
+    const [scheduleAvailableAmount, setScheduleAvailableAmount] = React.useState(0)
+    const [scheduleLowCredit, setScheduleLowCredit] = React.useState(0)
+    const [selectedChart3, setSelectedChart3] = React.useState(0)
+
     const [sellDestination, setSellDestination ] = useState({})
 
     const sellConvertErrorMessage = useRef("")
@@ -445,6 +456,38 @@ function BuySell() {
     const handleSelect = (key)=>{
             setTab(key)   
     }
+    const doSchedule = (e)=>{
+        e.preventDefault()
+        e.stopPropagation()
+      
+        
+        dispatch(create_schedule({
+            asset: scheduleSource.id,
+            pair: scheduleDestinaton,
+            amount: scheduleAvailableAmount,
+            price: schedulePrice,
+            type: "swap"
+        })).then(({result, message})=>{
+            if(result==="success")
+                toast.success(message)
+            else
+            toast.error(message)
+        }).catch(err=>{
+            console.log(err);
+            toast.error("خطا در برقراری با سرور")
+        })
+    }
+    const changeScheduleSource = (selectedCurrency)=>{
+        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1){
+            return;
+        }
+        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
+        setScheduleSource(selectedCurrency)
+        let av = get_available(selectedCurrency.id)
+        setScheduleAvailableAmount(av)
+        setScheduleLowCredit(false)
+        setSelectedChart3(selectedCurrency)
+    }
     return (
         <>
             <Header2 />
@@ -640,7 +683,62 @@ function BuySell() {
                                                             ></Loader>:undefined}</button>
                                                 </form>
                                             </Tab>
+                                            <Tab eventKey="schedule" title="زمان بندی">
+                                                <form method="post" name="myform" className="currency2_validate" onSubmit={doSchedule}>
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>ارز مورد نظر:</label>
+                                                        <select name='asset' className="form-control w-50 px-2 my-3" value={scheduleSource.id} onChange={e=>changeScheduleSource(e.target.value)}>
+                                                            <option value={0}>انتخاب</option>
+                                                                { 
+                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                                                        return    c.id!==Constants.IRT_CURRENCY_ID &&  <option key={idx} value={c.id}> {c.name} </option>
+                                                                    })
+                                                                }
+                                                        </select>
+                                                    </div>
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}>تبدیل به: </label>
+                                                        <select name='pair' className="form-control w-50 px-2 my-3" value={scheduleDestinaton} onChange={e=>setScheduleDestinaton(e.target.value)}>
+                                                            <option value={undefined}>انتخاب</option>
+                                                                { 
+                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                                                        return    <option key={idx} value={c.id}> {c.name}</option>
+                                                                    })
+                                                                }
+                                                        </select>
+                                                    </div>
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}}> مقدار:</label>
+                                                        <div className=" w-50" >
+                                                        <input className="form-control " type="number"
+                                                            onClick={e=>setScheduleAmount("")}
+                                                            name={"amount"} value={scheduleAmount} onChange={e=>setScheduleAmount(e.target.value)}/>
+                                                            { scheduleSource.id &&(
+                                                                <div className="d-flex align-items-center m-2"> 
+                                                                    <span>موجودی: {scheduleAvailableAmount}</span>                         
+                                                                    <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{setScheduleAmount(scheduleAvailableAmount)}}>$</div>
+                                                                </div>
+                                                            )
+                                                            }
+                                                        </div>
 
+                                                    </div>
+                                                    <div className="mb-3 d-flex align-items-center">
+                                                        <label className="form-label  text-nowrap" style={{width:"90px"}} >در قیمت:</label>
+                                                        <input className="form-control w-50" type="number"
+                                                            onClick={e=>setSchedulePrice("")}
+                                                            name="price" value={schedulePrice} onChange={e=>setSchedulePrice(e.target.value)}/>
+                                                    </div>
+                                                    <button type="submit" 
+                                                        className="btn btn-primary w-100 d-flex justify-content-center">ایجاد
+                                                        {creating_schedule? <Loader
+                                                                type="ThreeDots"
+                                                                height={25}
+                                                                width={40}
+                                                                color="#fff"
+                                                            ></Loader>:undefined}</button>
+                                                </form>
+                                            </Tab>
                                         </Tabs>
                                     </div>
 
@@ -676,76 +774,91 @@ function BuySell() {
                                                 </div> </>:
                                                 undefined
                                             }
+                                            {tab === "schedule" && scheduleSource.id? 
+                                            <>
+                                             {chartOpen ?
+                                                <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
+                                                :<span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
+                                                }
+                                            <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
+                                                <Chart selectedChart={scheduleSource.small_name_slug}/>
+                                                </div> </>:
+                                                undefined
+                                            }
                                             
 
                                         </div>
-                                        <div className="table-responsive">
+                                        {tab==="buy"?
+                                            <div className="table-responsive">
+                                                <table className="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><span className="text-primary">شما خریدار هستید</span></td>
+                                                            <td><span className="text-primary">{buyConvertAmount || 0} {" "} {buyDestinationR.current.small_name_slug}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>روش پرداخت</td>
+                                                            <td>{ buySource.name || "-"}</td>
+                                                        </tr>
+                                                        {/* <tr>
+                                                            <td>نسبت تبدیل</td>
+                                                            <td>{ buyConvertRate } {buySource.name}</td> */}
+                                                        {/* </tr> */}
+                                                        <tr>
+                                                            <td>کارمزد  ثابت</td>
+                                                            <td>{buyFixedKarmozdR.current || 0} {" "} {buyFeeUnit.current}
+                                                            <br/>
+                                                            <small style={{color:"green", fontSize:"12px"}}>
+                                                            (معادل {" "}
+                                                            {rnd(buyFixedFeeEqual.current)} {" "} {buyFeeUnitEqual.current} )
+                                                            </small>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>کارمزد   تراکنش</td>
+                                                            <td>{buyTransactionFee.current || 0} {" "} {buyFeeUnit.current}
+                                                            <br/>
+                                                            <small style={{color:"green", fontSize:"12px"}}>
+                                                            (معادل {" "} {rnd(buyVariableFeeEqual.current)} {" "} {buyFeeUnitEqual.current})
+                                                            </small>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>مجموع کارمزد</td>
+                                                            <td>{buyKarmozdAmountR.current || 0} {" "} {buyFeeUnit.current}
+                                                            <br/>
+                                                            <small style={{color:"green", fontSize:"12px"}}>
+                                                            (معادل {" "} {rnd(buyTotalFeeEqual.current)} {" "} {buyFeeUnitEqual.current})
+                                                            </small>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>مبلغ  تراکنش</td>
+                                                            <td>{buyConversionResultR.current.toLocaleString() || 0} {" "} {buySource.name}</td>
+                                                        </tr>
+                                                    
+                                                        <tr>
+                                                            <td>میزان دریافتی شما</td>
+                                                            
+                                                            <td>
+                                                            {buyFinalValue.current} {" "}  {buyDestinationR.current.name}
+                                                            <br/>
+                                                            <small style={{color:"green", fontSize:"12px"}}>
+                                                                (معادل 
+                                                                {" "}
+                                                                {rnd(buyFinalValueEqual.current)} 
+                                                                {" "}  {buySource.name})
+                                                            </small>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                            
+                                                </table>
+                                            </div>
+                                        :tab==="sell"?
+                                            <div className="table-responsive">
                                             <table className="table">
-                                                {tab==="buy"?
                                                  <tbody>
-                                                    <tr>
-                                                        <td><span className="text-primary">شما خریدار هستید</span></td>
-                                                        <td><span className="text-primary">{buyConvertAmount || 0} {" "} {buyDestinationR.current.small_name_slug}</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>روش پرداخت</td>
-                                                        <td>{ buySource.name || "-"}</td>
-                                                    </tr>
-                                                    {/* <tr>
-                                                        <td>نسبت تبدیل</td>
-                                                        <td>{ buyConvertRate } {buySource.name}</td> */}
-                                                    {/* </tr> */}
-                                                    <tr>
-                                                        <td>کارمزد  ثابت</td>
-                                                        <td>{buyFixedKarmozdR.current || 0} {" "} {buyFeeUnit.current}
-                                                        <br/>
-                                                        <small style={{color:"green", fontSize:"12px"}}>
-                                                        (معادل {" "}
-                                                        {rnd(buyFixedFeeEqual.current)} {" "} {buyFeeUnitEqual.current} )
-                                                         </small>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>کارمزد   تراکنش</td>
-                                                        <td>{buyTransactionFee.current || 0} {" "} {buyFeeUnit.current}
-                                                        <br/>
-                                                        <small style={{color:"green", fontSize:"12px"}}>
-                                                        (معادل {" "} {rnd(buyVariableFeeEqual.current)} {" "} {buyFeeUnitEqual.current})
-                                                        </small>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>مجموع کارمزد</td>
-                                                        <td>{buyKarmozdAmountR.current || 0} {" "} {buyFeeUnit.current}
-                                                        <br/>
-                                                        <small style={{color:"green", fontSize:"12px"}}>
-                                                        (معادل {" "} {rnd(buyTotalFeeEqual.current)} {" "} {buyFeeUnitEqual.current})
-                                                        </small>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>مبلغ  تراکنش</td>
-                                                        <td>{buyConversionResultR.current.toLocaleString() || 0} {" "} {buySource.name}</td>
-                                                    </tr>
-                                                   
-                                                    <tr>
-                                                        <td>میزان دریافتی شما</td>
-                                                        
-                                                        <td>
-                                                        {buyFinalValue.current} {" "}  {buyDestinationR.current.name}
-                                                        <br/>
-                                                        <small style={{color:"green", fontSize:"12px"}}>
-                                                            (معادل 
-                                                            {" "}
-                                                            {rnd(buyFinalValueEqual.current)} 
-                                                            {" "}  {buySource.name})
-                                                        </small>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                         
-                                                :
-                                                <tbody>
                                                     <tr>
                                                         <td><span className="text-primary">شما فروشنده هستید</span></td>
                                                         <td><span className="text-primary">{sellConvertAmount} {" "} {sellSourceR.current.small_name_slug}</span></td>
@@ -813,9 +926,19 @@ function BuySell() {
                                                          </small>
                                                         </td>
                                                     </tr>
-                                                </tbody>}
-                                               </table>
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                        :<div className="schedules-container">
+                                            <h5>خرید و فروش های زمان بندی شده</h5>
+                                            {schedules.length?
+                                                schedules.map((item, idx)=>{
+                                                    return <div>idx</div>
+                                                })
+                                            :"مورد برای نمایش وجود ندارد"
+                                            }
                                         </div>
+                                        }
                                     </div>
                                 </div>
                             </div>

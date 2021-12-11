@@ -8,6 +8,7 @@ export const UPDATE_NETWORK_LIST = "UPDATE_NETWORK_LIST"
 export const CHECKING_TRANSACTION = "CHECKING_TRANSACTION"
 export const CHECKING_WITHDRAW = "CHECKING_WITHDRAW"
 export const CHECKING_IRT_DEPOSIT = "CHECKING_IRT_DEPOSIT"
+export const CREATING_SCHEDULE = "CREATING_SCHEDULE"
 export const GENERATING_IRT_DEPOSIT_LINK = "GENERATING_IRT_DEPOSIT_LINK"
 
 
@@ -83,7 +84,33 @@ export const generating_irt_deposit_link = (is_generating)=>{
         payload: is_generating
     }
 }
-
+export const create_schedule = ({asset, pair, amount, price, type})=>{
+    return dispatch=>{
+        return new Promise((resolve, reject)=>{
+            dispatch(creating_schedule(true))
+            
+            axios.post(Constants.BASE_URL + "/api/v2/schedule/create/", {
+                        asset,
+                        pair,
+                        amount,
+                        price,
+                        type
+                    }).then(response=>{
+                    const {data} = response
+                    if(data.error === 0)
+                        return resolve({result: "success", message: response.message})                    
+                    else
+                        return resolve({result: "fail", message: response.message})                    
+                }).catch(error=>{
+                    return reject({result:"fail", message: "خطا در تایید تراکنش "})
+                }).finally(e=>{
+                    dispatch(update_checking_irt_deposit(false))
+                })
+            
+           
+        })
+    }
+}
 export const check_irt_deposit = ({bank_id, order_id, id})=>{
     return dispatch=>{
         return new Promise((resolve, reject)=>{
@@ -211,6 +238,12 @@ export const checking_withdraw = (is_checking)=>{
     return {
         type: CHECKING_WITHDRAW,
         payload: is_checking
+    }
+}
+export const creating_schedule = (is_updating)=>{
+    return {
+        type: CREATING_SCHEDULE,
+        payload: is_updating
     }
 }
 
