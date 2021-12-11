@@ -93,7 +93,7 @@ function Wallet(props) {
         setFetchingAddress(true)
         axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
             wallet:depositWallet.id,
-            network: network_id
+            network: +network_id
         }).then(response=>{
             if(!response) throw Error(401)
             const {data} = response 
@@ -502,7 +502,7 @@ function Wallet(props) {
                         <div className="col-12 mb-3 position-relative">
                             <label htmlFor="card-select" className="form-label">شبکه</label>
                             <select type="text" className="form-control mb-2" value={withdrawalNetwork} onChange={e=>setWithdrawalNetwork(e.target.value)}>
-                                {networks.length? networks.map((item, idx)=>{
+                                {withdrawWallet&& withdrawWallet.service? withdrawWallet.service.network.map((item, idx)=>{
                                     return <option key={idx} value={item.id}>{item.name} {" "}({item.realName})</option>
                                 }):undefined}
                             </select>
@@ -642,7 +642,7 @@ function Wallet(props) {
                             <select type="text" className="form-control mb-2" value={depositNetwork} onChange={e=>changeDepositNetwork(e.target.value)}>
                                 <option value={""}>انتخاب</option>
                                 
-                                {depositWallet&&depositWallet.service? depositWallet.service.network.map((item, idx)=>{
+                                {depositWallet&&depositWallet.service ? depositWallet.service.network.map((item, idx)=>{
                                     return <option value={item.id}>{item.name} {" "}({item.realName})</option>
                                 }):undefined}
                             </select>
