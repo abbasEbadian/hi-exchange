@@ -12,16 +12,20 @@ import { Link } from 'react-router-dom'
 import OrderList from '../element/orderList';
 import axios from 'axios';
 import {fill} from 'lodash'
+import {FiChevronDown} from 'react-icons/fi'
 
 function Wallet(props) {
     
     const dispatch = useDispatch() 
     const {wallet, checking_transaction, is_fetching, checking_irt_deposit } = useSelector(state => state.wallet)
+    const { networks } = useSelector(state => state.accounts)
     const user  = useSelector(state => state.session.user)
     const [copying, setCopying] = useState(false)
     const cards = useSelector(state => state.accounts.cards)
     const orders = useSelector(state => state.accounts.orders)
     const [address, setAddress] = useState("")
+    const [withdrawalNetwork, setWithdrawalNetwork] = useState("")
+    const [depositNetwork, setDepositNetwork] = useState("")
     const [generatingWallet, setGeneratingWallet] = useState(false)
     const [fetchingAddress, setFetchingAddress] = useState(false)
     const [transactionResult, setTransactionResult] = useState({status:undefined, text: undefined})
@@ -66,7 +70,8 @@ function Wallet(props) {
         setPreDepositModalOpen(false)
     }
     const openPreDepositModal = (currency_id) => {
-        
+        setDepositNetwork("")
+        setAddress("")
         if(user&&user.authentication_status !== "accepted"){
             openNotVerifiedModal()
             return
@@ -82,22 +87,25 @@ function Wallet(props) {
         }
         setDepositWallet(_wallet[0])
         setPreDepositModalOpen(true)
+    }
+    const changeDepositNetwork = (network_id)=>{
+        
         setFetchingAddress(true)
         axios.post(Constants.BASE_URL+"/api/v2/wallet/deposit/address/", {
-            wallet:_wallet[0].id
+            wallet:depositWallet.id,
+            network: network_id
         }).then(response=>{
             if(!response) throw Error(401)
             const {data} = response 
             setAddress(data.address)
-            setSelectedCurrency(_wallet[0])
+            setSelectedCurrency(depositWallet)
         }).catch(err=>{
         }).finally(f=>{
             setFetchingAddress(false)
-
         })
-
+        setDepositNetwork(network_id)
     }
-        const openVerify = (e) => {
+    const openVerify = (e) => {
         e.preventDefault()
         e.stopPropagation()
         axios.get(Constants.BASE_URL+"/api/v2/wallet/withdrawal/otp/")
@@ -202,7 +210,6 @@ function Wallet(props) {
     
 
     const confirmWithdraw= ()=>{
-        console.log(withdrawCard);
         
         if(currencyID === Constants.IRT_CURRENCY_ID){
             dispatch(check_withdraw_irt({
@@ -217,7 +224,8 @@ function Wallet(props) {
                 sourceWallet: withdrawWallet.id,
                 Destwallet: withdrawWalletText, 
                 amount: withdrawAmount,
-                otp: verifyCode
+                otp: verifyCode,
+                network: withdrawalNetwork
             }, setShowVerify, toast))
         }
     }
@@ -478,7 +486,7 @@ function Wallet(props) {
                 <Modal.Title>برداشت از کیف پول </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {currencyID !== Constants.IRT_CURRENCY_ID ?
+                    {currencyID !== Constants.IRT_CURRENCY_ID ?<>
                         <div className="col-12 mb-3">
                             <label htmlFor="card-select" className="form-label">آدرس کیف پول  مقصد</label>
                             <input type="text" className="form-control mb-2" value={withdrawWalletText} onChange={e=>setWithdrawWalletText(e.target.value)}/>
@@ -491,6 +499,17 @@ function Wallet(props) {
                                 در غیر اینصورت ، امکان از بین رفتن دارایی شما وجود دارد.
                             </small>:undefined}
                         </div>
+                        <div className="col-12 mb-3 position-relative">
+                            <label htmlFor="card-select" className="form-label">شبکه</label>
+                            <select type="text" className="form-control mb-2" value={withdrawalNetwork} onChange={e=>setWithdrawalNetwork(e.target.value)}>
+                                {networks.length? networks.map((item, idx)=>{
+                                    return <option key={idx} value={item.id}>{item.name} {" "}({item.realName})</option>
+                                }):undefined}
+                            </select>
+                            <FiChevronDown className="position-absolute" style={{left: "18px", bottom: "12px"}}/>
+
+                        </div>
+                        </>
                     :
                         <>
                             <label htmlFor="card-select" className="form-label">انتخاب کارت</label>
@@ -616,12 +635,26 @@ function Wallet(props) {
                 <Modal.Title>واریز</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {fetchingAddress && !address?
+                    {!depositNetwork?
+                        <>
+                            <div className="col-12 mb-3 position-relative">
+                            <label htmlFor="card-select" className="form-label">شبکه</label>
+                            <select type="text" className="form-control mb-2" value={depositNetwork} onChange={e=>changeDepositNetwork(e.target.value)}>
+                                <option value="">انتخاب</option>
+                                {networks.length? networks.map((item, idx)=>{
+                                    return <option value={item.id}>{item.name} {" "}({item.realName})</option>
+                                }):undefined}
+                            </select>
+                            <FiChevronDown className="position-absolute" style={{left: "18px", bottom: "12px"}}/>
+
+                        </div>
+                        </>
+                    :(fetchingAddress && !address?
                         <>
                             <p>در حال دریافت اطلاعات ...</p>
                         </>
                     :
-                    selectedCurrency && selectedCurrency.service && address?
+                    (selectedCurrency && selectedCurrency.service && address?
                         <>
                             <p>
                             کاربر گرامی ، لطفا ابتدا میزان مورد نظر ارز 
@@ -659,11 +692,13 @@ function Wallet(props) {
                                 {fetchingAddress? <Loader className="mx-3" type="Oval" color="#fff" width={25} height={25}></Loader>:undefined}
                                 </button>
                             </>
-                    }
+                    ))}
                 </Modal.Body>
                 <Modal.Footer>
-                <button className="btn btn-sm btn-success " disabled={!address} onClick={openDepositModal}>
-                {fetchingAddress && !address?
+                <button className="btn btn-sm btn-success " disabled={!address || !depositNetwork} onClick={openDepositModal}>
+                {!depositNetwork? 
+                    "شبکه  را انتخاب کنید"
+                :fetchingAddress && !address ?
                     <Loader type="Oval" color="#fff" height={25} width={25}></Loader> 
                     :
                     "واریز کردم"

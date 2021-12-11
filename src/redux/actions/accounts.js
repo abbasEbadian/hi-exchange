@@ -10,6 +10,7 @@ export const UPDATE_ORDERS =  "UPDATE_ORDERS"
 export const GETTING_ORDERS =  "GETTING_ORDERS"
 export const CREATING_ORDER =  "CREATING_ORDER"
 export const UPDATE_TRANSACTIONS =  "UPDATE_TRANSACTIONS"
+export const UPDATE_NETWORKS =  "UPDATE_NETWORKS"
 
 
 const BASE = Constants.BASE_URL
@@ -20,10 +21,12 @@ export const fetch_user_all_data = ()=>{
         dispatch(get_network_list())
         dispatch(fetch_accounts())
         dispatch(fetch_orders())
+        dispatch(fetch_networks())
         dispatch(fetch_transactions())
         dispatch(userUpdateDetail())
         dispatch(get_unread_notifications())
         dispatch(get_notifications())
+        
 
         // Generate wallets if not aleady have them
         dispatch(get_wallet_list()).then(wallet=>{
@@ -49,6 +52,18 @@ export const fetch_user_all_data = ()=>{
     }
 }
 
+export const fetch_networks = ()=>{
+    return dispatch =>{
+        axios.get(BASE+ "/api/v2/network/list/").then(response=>{
+            
+            if(!response) throw Error(401)
+            const {data} = response
+            dispatch(update_networks(data))
+        }).catch(error=>{
+            console.log("fetch accounts", 401);
+        })
+    }
+}
 export const fetch_accounts = ()=>{
     return dispatch =>{
         axios.get(BASE+ "/api/v2/bank/list/").then(response=>{
@@ -125,6 +140,12 @@ export const update_orders = (orders)=>{
 export const update_transactions = (trans)=>{
     return {
         type: UPDATE_TRANSACTIONS,
+        payload: trans
+    }
+}
+export const update_networks = (trans)=>{
+    return {
+        type: UPDATE_NETWORKS,
         payload: trans
     }
 }

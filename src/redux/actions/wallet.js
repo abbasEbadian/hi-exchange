@@ -157,14 +157,15 @@ export const checking_transaction = (is_checking)=>{
     }
 }
 
-export const check_withdraw = ({sourceWallet, Destwallet, amount, otp}, setShowVerify, toast)=>{
+export const check_withdraw = ({sourceWallet, Destwallet, amount, otp, network}, setShowVerify, toast)=>{
     return dispatch=>{
         dispatch(checking_transaction(true))
         axios.post(Constants.BASE_URL + "/api/v2/wallet/withdrawal/", {
             id: sourceWallet,
             wallet: Destwallet,
             amount: String(amount),
-            otp
+            otp,
+            network
         }).then(response=>{
             const {data} = response
             if (data.error === 1)
