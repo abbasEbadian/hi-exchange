@@ -39,7 +39,7 @@ function OrderList({orders}) {
                                     }else{
                                         type = ["IRT", "USDT"].includes(source)? "buy": "sell"
                                     }
-                                    return  <tr key={idx}>
+                                    return (!order.is_schedule || (order.is_schedule && order.status==="delivered") )&& <tr key={idx}>
                                         <td>{order.id || "-"}</td>
                                         {type === "buy"?
                                             <>

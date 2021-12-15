@@ -35,6 +35,7 @@ import { sessionService } from 'redux-react-session'
 import { useDispatch }from 'react-redux'
 import { fetch_currencies,  fetch_user_all_data } from '../redux/actions'
 import { Constants } from '../Constants'
+import {ToastContainer} from 'react-toastify'
 // Set token to axios requestss
 
 
@@ -176,6 +177,18 @@ const Index = ()=> {
                         <Route><S404></S404></Route>
                     </Switch>
                 </div>
+                <ToastContainer
+                    position="bottom-left"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={true}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    />
+                    
             </BrowserRouter>
            :
             <section></section> 

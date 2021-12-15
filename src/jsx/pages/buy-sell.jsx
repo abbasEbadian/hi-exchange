@@ -1,30 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form} from 'react-bootstrap';
+import {  Tab, Tabs, Form, Popover,Modal} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
-import { creating_order, create_order, create_schedule } from '../../redux/actions';
+import { creating_order, create_order, create_schedule, cancel_schedule } from '../../redux/actions';
 import qs from 'qs'
 import axios from 'axios';
 import {toast, ToastContainer} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 import Chart from '../element/chart'
+import IRTChart from '../charts/IRTChart' 
 const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
 function irt(num) {
     const t = Number(Number(p2e(String(num).replace(/٬/g, ''))).toFixed()).toLocaleString('fa-IR')
-    console.log("irt",t);
-    
     return t
 }
-function rnd(num) {  
+function rnd(num, us=false) {  
     let num2 = String(num)
     .replace(/,/g, '') 
     .replace(/،/g, '') 
     .replace(/٬/g, '') 
     num2 = p2e(num2) 
+    if (us) return num2
     
     return String(num).indexOf("٬")>-1? irt(Math.round(Number(num2)*1000)/1000):Math.round(Number(num2)*1000)/1000
 }
@@ -33,7 +33,6 @@ function compute_fee(unit, unit_price, source_amount, subfrom=undefined) {
     unit_price = String(unit_price || "").replace(/,/g, '');
     source_amount = String(source_amount || "").replace(/,/g, '');
     const tot = Number(unit_price) * Number(source_amount)
-    console.log("tot", tot);
     
     if(isNaN(tot)) return 0
     if(subfrom){
@@ -42,7 +41,6 @@ function compute_fee(unit, unit_price, source_amount, subfrom=undefined) {
         return subfrom - tot 
     }
     if(unit === "IRT") {
-        console.log("in",irt(tot));
         
         return irt(tot)
     }
@@ -85,8 +83,14 @@ function BuySell() {
     // Schedule
     const [buySchedulePrice, setBuySchedulePrice] = useState(0)
     const [sellSchedulePrice, setSellSchedulePrice] = useState(0)
-
+    const [lastChartName, setLastChartName] = useState()
+    const [isScheduledBuy, setIsScheduledBuy] = useState(false)
+    const [buyScheduleAmount, setBuyScheduleAmount] = useState(0)
+    const [isScheduledSell, setIsScheduledSell] = useState(false)
+    const [sellScheduleAmount, setSellScheduleAmount] = useState(0)
     const [sellDestination, setSellDestination ] = useState({})
+    const [cancelScheduleID, setCancelSceduleID] = useState(undefined)
+    const [showCancelModal, setShowCancelModal] = useState(undefined)
 
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
@@ -122,9 +126,8 @@ function BuySell() {
     const buyAmountRef = useRef(0)
     // const sellConvertValidR = useRef(false)
 
-
-    const [lastChartName, setLastChartName] = useState()
-
+    // Chart
+    const [lastTab, setLastTab] = React.useState("buy")
 
     const buyUnitPrice = useRef(0)
     const buyFeeUnit = useRef("")
@@ -134,6 +137,7 @@ function BuySell() {
     const buyTotalFeeEqual = useRef(0)
     const buyFinalValue = useRef(0)
     const buyFinalValueEqual = useRef(0)
+    const buyBuyerAmount = useRef(0)
 
     const sellUnitPrice = useRef(0)
     const sellFeeUnit = useRef("")
@@ -145,21 +149,22 @@ function BuySell() {
     const sellFinalValueEqual = useRef(0)
 
     const handleBuyConfirm = ()=>{
-        if(buySchedulePrice > 0){
+        if(isScheduledBuy){
             dispatch(create_schedule({
                 asset: buySource.id,
                 pair: buyDestinationR.current.id,
-                amount: buyConvertAmount,
+                amount: buyScheduleAmount,
                 price: buySchedulePrice,
                 type: "buy"
             })).then(({result, message})=>{
+                
                 if(result==="success")
                     toast.success(message)
                 else
-                toast.error(message)
+                    toast.error(message)
             }).catch(err=>{
                 console.log(err);
-                toast.error("خطا در برقراری با سرور")
+                toast.error("مقدار درخواستی شما کمتر از حد مجاز میباشد")
             })
         }else{
 
@@ -180,11 +185,11 @@ function BuySell() {
         }
     }
     const handleSellConfirm = ()=>{
-        if(sellSchedulePrice > 0){
+        if(isScheduledSell){
             dispatch(create_schedule({
                 asset: sellSourceR.current.id,
                 pair: sellDestination.id,
-                amount: sellConvertAmount,
+                amount: sellScheduleAmount,
                 price: sellSchedulePrice,
                 type: "sell"
             })).then(({result, message})=>{
@@ -194,7 +199,7 @@ function BuySell() {
                 toast.error(message)
             }).catch(err=>{
                 console.log(err);
-                toast.error("خطا در برقراری با سرور")
+                toast.error("مقدار درخواستی شما کمتر از حد مجاز میباشد")
             })
         }else{
             dispatch(creating_order(true))
@@ -231,6 +236,7 @@ function BuySell() {
         buyAvailableCurrencyR.current = av
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
+        setBuyScheduleAmount(0)
         setBuySource(selectedCurrency);
         computePrices({buyConvertAmountP: 0})
     }
@@ -241,7 +247,7 @@ function BuySell() {
         buyDestinationR.current = selectedCurrency;
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        setLastChartName(selectedCurrency)
+        setLastChartName(selectedCurrency.small_name_slug)
         computePrices({buyConvertAmountP: 0})
 
     }
@@ -275,6 +281,15 @@ function BuySell() {
             computePrices({buyConvertAmountP: value})
         setBuyConvertAmount(value)
     }
+    const changeBuyScheduleAmount = (value)=>{
+        
+        computePrices({buyConvertAmountP: +value/buySchedulePrice})
+        setBuyScheduleAmount(value)
+    }
+    const changeBuySchedulePrice = (value)=>{
+        computePrices({buyConvertAmountP: buyScheduleAmount/value, buySchedulePriceP: value})
+        setBuySchedulePrice(value)
+    }
     const changeSellAmount = (value, rerender=true)=>{
         if (rerender)    
             computePrices({sellConvertAmountP: value})
@@ -283,6 +298,7 @@ function BuySell() {
     const computePrices = ({
         buyConvertAmountP= buyConvertAmount,
         sellConvertAmountP= sellConvertAmount,
+        buySchedulePriceP=buySchedulePrice,
         buyConvertAll=undefined
     })=>{
         if(tab === "buy"){
@@ -344,9 +360,9 @@ function BuySell() {
                 buyFinalValueEqual.current = Number(buyConversionResultR.current) - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
 
                 if(buySource.id === Constants.IRT_CURRENCY_ID && buyDestinationR.current.name.indexOf("تتر") >-1){
-                    buyFixedFeeEqual.current = buyFixedKarmozdR.current/ +buyUnitPrice.current 
-                    buyVariableFeeEqual.current =   (buyTransactionFee.current / +buyUnitPrice.current) 
-                    buyTotalFeeEqual.current = buyKarmozdAmountR.current / +buyUnitPrice.current
+                    buyFixedFeeEqual.current = (buyFixedKarmozdR.current/ +buyUnitPrice.current ).toFixed(6)
+                    buyVariableFeeEqual.current =   (buyTransactionFee.current / +buyUnitPrice.current).toFixed(6)
+                    buyTotalFeeEqual.current = (buyKarmozdAmountR.current / +buyUnitPrice.current).toFixed(6)
                     buyFinalValue.current = buyConvertAmountP - (buyKarmozdAmountR.current / buyDestinationR.current.show_price_irt)
                     buyFinalValueEqual.current = irt(buyFinalValue.current  * buyDestinationR.current.show_price_irt)
                     buyFeeUnit.current = buySource.name
@@ -356,9 +372,12 @@ function BuySell() {
                     buyTransactionFee.current = irt(buyTransactionFee.current)
                     buyKarmozdAmountR.current = irt(buyKarmozdAmountR.current)
                 }
+                
 
                 buyTotalR.current = (a+a2).toLocaleString()
                 if(buySource.small_name_slug === "IRT"){
+                    console.log(buyUnitPrice);
+                    
                     buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
                 }
                 if(data.message && data.message.indexOf("خرید")!==-1){
@@ -372,11 +391,19 @@ function BuySell() {
                     changeBuyAmount(data["destination_price"], false)
                 }
 
-                
+               
 
 
                 // setBuyConvertAmount(buyConvertAmountP)
                 buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
+                if(isScheduledBuy){    
+                    const fee = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
+                    buyFinalValueEqual.current = buyConvertAmountP*buySchedulePriceP - rnd(fee, 1)
+                    buyLowCreditR.current = buyConvertAmountP*buySchedulePrice > +buyAvailableCurrencyR.current
+                }
+
+                
+                buyBuyerAmount.current = buyConvertAmountP
                 setBuyConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -448,7 +475,6 @@ function BuySell() {
                     sellFinalValueEqual.current = irt(sellFinalValue.current  * sellDestination.show_price_irt)
                     sellFeeUnit.current = sellSourceR.current.name
                     sellFeeUnitEqual.current = sellDestination.small_name_slug
-
                     sellFixedKarmozdR.current = irt(sellFixedKarmozdR.current)
                     sellTransactionFee.current = irt(sellTransactionFee.current)
                     sellKarmozdAmountR.current = irt(sellKarmozdAmountR.current)
@@ -463,7 +489,6 @@ function BuySell() {
 
                 
                 // setsellConvertAmount(sellConvertAmountP)
-                console.log(sellConvertAmountP , +sellAvailableCurrencyR.current)
                 sellLowCreditR.current = !sellConvertAmountP || sellConvertAmountP > +sellAvailableCurrencyR.current
                 setSellConvertInvalid(Math.random())
                
@@ -479,10 +504,27 @@ function BuySell() {
    }, [currencyList])
    
     const handleSelect = (key)=>{
+            setLastTab(prev=>{
+                return key!=="schedule"?key:prev
+            })
             setTab(key)   
     }
+    const cancelSchedule =()=>{
+        dispatch(cancel_schedule({id:cancelScheduleID}))
+        .then(response=>{
+            if(response.result === "success"){
+                toast.success(response.message)
+                setShowCancelModal(false)
+            }
+            else
+                toast.error(response.message)
+        }).catch(err=>{toast.error(err.message)})
+    }
     
-    
+    const openCancelModal =(id)=>{
+        setCancelSceduleID(id)
+        setShowCancelModal(true)
+    }
     return (
         <>
             <Header2 />
@@ -529,40 +571,73 @@ function BuySell() {
                                                             </Form.Control>
                                                             
                                                     </div>
-                                                    <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"110px"}} >خرید در قیمت:</label>
-                                                        <input className="form-control w-50" type="number"
-                                                            onClick={e=>setBuySchedulePrice("")}
-                                                            name="price" value={buySchedulePrice} onChange={e=>setBuySchedulePrice(e.target.value)}/>
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">مقدار 
-                                                            {buyDestinationR.current && buyDestinationR.current.id? 
-                                                                <>
-                                                                <i className="px-2"> {" "}{buyDestinationR.current.name}{" "}</i>    
-                                                                    مورد نظر
-                                                                </>:undefined
-                                                        }
-                                                        </label>
-                                                        <div className="input-group position-relative">
-                                                            <span className={"position-absolute icofont-close-line cursor-poitner " + (!buyConvertAmount?"d-none":undefined)} 
-                                                                style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeBuyAmount(0)}}></span>
-                                                            <input type="text" name="currency_amount" className="form-control" ref={buyAmountRef} value={buyConvertAmount} onFocus={e=>{changeBuyAmount("")}}  onChange={e=>changeBuyAmount(e.target.value)}
-                                                                placeholder="" />
-                                                            <input type="text" name="usd_amount" className="form-control " value={buyConversionResultStrR.current} readOnly
-                                                                placeholder="" />
-
-                                                            {buySource.name ? <div className="input-group-append p-0">
-                                                                <span className="input-group-text">{ buySource.name }</span>
-                                                            </div>:undefined}
+                                                    <div id="formGridCheckbox" class="mb-3 form-group">
+                                                        <div class="form-check ">
+                                                            <input type="checkbox"  style={{float:"right", backgroundColor: "#555"}} class="form-check-input" value={isScheduledBuy} onChange={e=>setIsScheduledBuy(e.target.checked)}/>
+                                                            <label title="" class="me-4 form-check-label"><small>خرید در قیمت خاص</small></label>
                                                         </div>
-                                                        
                                                     </div>
+                                                    {isScheduledBuy?
+                                                        <>
+                                                        <div className="mb-3 d-flex align-items-center">
+                                                            <label className="form-label  text-nowrap" style={{width:"110px"}} ><small>خرید در قیمت:</small></label>
+                                                            <div className="input-group" style={{width:"unset"}}>
+                                                                <input className="form-control w-50" type="number"
+                                                                    onClick={e=>setBuySchedulePrice("")}
+                                                                    name="price" value={buySchedulePrice} onChange={e=>changeBuySchedulePrice(e.target.value)}/>
+                                                                {buySource.name ? <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{ buySource.name }</span>
+                                                                </div>:undefined}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mb-3 d-flex align-items-center">
+                                                            <label className="form-label  text-nowrap" style={{width:"110px"}} > خرید به مقدار :</label>
+                                                            <div className="input-group" style={{width:"unset"}}>
+                                                                <input className="form-control w-50" type="number"
+                                                                    onClick={e=>setBuyScheduleAmount("")}
+                                                                    name="amount" value={buyScheduleAmount} onChange={e=>changeBuyScheduleAmount(e.target.value)}/>
+                                                                {buySource.name ? <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{ buySource.name }</span>
+                                                                </div>:undefined}
+                                                            </div>
+                                                        </div>
+                                                        </>
+                                                    :
+                                                    
+                                                        <div className="mb-3">
+                                                            <label className="form-label">مقدار 
+                                                                {buyDestinationR.current && buyDestinationR.current.id? 
+                                                                    <>
+                                                                    <i className="px-2"> {" "}{buyDestinationR.current.name}{" "}</i>    
+                                                                        مورد نظر
+                                                                    </>:undefined
+                                                            }
+                                                            </label>
+                                                            <div className="input-group position-relative">
+                                                                <span className={"position-absolute icofont-close-line cursor-poitner " + (!buyConvertAmount?"d-none":undefined)} 
+                                                                    style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeBuyAmount(0)}}></span>
+                                                                <input type="text" name="currency_amount" className="form-control" ref={buyAmountRef} value={buyConvertAmount} onFocus={e=>{changeBuyAmount("")}}  onChange={e=>changeBuyAmount(e.target.value)}
+                                                                    placeholder="" />
+                                                                <input type="text" name="usd_amount" className="form-control " value={buyConversionResultStrR.current} readOnly
+                                                                    placeholder="" />
+
+                                                                {buySource.name ? <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{ buySource.name }</span>
+                                                                </div>:undefined}
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    }
+                                                    
                                                     <div className=" col-xl-12 mb-3 d-flex align-items-center p-0">
                                                         <small  htmlFor="currency_amount_available">موجودی :</small>
                                                         <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(buyAvailableCurrencyR.current).toLocaleString() } {" "} { buySource.small_name_slug  }</span>
                                                         { buySource.id &&
-                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{computePrices({"buyConvertAll": buyAvailableCurrencyR.current})}}>$</div>
+                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{
+                                                                computePrices({"buyConvertAll": buyAvailableCurrencyR.current});
+                                                                setBuyScheduleAmount(buyAvailableCurrencyR.current)
+                                                                }}>$</div>
                                                         }
                                                     </div>
                                                     {buyConversionResultR.current?<div className="col-12 row mb-3 mx-0 ">
@@ -581,7 +656,7 @@ function BuySell() {
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
                                                     disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
-                                                            {buySchedulePrice>0? "ایجاد سفارش خرید": "خرید"}
+                                                            {isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
                                                             {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
@@ -617,42 +692,67 @@ function BuySell() {
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
                                                         
                                                     </div>
-
-                                                    
-                                                    <div className="mb-3 d-flex align-items-center">
-                                                        <label className="form-label  text-nowrap" style={{width:"110px"}} > فروش در قیمت:</label>
-                                                        <input className="form-control w-50" type="number"
-                                                            onClick={e=>setSellSchedulePrice("")}
-                                                            name="price" value={sellSchedulePrice} onChange={e=>setSellSchedulePrice(e.target.value)}/>
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">
-                                                            مقدار
-                                                            {sellSourceR.current && sellSourceR.current.id? 
-                                                                <>
-                                                                <i className="px-2"> {sellSourceR.current.name}</i>    
-                                                                مورد نظر
-                                                                </>:undefined
-                                                        }</label>
-                                                        <div className="input-group">
-                                                            <span className={"position-absolute icofont-close-line cursor-poitner " + (!sellConvertAmount?"d-none":undefined)} 
-                                                                style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeSellAmount(0)}}></span>
-                                                            
-                                                            <input type="text" name="currency_amount" className="form-control" onFocus={e=>{changeSellAmount("")}} value={sellConvertAmount} onChange={e=>changeSellAmount(e.target.value)}
-                                                                placeholder="" />
-                                                            <input type="text" name="usd_amount" className="form-control " value={sellConversionResultStrR.current} readOnly
-                                                                placeholder="" />
-                                                            {sellDestination.name? <div className="input-group-append p-0">
-                                                                <span className="input-group-text">{ sellDestination.name }</span>
-                                                            </div>:undefined}
+                                                    <div id="formGridCheckbox" class="mb-3 form-group">
+                                                        <div class="form-check ">
+                                                            <input type="checkbox"  style={{float:"right", backgroundColor: "#555"}} class="form-check-input" value={isScheduledSell} onChange={e=>setIsScheduledSell(e.target.checked)}/>
+                                                            <label title="" class="me-4 form-check-label"><small>فروش در قیمت خاص</small></label>
                                                         </div>
-                                                       
                                                     </div>
+                                                    {isScheduledSell?
+                                                        <>
+                                                        <div className="mb-3 d-flex align-items-center">
+                                                            <label className="form-label  text-nowrap" style={{width:"110px"}} ><small>فروش در قیمت:</small></label>
+                                                            <input className="form-control w-50" type="number"
+                                                                onClick={e=>setSellSchedulePrice("")}
+                                                                name="price" value={sellSchedulePrice} onChange={e=>setSellSchedulePrice(e.target.value)}/>
+                                                        </div>
+
+                                                        <div className="mb-3 d-flex align-items-center">
+                                                            <label className="form-label  text-nowrap" style={{width:"110px"}} > فروش به مقدار :</label>
+                                                            <div className="input-group" style={{width:"unset"}}>
+                                                                <input className="form-control w-50" type="number"
+                                                                    onClick={e=>setSellScheduleAmount("")}
+                                                                    name="amount" value={sellScheduleAmount} onChange={e=>setSellScheduleAmount(e.target.value)}/>
+                                                                {sellSourceR.current.name ? <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{ sellSourceR.current.name }</span>
+                                                                </div>:undefined}
+                                                            </div>
+                                                        </div>
+                                                        </>:
+                                                             <div className="mb-3">
+                                                                <label className="form-label">
+                                                                    مقدار
+                                                                    {sellSourceR.current && sellSourceR.current.id? 
+                                                                        <>
+                                                                        <i className="px-2"> {sellSourceR.current.name}</i>    
+                                                                        مورد نظر
+                                                                        </>:undefined
+                                                                }</label>
+                                                                <div className="input-group">
+                                                                    <span className={"position-absolute icofont-close-line cursor-poitner " + (!sellConvertAmount?"d-none":undefined)} 
+                                                                        style={{right: 0, top: "6px", fontWeight: 100, fontSize: "32px", zIndex: 1000}} onClick={e=>{changeSellAmount(0)}}></span>
+                                                                    
+                                                                    <input type="text" name="currency_amount" className="form-control" onFocus={e=>{changeSellAmount("")}} value={sellConvertAmount} onChange={e=>changeSellAmount(e.target.value)}
+                                                                        placeholder="" />
+                                                                    <input type="text" name="usd_amount" className="form-control " value={sellConversionResultStrR.current} readOnly
+                                                                        placeholder="" />
+                                                                    {sellDestination.name? <div className="input-group-append p-0">
+                                                                        <span className="input-group-text">{ sellDestination.name }</span>
+                                                                    </div>:undefined}
+                                                                </div>
+                                                            
+                                                            </div>
+                                                        }
+                                                    
+                                                   
                                                     <div className={"col-xl-12 mb-3 d-flex align-items-center p-0" + (sellSourceR.current.id?"":" d-none")}>
                                                         <small  htmlFor="currency_amount_available">موجودی :</small>
                                                         <span className="text-success px-2 fs-5 pt-1" dir="ltr">{ Number(sellAvailableCurrencyR.current).toLocaleString() } {" "} { sellSourceR.current.small_name_slug  }</span>
                                                         { sellSourceR.current.id &&
-                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{changeSellAmount(sellAvailableCurrencyR.current)}}>$</div>
+                                                            <div className="select-all-tooltip me-2" alt="انتخاب کل موجودی" onClick={()=>{
+                                                                changeSellAmount(sellAvailableCurrencyR.current);
+                                                                setSellScheduleAmount(sellAvailableCurrencyR.current)
+                                                                }}>$</div>
                                                         }
                                                     </div>
                                                     {sellConversionResultR.current? <div className="col-12 row mb-3 mx-0 ">
@@ -661,7 +761,7 @@ function BuySell() {
                                                             <label className="text-nowrap">قیمت تمام شده هر واحد 
                                                                 <i className="px-2">{ sellDestination.name }</i>
                                                                 :
-                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellUnitPrice.current }</span>  <i>{ sellSourceR.current.name}</i></span>
+                                                                <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ Number(sellUnitPrice.current).toFixed(6)  }</span>  <i>{ sellSourceR.current.name}</i></span>
                                                             </label>
                                                             :
                                                              <label className="text-nowrap">قیمت تمام شده هر واحد 
@@ -680,7 +780,7 @@ function BuySell() {
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
                                                      disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">
-                                                            {sellSchedulePrice>0? "ایجاد سفارش فروش": "فروش"}
+                                                            {isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}
 
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
@@ -705,11 +805,15 @@ function BuySell() {
                                     <div className="buyer-seller">
                                         <div className="d-flex flex-column mb-3 border-bottom pb-1">
                                             {chartOpen ?
-                                                    <span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
-                                                    :<span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}></span>
+                                                    <><span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
+                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                <Chart selectedChart={lastChartName}/>
+                                                    {/* {lastTab==="buy" && buySource.small_name_slug==="IRT"?<IRTChart currency={buyDestinationR.current.small_name_slug}/>:undefined}
+                                                    {lastTab==="buy" && buySource.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined}
+                                                    {lastTab==="sell" && sellDestination.small_name_slug==="IRT"?<IRTChart currency={sellSourceR.current.small_name_slug}/>:undefined}
+                                                    {lastTab==="sell" && buySource.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined} */}
+                                                    <Chart selectedChart={lastChartName}/>
                                                 </div>
                                             
 
@@ -720,7 +824,7 @@ function BuySell() {
                                                     <tbody>
                                                         <tr>
                                                             <td><span className="text-primary">شما خریدار هستید</span></td>
-                                                            <td><span className="text-primary">{buyConvertAmount || 0} {" "} {buyDestinationR.current.small_name_slug}</span></td>
+                                                            <td><span className="text-primary">{buyBuyerAmount.current} {" "} {buyDestinationR.current.small_name_slug}</span></td>
                                                         </tr>
                                                         <tr>
                                                             <td>روش پرداخت</td>
@@ -760,7 +864,7 @@ function BuySell() {
                                                         </tr>
                                                         <tr>
                                                             <td>مبلغ  تراکنش</td>
-                                                            <td>{buyConversionResultR.current.toLocaleString() || 0} {" "} {buySource.name}</td>
+                                                            <td>{isScheduledBuy? buyScheduleAmount:buyConversionResultR.current.toLocaleString() || 0} {" "} {buySource.name}</td>
                                                         </tr>
                                                     
                                                         <tr>
@@ -857,9 +961,67 @@ function BuySell() {
                                             </div>
                                         :<div className="schedules-container">
                                             <h5 >سفارشات باز</h5>
-                                            {schedules.length?
+                                            {schedules.length && currencyList.length?
                                                 schedules.map((item, idx)=>{
-                                                    return <div>idx</div>
+                                                    const s = currencyList.filter(i=>i&&i.id===item.source_asset)[0]
+                                                    const d = currencyList.filter(i=>i&&i.id===item.destination_asset)[0]
+                                                    return <div className="border rounded mb-1 p-2 position-relative">
+                                                        <h6>شماره سفارش: {item.id}</h6>
+                                                        {item.type==="buy"?<div style={{"fontSize": "15px"}}>
+                                                            {"خرید "} <small className="text-primary">{s.name}</small>
+                                                            {" در بازار "} <small className="text-primary">{d.name}</small>
+                                                            {" به مقدار "} <small className="text-primary">{item.source_amount} {" "} {d.name}</small>
+                                                            {" در قیمت "} <small className="text-primary">{item.order_amount || "20"}</small><br/>
+                                                            {" وضعیت: "} <small className="text-primary">{item.status}</small>
+                                                            </div>
+                                                        :<div style={{"fontSize": "15px"}}>
+                                                            {" فروش "} <small className="text-primary">{item.source_amount} {" "}{s.name}</small>
+                                                            {" در بازار "} <small className="text-primary">{d.name}</small>
+                                                            {" در قیمت "} <small className="text-primary">{item.order_amount || "20"}</small> <br/>
+                                                            {" وضعیت: "} <small className="text-primary">{item.status}</small>
+                                                            </div>}
+                                            
+                                                        {item.status==="pending"&& 
+                                                            <div style={{cursor: "pointer"}} className="text-danger position-absolute p-2 start-0 bottom-0">
+                                                                <small onClick={e=>openCancelModal(item.id)}>لغو سفارش</small>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    /**return <div className="border rounded p-2">
+                                                        <h6>شماره سفارش: {item.id}</h6>
+                                                        <div className="d-flex flex-wrap">
+                                                            <div className="ms-2">
+                                                                <small>مبدا:</small>
+                                                                <small className="text-primary">{d.name}</small>
+                                                            </div>
+                                                            
+                                                            <div className="mx-2">
+                                                                <small>مقصد:</small>
+                                                                <small className="text-primary">{s.name}</small>
+                                                            </div>
+                                                            <div className="mx-2">
+                                                                <small>قیمت مورد نظر:</small>
+                                                                <small className="text-primary">{123}</small>
+                                                            </div>
+                                                            <div className="mx-2">
+                                                                <small>مقدار:</small>
+                                                                <small className="text-primary">{item.source_amount} {" "}{d.name}</small>
+                                                            </div>
+                                                            <div className="mx-2">
+                                                                <small>نوع:</small>
+                                                                <small className="text-primary">{item.type==="buy"?"خرید":"فروش"}</small>
+                                                            </div>
+                                                            <div className="me-2">
+                                                                <small>وضعیت:</small>
+                                                                <small className="text-primary">{item.status}</small>
+                                                            </div>
+                                                            <div className="me-0">
+                                                                <small>قیمت فعلی:</small>
+                                                                <small className="text-primary">{item.type === "buy"? s.buyPrice: s.sellPrice}</small>
+                                                            </div>
+                                                        </div>
+
+                                                    </div> */
                                                 })
                                             :"مورد برای نمایش وجود ندارد"
                                             }
@@ -873,18 +1035,26 @@ function BuySell() {
 
                   
                 </div>
-                <ToastContainer
-                    position="bottom-left"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={true}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    />
-                    
+                <Modal  contentClassName="dark" show={showCancelModal} onHide={() => setShowCancelModal(false)} backdrop='static'>
+                    <Modal.Header closeButton>
+                    <Modal.Title>لغو سفارش</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <p>آیا از لغو این سفارش اطمینان دارید ؟</p>
+                        
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <button
+                            onClick={cancelSchedule}
+                            className={"btn btn-success ps-5 pe-5 "}
+                            type="button"
+                        >
+                            <span> تایید </span>
+                        </button>
+                    </Modal.Footer>
+               
+                 </Modal>
+                
             </div>
 
             

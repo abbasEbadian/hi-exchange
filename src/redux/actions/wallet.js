@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Constants } from '../../Constants'
-
+import {fetch_orders} from './accounts'
 
 export const UPDATE_WALLET_LIST = "UPDATE_WALLET_LIST"
 export const UPDATE_FETCHING_STATE = "UPDATE_FETCHING_STATE"
@@ -90,21 +90,43 @@ export const create_schedule = ({asset, pair, amount, price, type})=>{
             dispatch(creating_schedule(true))
             
             axios.post(Constants.BASE_URL + "/api/v2/schedule/create/", {
-                        asset,
-                        pair,
+                       pair:asset,
+                        asset:pair,
                         amount,
                         price,
                         type
                     }).then(response=>{
-                    const {data} = response
+                    const {data} = response 
+                    dispatch(fetch_orders())
                     if(data.error === 0)
-                        return resolve({result: "success", message: response.message})                    
-                    else
-                        return resolve({result: "fail", message: response.message})                    
+                        return resolve({result: "success", message: data.message})                    
+                    
+                    return resolve({result: "fail", message: data.message})                    
                 }).catch(error=>{
                     return reject({result:"fail", message: "خطا در تایید تراکنش "})
                 }).finally(e=>{
-                    dispatch(update_checking_irt_deposit(false))
+                    
+                    dispatch(creating_schedule(false))
+                })
+            
+           
+        })
+    }
+}
+export const cancel_schedule = ({id})=>{
+    return dispatch=>{
+        return new Promise((resolve, reject)=>{            
+            axios.post(Constants.BASE_URL + "/api/v2/schedule/cancel/", {
+                      id
+                    }).then(response=>{
+                    const {data} = response 
+                    dispatch(fetch_orders())
+                    if(data.error === 0)
+                        return resolve({result: "success", message: data.message})                    
+                    
+                    return resolve({result: "fail", message: data.message})                    
+                }).catch(error=>{
+                    return reject({result:"fail", message: "خطا در تایید تراکنش "})
                 })
             
            

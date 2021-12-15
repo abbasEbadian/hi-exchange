@@ -502,6 +502,8 @@ function Wallet(props) {
                         <div className="col-12 mb-3 position-relative">
                             <label htmlFor="card-select" className="form-label">شبکه</label>
                             <select type="text" className="form-control mb-2" value={withdrawalNetwork} onChange={e=>setWithdrawalNetwork(e.target.value)}>
+                                <option value="">انتخاب</option>
+
                                 {withdrawWallet&& withdrawWallet.service? withdrawWallet.service.network.map((item, idx)=>{
                                     return <option key={idx} value={item.id}>{item.name} {" "}({item.realName})</option>
                                 }):undefined}

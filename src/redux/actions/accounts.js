@@ -27,6 +27,7 @@ export const fetch_user_all_data = ()=>{
         dispatch(userUpdateDetail())
         dispatch(get_unread_notifications())
         dispatch(get_notifications())
+        dispatch(fetch_schedules())
         
 
         // Generate wallets if not aleady have them
@@ -108,6 +109,20 @@ export const fetch_orders = ()=>{
             if(!response) throw Error(401)
             const {data} = response
             dispatch(update_orders(data))
+        }).catch(error=>{
+            console.log("fetch ord", 401);
+        }).finally(f=>{
+            dispatch(getting_orders(false))
+        })
+    }
+}
+export const fetch_schedules = ()=>{
+    return dispatch =>{
+        dispatch(getting_orders(true))
+        axios.get(BASE+ "/api/v2/order/list/?schedule=True").then(response=>{
+            if(!response) throw Error(401)
+            const {data} = response
+            dispatch(update_schedules(data))
         }).catch(error=>{
             console.log("fetch ord", 401);
         }).finally(f=>{
