@@ -90,14 +90,15 @@ export const create_schedule = ({asset, pair, amount, price, type})=>{
             dispatch(creating_schedule(true))
             
             axios.post(Constants.BASE_URL + "/api/v2/schedule/create/", {
-                       pair:asset,
-                        asset:pair,
+                        asset,
+                        pair,
                         amount,
                         price,
                         type
                     }).then(response=>{
                     const {data} = response 
                     dispatch(fetch_orders())
+                    dispatch(get_wallet_list())
                     if(data.error === 0)
                         return resolve({result: "success", message: data.message})                    
                     

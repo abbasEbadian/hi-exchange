@@ -147,12 +147,13 @@ function BuySell() {
     const sellTotalFeeEqual = useRef(0)
     const sellFinalValue = useRef(0)
     const sellFinalValueEqual = useRef(0)
+    const sellBuyerAmount = useRef(0)
 
     const handleBuyConfirm = ()=>{
         if(isScheduledBuy){
             dispatch(create_schedule({
-                asset: buySource.id,
-                pair: buyDestinationR.current.id,
+                pair: buySource.id,
+                asset: buyDestinationR.current.id,
                 amount: buyScheduleAmount,
                 price: buySchedulePrice,
                 type: "buy"
@@ -252,6 +253,7 @@ function BuySell() {
 
     }
     const changeSellDestination = (e, selectedCurrency)=>{
+        if(!currencyList.length) return
         selectedCurrency = currencyList.filter(c=>c.id===+selectedCurrency)[0]
         sellLowCreditR.current = false
         setSellDestination(selectedCurrency)
@@ -282,7 +284,6 @@ function BuySell() {
         setBuyConvertAmount(value)
     }
     const changeBuyScheduleAmount = (value)=>{
-        
         computePrices({buyConvertAmountP: +value/buySchedulePrice})
         setBuyScheduleAmount(value)
     }
@@ -290,6 +291,18 @@ function BuySell() {
         computePrices({buyConvertAmountP: buyScheduleAmount/value, buySchedulePriceP: value})
         setBuySchedulePrice(value)
     }
+
+    const changeSellScheduleAmount = (value)=>{
+        
+        computePrices({sellConvertAmountP: +value})
+        setSellScheduleAmount(value)
+    }
+    const changeSellSchedulePrice = (value)=>{
+        computePrices({sellConvertAmountP: sellScheduleAmount, sellSchedulePriceP: value})
+        setSellSchedulePrice(value)
+    }
+
+
     const changeSellAmount = (value, rerender=true)=>{
         if (rerender)    
             computePrices({sellConvertAmountP: value})
@@ -299,6 +312,7 @@ function BuySell() {
         buyConvertAmountP= buyConvertAmount,
         sellConvertAmountP= sellConvertAmount,
         buySchedulePriceP=buySchedulePrice,
+        sellSchedulePriceP=sellSchedulePrice,
         buyConvertAll=undefined
     })=>{
         if(tab === "buy"){
@@ -375,9 +389,7 @@ function BuySell() {
                 
 
                 buyTotalR.current = (a+a2).toLocaleString()
-                if(buySource.small_name_slug === "IRT"){
-                    console.log(buyUnitPrice);
-                    
+                if(buySource.small_name_slug === "IRT"){                    
                     buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
                 }
                 if(data.message && data.message.indexOf("خرید")!==-1){
@@ -397,13 +409,14 @@ function BuySell() {
                 // setBuyConvertAmount(buyConvertAmountP)
                 buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
                 if(isScheduledBuy){    
-                    const fee = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
+                    const fee = compute_fee(buySource.small_name_slug, buySchedulePriceP, buyKarmozdAmountR.current)
                     buyFinalValueEqual.current = buyConvertAmountP*buySchedulePriceP - rnd(fee, 1)
                     buyLowCreditR.current = buyConvertAmountP*buySchedulePrice > +buyAvailableCurrencyR.current
                 }
 
                 
                 buyBuyerAmount.current = buyConvertAmountP
+
                 setBuyConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -450,9 +463,9 @@ function BuySell() {
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
-                sellKarmozdAmountR.current =  +data["total_fee"] || 0
-                sellTransactionFee.current =  +data["fee"] || 0
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
+                sellTransactionFee.current =  +data["fee"] || 0
+                sellKarmozdAmountR.current =  +data["total_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 sellUnitPrice.current = data['unit_price']
@@ -479,17 +492,26 @@ function BuySell() {
                     sellTransactionFee.current = irt(sellTransactionFee.current)
                     sellKarmozdAmountR.current = irt(sellKarmozdAmountR.current)
                 }
-                if(sellDestination.small_name === "IRT"){
+                if(sellDestination.small_name === "IRT" && !isScheduledSell){
                     let v = a + sellKarmozdAmountR.current 
                     sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()
-                    sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
+                    // sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
                 }else{
                     sellTotalR.current = (a+a2).toLocaleString()
                 }
+                sellBuyerAmount.current = sellConvertAmountP
 
-                
+                if(isScheduledSell){    
+                    const fee = compute_fees(sellSourceR.current.small_name_slug, sellSchedulePriceP, sellKarmozdAmountR.current)
+                    console.log("T", sellConvertAmountP*sellSchedulePriceP, rnd(fee, 1));
+                    
+                    sellFinalValue.current = sellConvertAmountP*sellSchedulePriceP - rnd(fee, 1)
+                    sellFinalValueEqual.current = sellConvertAmountP - sellKarmozdAmountR.current
+                    sellLowCreditR.current = sellConvertAmountP > +sellAvailableCurrencyR.current
+                }else{
+
+                }
                 // setsellConvertAmount(sellConvertAmountP)
-                sellLowCreditR.current = !sellConvertAmountP || sellConvertAmountP > +sellAvailableCurrencyR.current
                 setSellConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -585,9 +607,9 @@ function BuySell() {
                                                                 <input className="form-control w-50" type="number"
                                                                     onClick={e=>setBuySchedulePrice("")}
                                                                     name="price" value={buySchedulePrice} onChange={e=>changeBuySchedulePrice(e.target.value)}/>
-                                                                {buySource.name ? <div className="input-group-append p-0">
-                                                                    <span className="input-group-text">{ buySource.name }</span>
-                                                                </div>:undefined}
+                                                                 <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{ buySource.name ?buySource.name : "؟"}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -597,9 +619,9 @@ function BuySell() {
                                                                 <input className="form-control w-50" type="number"
                                                                     onClick={e=>setBuyScheduleAmount("")}
                                                                     name="amount" value={buyScheduleAmount} onChange={e=>changeBuyScheduleAmount(e.target.value)}/>
-                                                                {buySource.name ? <div className="input-group-append p-0">
-                                                                    <span className="input-group-text">{ buySource.name }</span>
-                                                                </div>:undefined}
+                                                                 <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{buySource.name ?buySource.name : "؟"}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         </>
@@ -642,7 +664,7 @@ function BuySell() {
                                                     </div>
                                                     {buyConversionResultR.current?<div className="col-12 row mb-3 mx-0 ">
                                                     <small className="d-flex justify-content-between px-0 flex-wrap">
-                                                        <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                        <label className="text-nowrap">قیمت فعلی  هر واحد 
                                                             <i className="px-2">{ buyDestinationR.current.name }</i>
                                                             :
                                                         </label>
@@ -654,7 +676,7 @@ function BuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
-                                                    disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
+                                                    disabled={(!buyScheduleAmount &&!+buyConvertAmount) || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
                                                             {isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
                                                             {_creating_order? <Loader
@@ -702,9 +724,15 @@ function BuySell() {
                                                         <>
                                                         <div className="mb-3 d-flex align-items-center">
                                                             <label className="form-label  text-nowrap" style={{width:"110px"}} ><small>فروش در قیمت:</small></label>
+                                                            <div className="input-group" style={{width:"unset"}}>
                                                             <input className="form-control w-50" type="number"
                                                                 onClick={e=>setSellSchedulePrice("")}
-                                                                name="price" value={sellSchedulePrice} onChange={e=>setSellSchedulePrice(e.target.value)}/>
+                                                                name="price" value={sellSchedulePrice} onChange={e=>changeSellSchedulePrice(e.target.value)}/>
+                                                                <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{sellDestination.name ?  sellDestination.name :"؟"}</span>
+                                                                </div>
+                                                            </div>
+
                                                         </div>
 
                                                         <div className="mb-3 d-flex align-items-center">
@@ -712,10 +740,10 @@ function BuySell() {
                                                             <div className="input-group" style={{width:"unset"}}>
                                                                 <input className="form-control w-50" type="number"
                                                                     onClick={e=>setSellScheduleAmount("")}
-                                                                    name="amount" value={sellScheduleAmount} onChange={e=>setSellScheduleAmount(e.target.value)}/>
-                                                                {sellSourceR.current.name ? <div className="input-group-append p-0">
-                                                                    <span className="input-group-text">{ sellSourceR.current.name }</span>
-                                                                </div>:undefined}
+                                                                    name="amount" value={sellScheduleAmount} onChange={e=>changeSellScheduleAmount(e.target.value)}/>
+                                                                 <div className="input-group-append p-0">
+                                                                    <span className="input-group-text">{sellSourceR.current.name ? sellSourceR.current.name:"؟"}</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         </>:
@@ -758,13 +786,13 @@ function BuySell() {
                                                     {sellConversionResultR.current? <div className="col-12 row mb-3 mx-0 ">
                                                     <small className="d-flex justify-content-between px-0 flex-wrap">
                                                         {sellDestination.id !== Constants.IRT_CURRENCY_ID?
-                                                            <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                            <label className="text-nowrap">قیمت فعلی  هر واحد 
                                                                 <i className="px-2">{ sellDestination.name }</i>
                                                                 :
                                                                 <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ Number(sellUnitPrice.current).toFixed(6)  }</span>  <i>{ sellSourceR.current.name}</i></span>
                                                             </label>
                                                             :
-                                                             <label className="text-nowrap">قیمت تمام شده هر واحد 
+                                                             <label className="text-nowrap">قیمت فعلی  هر واحد 
                                                                 <i className="px-2">{ sellSourceR.current.name }</i>
                                                                 :
                                                                 <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ sellSourceR.current.show_price_irt }</span>  <i>{ sellDestination.name}</i></span>
@@ -778,7 +806,7 @@ function BuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
-                                                     disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                     disabled={(!sellScheduleAmount &&!+sellConvertAmount) || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">
                                                             {isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}
 
@@ -891,7 +919,7 @@ function BuySell() {
                                                  <tbody>
                                                     <tr>
                                                         <td><span className="text-primary">شما فروشنده هستید</span></td>
-                                                        <td><span className="text-primary">{sellConvertAmount} {" "} {sellSourceR.current.small_name_slug}</span></td>
+                                                        <td><span className="text-primary">{sellBuyerAmount.current} {" "} {sellSourceR.current.small_name_slug}</span></td>
                                                     </tr>
                                                     
                                                     <tr>
@@ -929,12 +957,13 @@ function BuySell() {
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
                                                         {compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)} {" "} {sellDestination.small_name_slug})
+                                                        {/* {sellTotalFeeEqual.current} {" "} {sellDestination.small_name_slug}) */}
                                                          </small>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>مبلغ  تراکنش</td>
-                                                        <td>{sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSourceR.current.name}
+                                                        <td>{isScheduledSell? sellScheduleAmount:sellConvertAmount.toLocaleString()|| 0}  {" "} {sellSourceR.current.name}
                                                         {/* <small style={{color:"green", fontSize:"12px"}}>(معادل {" "} {compute_fee(sellDestination.small_name_slug, 1, sellConversionResultR.current)} {" "} {sellDestination.small_name_slug})</small> */}
 
                                                         </td>
@@ -948,11 +977,14 @@ function BuySell() {
                                                     <tr>
                                                         <td> میزان دریافتی شما</td>
                                                         <td> 
-                                                            {compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current, sellConversionResultR.current )} {" "}  {sellDestination.name}
+                                                            {!isScheduledSell?
+                                                                compute_fees(sellDestination.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current, sellConversionResultR.current ) + " " + sellDestination.name
+                                                            :sellFinalValue.current +" "+ sellDestination.name}
                                                         <br/>
                                                         <small style={{color:"green", fontSize:"12px"}}>
                                                         (معادل {" "}
-                                                        {sellConvertAmount - sellKarmozdAmountR.current } {" "} {sellSourceR.current.small_name_slug})
+                                                        {!isScheduledSell?sellConvertAmount - sellKarmozdAmountR.current +" "+sellSourceR.current.small_name_slug
+                                                        :sellFinalValueEqual.current+" "+sellSourceR.current.small_name_slug})
                                                          </small>
                                                         </td>
                                                     </tr>
@@ -971,13 +1003,13 @@ function BuySell() {
                                                             {"خرید "} <small className="text-primary">{s.name}</small>
                                                             {" در بازار "} <small className="text-primary">{d.name}</small>
                                                             {" به مقدار "} <small className="text-primary">{item.source_amount} {" "} {d.name}</small>
-                                                            {" در قیمت "} <small className="text-primary">{item.order_amount || "20"}</small><br/>
+                                                            {" در قیمت "} <small className="text-primary">{item.internal_amount || "20"}</small><br/>
                                                             {" وضعیت: "} <small className="text-primary">{item.status}</small>
                                                             </div>
                                                         :<div style={{"fontSize": "15px"}}>
                                                             {" فروش "} <small className="text-primary">{item.source_amount} {" "}{s.name}</small>
                                                             {" در بازار "} <small className="text-primary">{d.name}</small>
-                                                            {" در قیمت "} <small className="text-primary">{item.order_amount || "20"}</small> <br/>
+                                                            {" در قیمت "} <small className="text-primary">{item.internal_amount || "20"}</small> <br/>
                                                             {" وضعیت: "} <small className="text-primary">{item.status}</small>
                                                             </div>}
                                             
