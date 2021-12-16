@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import WhatsappIcon from './element/whatsapp-icon';
 import Dashboard from './pages/index';
 import BuySell from './pages/buy-sell';
 import Accounts from './pages/accounts';
@@ -188,7 +189,7 @@ const Index = ()=> {
                     draggable
                     pauseOnHover
                     />
-                    
+                    <WhatsappIcon/>
             </BrowserRouter>
            :
             <section></section> 
