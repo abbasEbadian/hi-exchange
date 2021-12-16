@@ -238,6 +238,8 @@ function BuySell() {
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
         setBuyScheduleAmount(0)
+        setBuySchedulePrice(0)
+
         setBuySource(selectedCurrency);
         computePrices({buyConvertAmountP: 0})
     }
@@ -258,6 +260,8 @@ function BuySell() {
         sellLowCreditR.current = false
         setSellDestination(selectedCurrency)
         setSellConvertAmount(0)
+        setSellScheduleAmount(0)
+        setSellSchedulePrice(0)
         setLastChartName(selectedCurrency.small_name_slug)
         computePrices({sellConvertAmountP: 0})
     }
@@ -522,8 +526,21 @@ function BuySell() {
    useEffect(() => {
         if(!buySource.id && currencyList.length>0) changeBuySource('',Constants.USDT_CURRENCY_ID)
         if(!sellDestination.id && currencyList.length>0) changeSellDestination('',Constants.USDT_CURRENCY_ID)
-        
    }, [currencyList])
+
+   useEffect(() => {
+       console.log("came", buySource.id);
+       
+        if(buySource.id){
+            changeBuySource('',buySource.id)
+            buyAvailableCurrencyR.current = get_available(buySource.id)   
+        }
+        if(sellSourceR.current.id) {
+            changeSellDestination('',Constants.USDT_CURRENCY_ID)
+            sellAvailableCurrencyR.current = get_available(sellSourceR.current.id)   
+        }
+        
+   }, [wallet])
    
     const handleSelect = (key)=>{
             setLastTab(prev=>{
