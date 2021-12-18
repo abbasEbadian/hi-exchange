@@ -22,7 +22,6 @@ function ProfileImages({source=undefined}) {
 
 
     const [ uploading, setUploading ] = useState(false)
-
     const handleFile = (e, id)=>{
         
         e.preventDefault()
@@ -273,11 +272,13 @@ function ProfileImages({source=undefined}) {
                     </div>
                 </div>
             
-                <div className="text-center mt-5">
+                <div className={"text-center mt-5 upload-images-submitter" + (!(file1 || (user.scans&&user.scans.selfie)) || !(file2 || (user.scans&&user.scans.national_card))|| !(file3 || (user.scans&&user.scans.birth_certificate))?" disabled": "")} alt={"سه فیلد اول الزامی هستند."}>
                     <button
                         type="submit"
                         className={"btn btn-success w-100 d-flex justify-content-center align-items-center " + (!(file1 || (user.scans&&user.scans.selfie)) || !(file2 || (user.scans&&user.scans.national_card))|| !(file3 || (user.scans&&user.scans.birth_certificate))?"disabled":undefined)}
                         disabled={!(file1 || (user.scans&&user.scans.selfie)) || !(file2 || (user.scans&&user.scans.national_card))|| !(file3 || (user.scans&&user.scans.birth_certificate))?"disabled":undefined}
+                        
+                        
                     >
                         ارسال
                         {uploading?

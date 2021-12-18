@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Constants } from '../../Constants'
-import {fetch_orders} from './accounts'
+import {fetch_schedules} from './accounts'
 
 export const UPDATE_WALLET_LIST = "UPDATE_WALLET_LIST"
 export const UPDATE_FETCHING_STATE = "UPDATE_FETCHING_STATE"
@@ -97,7 +97,7 @@ export const create_schedule = ({asset, pair, amount, price, type})=>{
                         type
                     }).then(response=>{
                     const {data} = response 
-                    dispatch(fetch_orders())
+                    dispatch(fetch_schedules())
                     dispatch(get_wallet_list())
                     if(data.error === 0)
                         return resolve({result: "success", message: data.message})                    
@@ -121,7 +121,7 @@ export const cancel_schedule = ({id})=>{
                       id
                     }).then(response=>{
                     const {data} = response 
-                    dispatch(fetch_orders())
+                    dispatch(fetch_schedules())
                     if(data.error === 0)
                         return resolve({result: "success", message: data.message})                    
                     

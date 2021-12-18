@@ -610,12 +610,22 @@ function BuySell() {
                                                             </Form.Control>
                                                             
                                                     </div>
-                                                    <div id="formGridCheckbox" class="mb-3 form-group">
+                                                     <label className="toggle">
+                                                        <input
+                                                            checked={isScheduledBuy}
+                                                            onChange={e=>setIsScheduledBuy(e.target.checked)}
+                                                            className="toggle-checkbox"
+                                                            type="checkbox"
+                                                        />
+                                                        <span className="toggle-switch"></span>
+                                                            <small>خرید در قیمت خاص</small>
+                                                    </label>
+                                                        {/* <div id="formGridCheckbox" class="mb-3 form-group">
                                                         <div class="form-check ">
                                                             <input type="checkbox"  style={{float:"right", backgroundColor: "#555"}} class="form-check-input" value={isScheduledBuy} onChange={e=>setIsScheduledBuy(e.target.checked)}/>
-                                                            <label title="" class="me-4 form-check-label"><small>خرید در قیمت خاص</small></label>
+                                                            <label title="" class="me-4 form-check-label"></label>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
                                                     {isScheduledBuy?
                                                         <>
                                                         <div className="mb-3 d-flex align-items-center">
@@ -731,12 +741,22 @@ function BuySell() {
                                                             <small className="text-success me-2">شارژ کیف پول</small></Link>: undefined} 
                                                         
                                                     </div>
-                                                    <div id="formGridCheckbox" class="mb-3 form-group">
+                                                    {/* <div id="formGridCheckbox" class="mb-3 form-group">
                                                         <div class="form-check ">
                                                             <input type="checkbox"  style={{float:"right", backgroundColor: "#555"}} class="form-check-input" value={isScheduledSell} onChange={e=>setIsScheduledSell(e.target.checked)}/>
-                                                            <label title="" class="me-4 form-check-label"><small>فروش در قیمت خاص</small></label>
+                                                            <label title="" class="me-4 form-check-label"></label>
                                                         </div>
-                                                    </div>
+                                                    </div> */}
+                                                    <label className="toggle">
+                                                        <input
+                                                            checked={isScheduledSell}
+                                                            onChange={e=>setIsScheduledSell(e.target.checked)}
+                                                            className="toggle-checkbox"
+                                                            type="checkbox"
+                                                        />
+                                                        <span className="toggle-switch"></span>
+                                                        <small>فروش در قیمت خاص</small>
+                                                    </label>
                                                     {isScheduledSell?
                                                         <>
                                                         <div className="mb-3 d-flex align-items-center">

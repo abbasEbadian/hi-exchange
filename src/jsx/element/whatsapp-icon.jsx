@@ -3,12 +3,13 @@ import React from 'react'
 function WhatsappIcon() {
     const [style, setStyle] = React.useState({
            position: "fixed",
-           bottom: "20px",
-           right: "20px",
-           height: "70px",
-           width: "70px",
+           bottom: "28px",
+           right: "100px",
+           height: "65px",
+           width: "65px",
            zIndex: "999",
-
+            transform: "translateY(0px)",
+            transition: "0.2s"
     })
     
     React.useEffect(() => {
@@ -22,18 +23,20 @@ function WhatsappIcon() {
                 width:"60px",
                 bottom:"60px",
                 zIndex: "999",
-
+                transform: "translateY(0px)",
+                transition: "0.2s"
             })
         } else{
             setStyle({
            position: "fixed",
-           bottom: "20px",
-           right: "20px",
-           height: "70px",
-           width: "70px",
+           bottom: "28px",
+           right: "100px",
+           height: "65px",
+           width: "65px",
            zIndex: "999",
-
-    })
+            transform: "translateY(0px)",
+            transition: "0.2s"
+        })
         }
        } 
        window.onresize = resize

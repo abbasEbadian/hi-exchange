@@ -10259,6 +10259,16 @@ button.btn-simple {
   background: linear-gradient(160deg, crimson, #dd3557);
   color: white; }
 
+.upload-images-submitter {
+  position: relative; }
+
+.upload-images-submitter.disabled:hover::after {
+  content: attr(alt);
+  position: absolute;
+  right: 6px;
+  font-size: 13px;
+  top: -20px; }
+
 .fs-13 {
   font-size: 13px !important; }
 

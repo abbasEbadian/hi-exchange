@@ -171,11 +171,13 @@ function VerifyStep1() {
                                             <button
                                                 // to={"./verify-step-2"}
                                                 type="submit"
-                                                className={"btn btn-success ps-5 pe-5 " + (!confirmed?"disabled":"")}
+                                                className={"btn btn-success ps-5 pe-5 verify-step1-confirm" + (!confirmed?"disabled":"")}
                                                 disabled={!confirmed}
+                                                
                                             >
                                                 ادامه
                                             </button>
+                                            
                                         </div>
                                     </form>
                                 </div>
