@@ -1037,16 +1037,17 @@ function BuySell() {
                                                     return <div className="border rounded mb-1 p-2 position-relative">
                                                         <h6>شماره سفارش: {item.id}</h6>
                                                         {item.type==="buy"?<div style={{"fontSize": "15px"}}>
-                                                            {"خرید "} <small className="text-primary">{s.name}</small>
-                                                            {" در بازار "} <small className="text-primary">{d.name}</small>
-                                                            {" به مقدار "} <small className="text-primary">{item.source_amount} {" "} {d.name}</small>
-                                                            {" در قیمت "} <small className="text-primary">{item.internal_amount || "20"}</small><br/>
+                                                {"خرید "} <small className="text-primary">{rnd(item.source_amount/item.destination_amount)}{" "}{d.name}</small>
+                                                            {" در بازار "} <small className="text-primary">{s.name}</small>
+                                                            {" در قیمت "} <small className="text-primary px-2">{rnd(item.destination_amount) || "20"}</small>{s.name}
+                                                            {" معادل  "} <small className="text-primary">{item.source_amount} {" "} {s.name}</small><br/>
                                                             {" وضعیت: "} <small className="text-primary">{item.status}</small>
                                                             </div>
                                                         :<div style={{"fontSize": "15px"}}>
                                                             {" فروش "} <small className="text-primary">{item.source_amount} {" "}{s.name}</small>
                                                             {" در بازار "} <small className="text-primary">{d.name}</small>
-                                                            {" در قیمت "} <small className="text-primary">{item.internal_amount || "20"}</small> <br/>
+                                                            {" در قیمت "} <small className="text-primary">{rnd(item.destination_amount) || "20"}</small>  {d.name}
+                                                            {" معادل  "} <small className="text-primary">{rnd(item.source_amount*item.destination_amount)} {" "} {d.name}</small><br/>
                                                             {" وضعیت: "} <small className="text-primary">{item.status}</small>
                                                             </div>}
                                             

@@ -18,7 +18,7 @@ function Balance() {
             let bals = []
             let nams = []
             let tot = 0
-            data.sort((a,b)=>b.balance - a.balance)
+            data.sort((a,b)=>b.balance*b.service.show_price_irt - a.balance*a.service.show_price_irt)
             for(let item of data){                
                 bals.push(item.balance)
                 nams.push(item.service.small_name_slug)
