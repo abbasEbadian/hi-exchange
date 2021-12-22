@@ -165,17 +165,7 @@ function Signin() {
                         </div>
                     </div>
                 </div>
-                <ToastContainer
-                    position="bottom-left"
-                    autoClose={2500}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={true}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    />
+               
             </div>
         </>
     );

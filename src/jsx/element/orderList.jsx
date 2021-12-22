@@ -28,7 +28,9 @@ function OrderList({orders}) {
                         </thead>
                         <tbody>
                             
-                                {orders.map((order, idx)=>{
+                                {orders.filter(order=> {return currencyList.filter(i=>i.id===order.source_asset).length 
+                                    && currencyList.filter(i=>i.id===order.destination_asset).length})
+                                    .map((order, idx)=>{
                                     const source = currencyList.filter(i=>i.id===order.source_asset)[0].small_name_slug
                                     const destination = currencyList.filter(i=>i.id===order.destination_asset)[0].small_name_slug
                                     let type = ""

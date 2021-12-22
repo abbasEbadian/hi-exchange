@@ -47,7 +47,7 @@ axios.interceptors.request.use(
         try{
             const session = await sessionService.loadSession()
             
-            if (config.url.indexOf("service") === -1 && config.url.indexOf("token/otp") === -1 && session && session.token ) {
+            if (config.url.indexOf("api/v1") === -1&&config.url.indexOf("service") === -1 && config.url.indexOf("token/otp") === -1 && session && session.token ) {                
                 config.headers['Authorization'] = 'Bearer ' + session.token;
             }
         }catch(err){

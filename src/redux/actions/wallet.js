@@ -16,7 +16,7 @@ export const GENERATING_IRT_DEPOSIT_LINK = "GENERATING_IRT_DEPOSIT_LINK"
 
 export const get_network_list = ()=>{
     return dispatch=>{
-        axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
+        axios.get(Constants.BASE_URL+"api/v2/wallet/list/").then(res=>{
                 if(!res) throw Error(401)
                 dispatch(update_network_list(res.datad))
                 
@@ -30,7 +30,7 @@ export const get_wallet_list = ()=>{
     return dispatch=>{
         dispatch(update_fetching_state(true))
         return new Promise((resolve, reject)=>{
-            axios.get("https://hi-exchange.com/api/v2/wallet/list/").then(res=>{
+            axios.get(Constants.BASE_URL+"/api/v2/wallet/list/").then(res=>{
                 if(!res) throw Error(401)
                 
                 const d = res.data.filter(item=>item&&item.service)                

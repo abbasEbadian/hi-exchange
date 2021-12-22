@@ -4,19 +4,26 @@ import axios from 'axios';
 import Loader from 'react-loader-spinner'
 import Chart from '../element/chart'
 function ProfileChart({ selectedChart}) {
-    const base = "http://127.0.0.1:5000/cryptocurrency/quotes/latest?symbol="
+    const base = "http://162.55.11.144:8000/api/v1/historical/?s=BTC"
     const [info, setInfo] = useState({})
     useEffect(() => {
-        setInfo({})
-        axios.get(base + selectedChart)
-        .then(res=>{
-            const {data} = res;
-            setInfo(data.data);
-            
-        }).catch(err=>{
+                setInfo({})
+
+        fetch(base, {method:"get",  mode: 'cors'} )
+        .then(response => console.log(response))
+        // .then(data => {console.log(data);setInfo(data)})
+        .catch(err=>{
             console.log(err);
-            
         })
+        // axios.get(base)
+        // .then(res=>{
+        //     const {data} = res;
+        //     setInfo(data.data);
+            
+        // }).catch(err=>{
+        //     console.log(err);
+            
+        // })
     }, [selectedChart])
         
     return (

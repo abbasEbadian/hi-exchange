@@ -9,7 +9,7 @@ function Chart({selectedChart}) {
        <div style={{minHeight: 400+"px"}}>
 
             <TradingViewWidget 
-                symbol={Constants.TW_SYMBOL[selectedChart]}
+                symbol={Constants.get_symbol(selectedChart)}
                 theme={Themes.DARK}
                 locale="fa_IR"
                 width={"100%"}
@@ -29,7 +29,7 @@ function Chart({selectedChart}) {
                 </Modal.Header>
                 <Modal.Body>
                 <TradingViewWidget 
-                symbol={Constants.TW_SYMBOL[selectedChart]}
+                symbol={Constants.get_symbol(selectedChart)}
                 theme={Themes.DARK}
                 locale="fa_IR"
                 autosize={window.size> 768}
