@@ -4,21 +4,41 @@ import axios from 'axios'
 import Loader from 'react-loader-spinner'
 function IRTChart({currency}) {
     const [series, setSeries] = React.useState({})
+    const [categories, setCategories] = React.useState([])
+    const [time, setTime] = React.useState(undefined)
+    const [currency2, setCurrency2] = React.useState(currency)
     const options = {
-        chart: {
+         chart: {
           height: 350,
-          type: 'area',
-          stacked:true,
-        },
+          type: 'line',
+          zoom: {
+            enabled: false
+          },
+         },
         dataLabels: {
           enabled: false
         },
-        stroke: {
-          curve: 'smooth'
+        
+        grid: {
+          row: {
+            colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
+            opacity: 0.5
+          },
         },
         xaxis: {
           type: 'datetime',
-          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z","2018-09-19T00:00:00.000Z",]
+          categories
+        },
+        yaxis:{
+          labels:{
+             style: {
+              colors: ["white"],
+              fontSize: '12px',
+              fontFamily: 'Helvetica, Arial, sans-serif',
+              fontWeight: 400,
+              cssClass: 'apexcharts-xaxis-label',
+            },
+          }
         },
         tooltip: {
           x: {
@@ -28,22 +48,31 @@ function IRTChart({currency}) {
       }
 
 
-    
-    
-    React.useEffect(()=>{
-        if(!currency)return
-        axios.get(`https://api.nobitex.ir/v2/orderbook/${currency}IRT`)
+    const get_latest = ()=>{
+      axios.get(`http://162.55.11.144:8000/api/v1/historical/?s=${currency2}`)
         .then(response=>{
             const {data} = response
+            
             setSeries([
-                {name: "bids", data:data.bids.map(i=>{return [+(i[0]+"000"), +i[1]]})},
-                {name:"asks", data: data.asks.map(i=>{return [+(i[0]+"000"), +i[1]]})}
+                {name: currency2+"-IRT", data:data.map(i=>{return +i["price"].toFixed()})},
             ])
+            setCategories(data.map(i=>{let a = new Date(+i["timestamp"]*1000); return a.toLocaleString()}))
         })
         .catch(err=>console.log(err))
+    }
+    if(!time){
+      const t = setTimeout(() => {
+        get_latest(currency)
+      }, 60000)
+      setTime(t)
+    }
+    React.useEffect(()=>{
+      setCurrency2(currency)
+        if(!currency)return
+        get_latest()
 
-    }, [])
-    console.log(series);
+    }, [currency])
+    console.log(series, categories);
     
     return (
         <>
@@ -56,7 +85,8 @@ function IRTChart({currency}) {
             height={350}
           />
         </div>
-        :<Loader type={"Circles"} height={45}/>
+        :
+        <div className="w-100 text-center"><Loader type={"Circles"} height={45}/></div>
         }
         </>
     )

@@ -867,18 +867,17 @@ function BuySell() {
                         <div className="col-xl-7 col-lg-7 col-md-12">
                             <div className="card">
                                 <div className="card-body">
-                                    <div className="buyer-seller">
+                                    <div className="buyer-seller" dir="ltr">
                                         <div className="d-flex flex-column mb-3 border-bottom pb-1">
                                             {chartOpen ?
-                                                    <><span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
-                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
+                                                    <><span className="fa fa-arrow-up fs-3 mb-1 text-right" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
+                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1 text-right" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
                                                 }
                                                 <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                    {/* {lastTab==="buy" && buySource.small_name_slug==="IRT"?<IRTChart currency={buyDestinationR.current.small_name_slug}/>:undefined}
+                                                    {lastTab==="buy" && buySource.small_name_slug==="IRT"?<IRTChart currency={buyDestinationR.current.small_name_slug}/>:undefined}
                                                     {lastTab==="buy" && buySource.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined}
                                                     {lastTab==="sell" && sellDestination.small_name_slug==="IRT"?<IRTChart currency={sellSourceR.current.small_name_slug}/>:undefined}
-                                                    {lastTab==="sell" && buySource.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined} */}
-                                                    <Chart selectedChart={lastChartName}/>
+                                                    {lastTab==="sell" && sellDestination.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined}
                                                 </div>
                                             
 
