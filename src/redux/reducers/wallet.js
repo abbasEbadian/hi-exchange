@@ -18,7 +18,8 @@ const init_state = {
     checking_withdraw: false,
     checking_irt_deposit: false,
     creating_schedule: false,
-    generating_irt_deposit_link: false
+    generating_irt_deposit_link: false,
+    chart: "BTC"
 }
 export const wallet = (state=init_state, action)=>{
     switch (action.type) {
@@ -62,6 +63,11 @@ export const wallet = (state=init_state, action)=>{
             return {
                 ...state,
                 creating_schedule: action.payload
+            }
+        case "UPDATE_LAST_CHART_NAME":
+            return {
+                ...state,
+                chart: action.payload
             }
 
         default:
