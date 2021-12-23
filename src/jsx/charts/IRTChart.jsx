@@ -66,15 +66,16 @@ function IRTChart({}) {
         })
         .catch(err=>console.log(err))
     }
-    if(!time){
-      const t = setTimeout(() => {
-        get_latest(chart || "BTC")
+    
+    React.useEffect(()=>{
+      get_latest(chart)
+      if(time) clearInterval(time)
+      const t = setInterval(() => {
+        get_latest(chart)
       }, 60000)
       setTime(t)
-    }
-    React.useEffect(()=>{
-      get_latest(chart || "BTC")
     },[chart])
+
     
     return (
         <>
