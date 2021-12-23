@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { creating_order, create_order, create_schedule, cancel_schedule } from '../../redux/actions';
 import qs from 'qs'
 import axios from 'axios';
-import {toast, ToastContainer} from 'react-toastify'
+import {toast} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 import Chart from '../element/chart'
@@ -100,7 +100,7 @@ function BuySell() {
     // const buySourceR = useRef({small_name_slug: undefined})
     const sellSourceR = useRef({small_name_slug: undefined})
 
-    const buyDestinationR = useRef({small_name_slug: undefined})
+    const [buyDestination, setBuyDestination] = React.useState({})
 
     const sellDestinationR = useRef({small_name_slug: undefined})
 
@@ -153,7 +153,7 @@ function BuySell() {
         if(isScheduledBuy){
             dispatch(create_schedule({
                 pair: buySource.id,
-                asset: buyDestinationR.current.id,
+                asset: buyDestination.id,
                 amount: buyScheduleAmount,
                 price: buySchedulePrice,
                 type: "buy"
@@ -177,7 +177,7 @@ function BuySell() {
                 source_price: buyConversionResultStrR.current,
                 destination_price: String(buyConvertAmount),
                 source_asset: String(buySource.id),
-                destination_asset: String(buyDestinationR.current.id),
+                destination_asset: String(buyDestination.id),
                 wallet: _wallet,
                 description: "" ,
                 type:"buy"
@@ -232,7 +232,7 @@ function BuySell() {
     }
 
     const changeBuySource = (e, selectedCurrency)=>{        
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
+        selectedCurrency = currencyList&&currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
         buyAvailableCurrencyR.current = av
         buyLowCreditR.current = false
@@ -246,23 +246,23 @@ function BuySell() {
     const changeBuyDestination = (e)=>{
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]        
-        buyDestinationR.current = selectedCurrency;
+        selectedCurrency = currencyList&&currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]        
+        setBuyDestination (selectedCurrency)
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        setLastChartName(selectedCurrency.small_name_slug)
+        changeLastChartName(selectedCurrency.small_name_slug)
         computePrices({buyConvertAmountP: 0})
 
     }
     const changeSellDestination = (e, selectedCurrency)=>{
         if(!currencyList.length) return
-        selectedCurrency = currencyList.filter(c=>c.id===+selectedCurrency)[0]
+        selectedCurrency = currencyList&&currencyList.filter(c=>c.id===+selectedCurrency)[0]
         sellLowCreditR.current = false
         setSellDestination(selectedCurrency)
         setSellConvertAmount(0)
         setSellScheduleAmount(0)
         setSellSchedulePrice(0)
-        setLastChartName(selectedCurrency.small_name_slug)
+        changeLastChartName(selectedCurrency.small_name_slug)
         computePrices({sellConvertAmountP: 0})
     }
     const changeSellSource = (e)=>{
@@ -271,17 +271,20 @@ function BuySell() {
             sellSourceR.current = undefined
             return;
         }
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
+        selectedCurrency = currencyList&&currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
         sellSourceR.current = selectedCurrency;
         sellAvailableCurrencyR.current = av
         sellLowCreditR.current = false
         setSellConvertAmount(0)
-        setLastChartName(selectedCurrency.small_name_slug)
+        changeLastChartName(selectedCurrency.small_name_slug)
 
         computePrices({sellConvertAmountP: 0})
     }
-
+     const changeLastChartName =(name)=>{
+         setLastChartName(name)
+         dispatch({type: "UPDATE_LAST_CHART_NAME" , payload: name})
+     }
     const changeBuyAmount = (value, rerender=true)=>{
         if (rerender)    
             computePrices({buyConvertAmountP: value})
@@ -338,7 +341,7 @@ function BuySell() {
             }
             const data = qs.stringify({
                 'source': String(buySource.id), 
-                'destination': String(buyDestinationR.current.id),
+                'destination': String(buyDestination.id),
                 'changed': !buyConvertAll ? 'destination' : 'source',
                 'source-price': buyConvertAll || '0',
                 'destination-price': !buyConvertAll ? buyConvertAmountP : '0'
@@ -369,7 +372,7 @@ function BuySell() {
                 const a = buyConversionResultR.current
                 const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
                 
-                buyFeeUnit.current = buyDestinationR.current.name
+                buyFeeUnit.current = buyDestination.name
                 buyFeeUnitEqual.current = buySource.small_name_slug
                 buyFixedFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)
                 buyVariableFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current) 
@@ -377,14 +380,14 @@ function BuySell() {
                 buyFinalValue.current = buyConvertAmountP-buyKarmozdAmountR.current
                 buyFinalValueEqual.current = Number(buyConversionResultR.current) - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
 
-                if(buySource.id === Constants.IRT_CURRENCY_ID && buyDestinationR.current.name.indexOf("تتر") >-1){
+                if(buySource.id === Constants.IRT_CURRENCY_ID && buyDestination.name.indexOf("تتر") >-1){
                     buyFixedFeeEqual.current = (buyFixedKarmozdR.current/ +buyUnitPrice.current ).toFixed(6)
                     buyVariableFeeEqual.current =   (buyTransactionFee.current / +buyUnitPrice.current).toFixed(6)
                     buyTotalFeeEqual.current = (buyKarmozdAmountR.current / +buyUnitPrice.current).toFixed(6)
-                    buyFinalValue.current = buyConvertAmountP - (buyKarmozdAmountR.current / buyDestinationR.current.show_price_irt)
-                    buyFinalValueEqual.current = irt(buyFinalValue.current  * buyDestinationR.current.show_price_irt)
+                    buyFinalValue.current = buyConvertAmountP - (buyKarmozdAmountR.current / buyDestination.show_price_irt)
+                    buyFinalValueEqual.current = irt(buyFinalValue.current  * buyDestination.show_price_irt)
                     buyFeeUnit.current = buySource.name
-                    buyFeeUnitEqual.current = buyDestinationR.current.small_name_slug
+                    buyFeeUnitEqual.current = buyDestination.small_name_slug
 
                     buyFixedKarmozdR.current = irt(buyFixedKarmozdR.current)
                     buyTransactionFee.current = irt(buyTransactionFee.current)
@@ -656,9 +659,9 @@ function BuySell() {
                                                     
                                                         <div className="mb-3">
                                                             <label className="form-label">مقدار 
-                                                                {buyDestinationR.current && buyDestinationR.current.id? 
+                                                                {buyDestination && buyDestination.id? 
                                                                     <>
-                                                                    <i className="px-2"> {" "}{buyDestinationR.current.name}{" "}</i>    
+                                                                    <i className="px-2"> {" "}{buyDestination.name}{" "}</i>    
                                                                         مورد نظر
                                                                     </>:undefined
                                                             }
@@ -692,7 +695,7 @@ function BuySell() {
                                                     {buyConversionResultR.current?<div className="col-12 row mb-3 mx-0 ">
                                                     <small className="d-flex justify-content-between px-0 flex-wrap">
                                                         <label className="text-nowrap">قیمت فعلی  هر واحد 
-                                                            <i className="px-2">{ buyDestinationR.current.name }</i>
+                                                            <i className="px-2">{ buyDestination.name }</i>
                                                             :
                                                         </label>
                                                         <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ buyUnitPrice.current }</span>  <i>{ buySource.name}</i></span>
@@ -703,7 +706,7 @@ function BuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
-                                                    disabled={(!buyScheduleAmount &&!+buyConvertAmount) || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
+                                                    disabled={(!buyScheduleAmount &&!+buyConvertAmount) || !buyDestination.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
                                                             {isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
                                                             {_creating_order? <Loader
@@ -867,14 +870,18 @@ function BuySell() {
                         <div className="col-xl-7 col-lg-7 col-md-12">
                             <div className="card">
                                 <div className="card-body">
-                                    <div className="buyer-seller" dir="ltr">
+                                    <div className="buyer-seller" >
                                         <div className="d-flex flex-column mb-3 border-bottom pb-1">
-                                            {chartOpen ?
-                                                    <><span className="fa fa-arrow-up fs-3 mb-1 text-right" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
-                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1 text-right" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
+                                            <div className="d-flex justify-content-between">
+                                                {chartOpen ?
+                                                    <><span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
+                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
+                                                    
                                                 }
-                                                <div style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
-                                                    {lastTab==="buy" && buySource.small_name_slug==="IRT"?<IRTChart currency={buyDestinationR.current.small_name_slug}/>:undefined}
+                                                <span className="text-primary">{lastChartName}</span>
+                                                    </div>
+                                                <div dir="ltr" style={{minHeight: 400+"px"}} className={!chartOpen? "d-none" : undefined}>
+                                                    {lastTab==="buy" && buySource.small_name_slug==="IRT"?<IRTChart currency={buyDestination.small_name_slug}/>:undefined}
                                                     {lastTab==="buy" && buySource.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined}
                                                     {lastTab==="sell" && sellDestination.small_name_slug==="IRT"?<IRTChart currency={sellSourceR.current.small_name_slug}/>:undefined}
                                                     {lastTab==="sell" && sellDestination.small_name_slug!=="IRT"?<Chart selectedChart={lastChartName}/>:undefined}
@@ -888,7 +895,7 @@ function BuySell() {
                                                     <tbody>
                                                         <tr>
                                                             <td><span className="text-primary">شما خریدار هستید</span></td>
-                                                            <td><span className="text-primary">{buyBuyerAmount.current} {" "} {buyDestinationR.current.small_name_slug}</span></td>
+                                                            <td><span className="text-primary">{buyBuyerAmount.current} {" "} {buyDestination.small_name_slug}</span></td>
                                                         </tr>
                                                         <tr>
                                                             <td>روش پرداخت</td>
@@ -935,7 +942,7 @@ function BuySell() {
                                                             <td>میزان دریافتی شما</td>
                                                             
                                                             <td>
-                                                            {buyFinalValue.current} {" "}  {buyDestinationR.current.name}
+                                                            {buyFinalValue.current} {" "}  {buyDestination.name}
                                                             <br/>
                                                             <small style={{color:"green", fontSize:"12px"}}>
                                                                 (معادل 
@@ -1031,8 +1038,8 @@ function BuySell() {
                                             <h5 >سفارشات باز</h5>
                                             {schedules.length && currencyList.length?
                                                 schedules.map((item, idx)=>{
-                                                    const s = currencyList.filter(i=>i&&i.id===item.source_asset)[0]
-                                                    const d = currencyList.filter(i=>i&&i.id===item.destination_asset)[0]
+                                                    const s = currencyList&&currencyList.filter(i=>i&&i.id===item.source_asset)[0]
+                                                    const d = currencyList&&currencyList.filter(i=>i&&i.id===item.destination_asset)[0]
                                                     return <div className="border rounded mb-1 p-2 position-relative">
                                                         <h6>شماره سفارش: {item.id}</h6>
                                                         {item.type==="buy"?<div style={{"fontSize": "15px"}}>
