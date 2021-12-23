@@ -26,24 +26,7 @@ function IRTChart({}) {
             opacity: 0.2
           },
         },
-        annotations:{
-           position: 'front' ,
-          points: [
-            {
-              x:0,
-              y:null,
-              // x:  categories.length?categories[0]:undefined,
-              // y: series.length?series[0]:undefined,
-              marker: {
-                size: 8,
-              },
-              label: {
-                borderColor: '#FF4560',
-                text: 'Point Annotation'
-              }
-            }
-          ],
-        },
+        
         
         xaxis: {
           type: 'datetime',
@@ -104,7 +87,10 @@ function IRTChart({}) {
             height={350}
           />
         </div>
-        <small className="mt-3 d-block text-end" dir="rtl">آخرین قیمت: <span className="text-primary">{Number(series[0].data[0]).toLocaleString("fa-IR")}</span></small>
+        <small className="mt-3 d-block text-end" dir="rtl">آخرین قیمت:
+         <span className="text-primary">{Number(series[0].data[0]).toLocaleString("fa-IR")}</span>
+        <small style={{fontSize: "12px"}}>{" "} تومان { " " }(یک دقیقه پیش)</small>
+         </small>
         </>
         :
         <div className="w-100 text-center pt-5"><Loader type={"Circles"} height={45}/></div>}

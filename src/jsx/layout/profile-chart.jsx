@@ -4,26 +4,23 @@ import axios from 'axios';
 import Loader from 'react-loader-spinner'
 import Chart from '../element/chart'
 function ProfileChart({ selectedChart}) {
-    const base = "http://162.55.11.144:8000/api/v1/historical/?s=BTC"
+    const base = "http://162.55.11.144:8000/api/v1/cmc_request/?source="
     const [info, setInfo] = useState({})
     useEffect(() => {
-                setInfo({})
-
-        fetch(base, {method:"get",  mode: 'cors'} )
-        .then(response => console.log(response))
-        // .then(data => {console.log(data);setInfo(data)})
-        .catch(err=>{
+        setInfo({})
+        axios.get(base+selectedChart)
+        .then(res=>{
+            try{
+                const {data} = res;
+                setInfo(data.data);
+            }catch(e){
+                console.log(e)
+            }
+            
+        }).catch(err=>{
             console.log(err);
+            
         })
-        // axios.get(base)
-        // .then(res=>{
-        //     const {data} = res;
-        //     setInfo(data.data);
-            
-        // }).catch(err=>{
-        //     console.log(err);
-            
-        // })
     }, [selectedChart])
         
     return (
