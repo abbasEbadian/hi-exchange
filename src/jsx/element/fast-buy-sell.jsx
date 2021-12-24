@@ -10,7 +10,6 @@ import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 
 
-
 function FastBuySell() {
     const dispatch = useDispatch()
 
@@ -301,7 +300,6 @@ function FastBuySell() {
 
                 
                 // setsellConvertAmount(sellConvertAmountP)
-                console.log(sellConvertAmountP , +sellAvailableCurrencyR.current)
                 sellLowCreditR.current = !sellConvertAmountP || sellConvertAmountP > +sellAvailableCurrencyR.current
                 setSellConvertInvalid(Math.random())
                
@@ -310,14 +308,16 @@ function FastBuySell() {
            })
         }
     }
+    useEffect(() => {
+       dispatch({type: "UPDATE_MENU", payload: "sale-fast"})
+   }, [])
    useEffect(() => {
         if(!buySource.id && currencyList.length>0) changeBuySource('',Constants.USDT_CURRENCY_ID)
         if(!sellDestination.id && currencyList.length>0) changeSellDestination('',Constants.USDT_CURRENCY_ID)
         
    }, [currencyList])
    
-    return (
-        <div className="card">
+    return( <div className="card">
         <div className="card-body">
             <div className="buy-sell-widget">
 
@@ -525,6 +525,7 @@ function FastBuySell() {
 
         </div>
     </div>
+    
   
     )
 }
