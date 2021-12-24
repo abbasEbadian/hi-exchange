@@ -19,7 +19,9 @@ function IRTChart({}) {
         dataLabels: {
           enabled: false
         },
-        
+        stroke: {
+          width: 1
+        },
         grid: {
           row: {
             colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
