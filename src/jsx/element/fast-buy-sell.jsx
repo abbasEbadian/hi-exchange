@@ -1,19 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {  Tab, Tabs, Form} from 'react-bootstrap';
+import {  Tab, Tabs, Form, Popover,Modal} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import PageTitle from '../element/page-title';
+import Header2 from '../layout/header2';
+import Sidebar from '../layout/sidebar';
 import { useSelector, useDispatch } from 'react-redux';
-import { creating_order, create_order } from '../../redux/actions';
+import { creating_order, create_order, create_schedule, cancel_schedule } from '../../redux/actions';
 import qs from 'qs'
 import axios from 'axios';
 import {toast} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
-
+import Chart from '../element/chart'
+import IRTChart from '../charts/IRTChart' 
+const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+function irt(num) {
+    const t = Number(Number(p2e(String(num).replace(/٬/g, ''))).toFixed()).toLocaleString('fa-IR')
+    return t
+}
+function rnd(num, us=false) {  
+    let num2 = String(num)
+    .replace(/,/g, '') 
+    .replace(/،/g, '') 
+    .replace(/٬/g, '') 
+    num2 = p2e(num2) 
+    if (us) return num2
+    
+    return String(num).indexOf("٬")>-1? irt(Math.round(Number(num2)*1000)/1000):Math.round(Number(num2)*1000)/1000
+}
+function compute_fee(unit, unit_price, source_amount, subfrom=undefined) {
+    if(!unit_price || source_amount.length===0 )return 0
+    unit_price = String(unit_price || "").replace(/,/g, '');
+    source_amount = String(source_amount || "").replace(/,/g, '');
+    const tot = Number(unit_price) * Number(source_amount)
+    
+    if(isNaN(tot)) return 0
+    if(subfrom){
+        if(unit === "IRT") 
+            return irt(subfrom -tot)
+        return subfrom - tot 
+    }
+    if(unit === "IRT") {
+        
+        return irt(tot)
+    }
+    return  tot 
+}
+// for sale
+function compute_fees(unit, unit_price, source_amount, subfrom=undefined) {
+    
+    if(!unit_price || source_amount.length===0 )return 0
+    unit_price = String(unit_price || "").replace(/,/g, '');
+    source_amount = String(source_amount || "").replace(/,/g, '');
+    const tot = Number(source_amount)/ Number(unit_price)
+    
+    if(isNaN(tot)) return 0
+    if(subfrom){
+        if(unit === "IRT") 
+            return Number( Number(subfrom -tot).toFixed()).toLocaleString("fa-IR")
+        return subfrom - tot 
+    }
+    if(unit === "IRT") 
+        return Number(tot.toFixed())
+    return  tot 
+}
 
 function FastBuySell() {
     const dispatch = useDispatch()
 
     const {currencyList}  = useSelector(state => state.currencies)
+    const {schedules, creating_schedule}  = useSelector(state => state.accounts)
     const wallet  = useSelector(state => state.wallet.wallet)
     const _creating_order  = useSelector(state => state.accounts.creating_order)
     const [tab, setTab] = useState("buy")
@@ -23,7 +79,18 @@ function FastBuySell() {
     const [buyConvertInvalid, setBuyConvertInvalid] = useState(0)
     const [sellConvertInvalid, setSellConvertInvalid] = useState(0)
     const [buySource, setBuySource] = useState({})
+
+    // Schedule
+    const [buySchedulePrice, setBuySchedulePrice] = useState(0)
+    const [sellSchedulePrice, setSellSchedulePrice] = useState(0)
+    const [lastChartName, setLastChartName] = useState()
+    const [isScheduledBuy, setIsScheduledBuy] = useState(false)
+    const [buyScheduleAmount, setBuyScheduleAmount] = useState(0)
+    const [isScheduledSell, setIsScheduledSell] = useState(false)
+    const [sellScheduleAmount, setSellScheduleAmount] = useState(0)
     const [sellDestination, setSellDestination ] = useState({})
+    const [cancelScheduleID, setCancelSceduleID] = useState(undefined)
+    const [showCancelModal, setShowCancelModal] = useState(undefined)
 
     const sellConvertErrorMessage = useRef("")
     const buyConvertErrorMessage = useRef("")
@@ -33,69 +100,125 @@ function FastBuySell() {
     // const buySourceR = useRef({small_name_slug: undefined})
     const sellSourceR = useRef({small_name_slug: undefined})
 
-    const buyDestinationR = useRef({small_name_slug: undefined})
+    const [buyDestination, setBuyDestination] = React.useState({})
 
+    const sellDestinationR = useRef({small_name_slug: undefined})
 
     const buyLowCreditR = useRef(false)
     const sellLowCreditR = useRef(false)
-    const buyTransactionFee = useRef(0)
 
     const buyConversionResultR = useRef(0)
     const buyConversionResultStrR = useRef(0)
     const buyEndPriceR = useRef(0)
     const buyKarmozdAmountR = useRef(0)
     const buyFixedKarmozdR = useRef(0)
+    const buyTransactionFee = useRef(0)
+
     const buyTotalR = useRef(0)
     const sellConversionResultR = useRef(0)
     const sellConversionResultStrR = useRef(0)
     const sellEndPriceR = useRef(0)
     const sellKarmozdAmountR = useRef(0)
-    const sellFixedKarmozdR = useRef(0)
     const sellTransactionFee = useRef(0)
-
+    const sellFixedKarmozdR = useRef(0)
     const sellTotalR = useRef(0)
-    const buyUnitPrice = useRef(0)
-    const sellUnitPrice = useRef(0)
 
     const buyAmountRef = useRef(0)
     // const sellConvertValidR = useRef(false)
 
+    // Chart
+    const [lastTab, setLastTab] = React.useState("buy")
 
-    const [selectedChart1, setSelectedChart1] = useState()
-    const [selectedChart2, setSelectedChart2] = useState()
+    const buyUnitPrice = useRef(0)
+    const buyFeeUnit = useRef("")
+    const buyFeeUnitEqual = useRef("")
+    const buyFixedFeeEqual = useRef(0)
+    const buyVariableFeeEqual = useRef(0)
+    const buyTotalFeeEqual = useRef(0)
+    const buyFinalValue = useRef(0)
+    const buyFinalValueEqual = useRef(0)
+    const buyBuyerAmount = useRef(0)
+
+    const sellUnitPrice = useRef(0)
+    const sellFeeUnit = useRef("")
+    const sellFeeUnitEqual = useRef("")
+    const sellFixedFeeEqual = useRef(0)
+    const sellVariableFeeEqual = useRef(0)
+    const sellTotalFeeEqual = useRef(0)
+    const sellFinalValue = useRef(0)
+    const sellFinalValueEqual = useRef(0)
+    const sellBuyerAmount = useRef(0)
 
     const handleBuyConfirm = ()=>{
-        dispatch(creating_order(true))
-        const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
-        const data= {
-            source_price: buyConversionResultStrR.current,
-            destination_price: String(buyConvertAmount),
-            source_asset: String(buySource.id),
-            destination_asset: String(buyDestinationR.current.id),
-            wallet: _wallet,
-            description: "" ,
-            type:"buy"
+        if(isScheduledBuy){
+            dispatch(create_schedule({
+                pair: buySource.id,
+                asset: buyDestination.id,
+                amount: buyScheduleAmount,
+                price: buySchedulePrice,
+                type: "buy"
+            })).then(({result, message})=>{
+                
+                if(result==="success")
+                    toast.success(message)
+                else
+                    toast.error(message)
+            }).catch(err=>{
+                console.log(err);
+                toast.error("مقدار درخواستی شما کمتر از حد مجاز میباشد")
+            })
+        }else{
+
+            dispatch(creating_order(true))
+            const _wallet = wallet && wallet.length? 
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
+            const data= {
+                source_price: buyConversionResultStrR.current,
+                destination_price: String(buyConvertAmount),
+                source_asset: String(buySource.id),
+                destination_asset: String(buyDestination.id),
+                wallet: _wallet,
+                description: "" ,
+                type:"buy"
+            }
+            dispatch(create_order(data, toast))
         }
-        dispatch(create_order(data, toast))
     }
     const handleSellConfirm = ()=>{
-        dispatch(creating_order(true))
-        const _wallet = wallet && wallet.length? 
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
-                wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
-        const data= {
-            source_price: String(sellConvertAmount),
-            destination_price: sellConversionResultStrR.current,
-            source_asset: String(sellSourceR.current.id),
-            destination_asset: String(sellDestination.id),
-            wallet: _wallet,
-            changed:"source",
-            description: "" ,
-            type:"sell"
-        }
+        if(isScheduledSell){
+            dispatch(create_schedule({
+                asset: sellSourceR.current.id,
+                pair: sellDestination.id,
+                amount: sellScheduleAmount,
+                price: sellSchedulePrice,
+                type: "sell"
+            })).then(({result, message})=>{
+                if(result==="success")
+                    toast.success(message)
+                else
+                toast.error(message)
+            }).catch(err=>{
+                console.log(err);
+                toast.error("مقدار درخواستی شما کمتر از حد مجاز میباشد")
+            })
+        }else{
+            dispatch(creating_order(true))
+            const _wallet = wallet && wallet.length? 
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id).lenght?
+                    wallet.filter(item=>item&&item.service&&item.service.id === buySource.id)[0].id:undefined:undefined
+            const data= {
+                source_price: String(sellConvertAmount),
+                destination_price: sellConversionResultStrR.current,
+                source_asset: String(sellSourceR.current.id),
+                destination_asset: String(sellDestination.id),
+                wallet: _wallet,
+                changed:"source",
+                description: "" ,
+                type:"sell"
+            }
         dispatch(create_order(data, toast))
+        }
     }
     
 
@@ -108,56 +231,85 @@ function FastBuySell() {
          return target.length > 0 ? target[0]["balance"] : 0
     }
 
-    const changeBuySource = (e, selectedCurrency)=>{
-        console.log(selectedCurrency);
-        
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
+    const changeBuySource = (e, selectedCurrency)=>{        
+        selectedCurrency = currencyList&&currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
-
         buyAvailableCurrencyR.current = av
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
+        setBuyScheduleAmount(0)
+        setBuySchedulePrice(0)
+
         setBuySource(selectedCurrency);
         computePrices({buyConvertAmountP: 0})
     }
     const changeBuyDestination = (e)=>{
         let selectedCurrency = e.target.value;
         if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]        
-        buyDestinationR.current = selectedCurrency;
+        selectedCurrency = currencyList&&currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]        
+        setBuyDestination (selectedCurrency)
         buyLowCreditR.current = false
         setBuyConvertAmount(0)
-        setSelectedChart1(selectedCurrency)
+        changeLastChartName(selectedCurrency.small_name_slug)
         computePrices({buyConvertAmountP: 0})
 
     }
     const changeSellDestination = (e, selectedCurrency)=>{
-        selectedCurrency = currencyList.filter(c=>c.id===+selectedCurrency)[0]
+        if(!currencyList.length) return
+        selectedCurrency = currencyList&&currencyList.filter(c=>c.id===+selectedCurrency)[0]
         sellLowCreditR.current = false
         setSellDestination(selectedCurrency)
         setSellConvertAmount(0)
-        setSelectedChart1(selectedChart2)
+        setSellScheduleAmount(0)
+        setSellSchedulePrice(0)
+        changeLastChartName(selectedCurrency.small_name_slug)
         computePrices({sellConvertAmountP: 0})
     }
     const changeSellSource = (e)=>{
         let selectedCurrency = e.target.value;
-        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1) return;
-        selectedCurrency = currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
+        if (!selectedCurrency || selectedCurrency.indexOf("انتخاب") >-1){
+            sellSourceR.current = undefined
+            return;
+        }
+        selectedCurrency = currencyList&&currencyList.filter((c, idx)=>c.id===+selectedCurrency)[0]
         let av = get_available(selectedCurrency.id)
         sellSourceR.current = selectedCurrency;
         sellAvailableCurrencyR.current = av
         sellLowCreditR.current = false
         setSellConvertAmount(0)
-        setSelectedChart2(selectedCurrency)
+        changeLastChartName(selectedCurrency.small_name_slug)
 
         computePrices({sellConvertAmountP: 0})
     }
-
+     const changeLastChartName =(name)=>{
+         setLastChartName(name)
+         dispatch({type: "UPDATE_LAST_CHART_NAME" , payload: name})
+     }
     const changeBuyAmount = (value, rerender=true)=>{
         if (rerender)    
             computePrices({buyConvertAmountP: value})
         setBuyConvertAmount(value)
     }
+    const changeBuyScheduleAmount = (value)=>{
+        computePrices({buyConvertAmountP: +value/buySchedulePrice})
+        setBuyScheduleAmount(value)
+    }
+    const changeBuySchedulePrice = (value)=>{
+        computePrices({buyConvertAmountP: buyScheduleAmount/value, buySchedulePriceP: value})
+        setBuySchedulePrice(value)
+    }
+
+    const changeSellScheduleAmount = (value)=>{
+        
+        computePrices({sellConvertAmountP: +value})
+        setSellScheduleAmount(value)
+    }
+    const changeSellSchedulePrice = (value)=>{
+        computePrices({sellConvertAmountP: sellScheduleAmount, sellSchedulePriceP: value})
+        setSellSchedulePrice(value)
+    }
+
+
     const changeSellAmount = (value, rerender=true)=>{
         if (rerender)    
             computePrices({sellConvertAmountP: value})
@@ -166,9 +318,10 @@ function FastBuySell() {
     const computePrices = ({
         buyConvertAmountP= buyConvertAmount,
         sellConvertAmountP= sellConvertAmount,
+        buySchedulePriceP=buySchedulePrice,
+        sellSchedulePriceP=sellSchedulePrice,
         buyConvertAll=undefined
     })=>{
-        
         if(tab === "buy"){
             
             if(!buyConvertAmountP && !buyConvertAll){
@@ -188,7 +341,7 @@ function FastBuySell() {
             }
             const data = qs.stringify({
                 'source': String(buySource.id), 
-                'destination': String(buyDestinationR.current.id),
+                'destination': String(buyDestination.id),
                 'changed': !buyConvertAll ? 'destination' : 'source',
                 'source-price': buyConvertAll || '0',
                 'destination-price': !buyConvertAll ? buyConvertAmountP : '0'
@@ -205,7 +358,8 @@ function FastBuySell() {
                     
                 }else
                     buyConvertErrorMessage.current = ""
-               
+                buyConvertAmountP = buyConvertAll ? +data["destination_price"] :buyConvertAmountP
+
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 buyEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
@@ -213,13 +367,28 @@ function FastBuySell() {
                 buyTransactionFee.current =  +data["fee"] || 0
                 buyFixedKarmozdR.current =  +data["fix_fee"] || 0
                 buyConversionResultR.current =   buyConvertAmountP? +data["source_price"]: 0
-                buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0
+                buyConversionResultStrR.current =  buyConvertAmountP? data["source_price_str"]: 0                
                 buyUnitPrice.current = data['unit_price']
                 const a = buyConversionResultR.current
                 const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
                 
+                buyFeeUnit.current = buySource.name
+                buyFeeUnitEqual.current = buyDestination.small_name_slug
+                buyFixedFeeEqual.current =      compute_fees(buyDestination.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)
+                buyVariableFeeEqual.current =   compute_fees(buyDestination.small_name_slug, buyUnitPrice.current, buyTransactionFee.current) 
+                buyTotalFeeEqual.current =      compute_fees(buyDestination.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current) 
+                buyFinalValueEqual.current = buyConversionResultR.current - buyKarmozdAmountR.current
+                buyFinalValue.current = Number(buyConvertAmountP)-compute_fees(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
+                
+                if(buySource.id === Constants.IRT_CURRENCY_ID && buyDestination.name.indexOf("تتر") >-1){
+                    buyFixedKarmozdR.current = irt(buyFixedKarmozdR.current)
+                    buyTransactionFee.current = irt(buyTransactionFee.current)
+                    buyKarmozdAmountR.current = irt(buyKarmozdAmountR.current)
+                }
+                
+
                 buyTotalR.current = (a+a2).toLocaleString()
-                if(buySource.small_name_slug === "IRT"){
+                if(buySource.small_name_slug === "IRT"){                    
                     buyUnitPrice.current = Number(Number(buyUnitPrice.current).toFixed()).toLocaleString()
                 }
                 if(data.message && data.message.indexOf("خرید")!==-1){
@@ -227,15 +396,30 @@ function FastBuySell() {
                     buyConversionResultStrR.current =  "-"
                    
                 }
+                buyBuyerAmount.current = buyConvertAmountP
                 if(buyConvertAll){
-                    changeBuyAmount(data["destination_price"], false)
                     buyConversionResultR.current = +data['source_price']
                     buyConversionResultStrR.current = data['source_price_str']
+                    buyFinalValue.current = data["destination_price"]
+                    buyBuyerAmount.current = data["amount_with_out_fee"]
+                    changeBuyAmount(data["amount_with_out_fee"], false)
+                }
+
+               
+
+
+                // setBuyConvertAmount(buyConvertAmountP
+                
+                buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
+                if(isScheduledBuy){    
+                    const fee = compute_fee(buySource.small_name_slug, buySchedulePriceP, buyKarmozdAmountR.current)
+                    buyFinalValueEqual.current = buyConvertAmountP*buySchedulePriceP - rnd(fee, 1)
+                    buyLowCreditR.current = buyConvertAmountP*buySchedulePrice > +buyAvailableCurrencyR.current
                 }
 
                 
-                // setBuyConvertAmount(buyConvertAmountP)
-                buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
+                
+
                 setBuyConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -282,25 +466,55 @@ function FastBuySell() {
                 const prec2 = Math.max(8, +data["source_decimal"] , +data["destination_decimal"])
                
                 sellEndPriceR.current =  Math.round(Math.pow(10, prec2) * +data["unit_price"])/Math.pow(10,prec2)
-                sellKarmozdAmountR.current =  Math.round(1000*+data["total_fee"])/1000 || 0
-                sellTransactionFee.current =  Math.round(1000*+data["fee"])/1000 || 0
                 sellFixedKarmozdR.current =  +data["fix_fee"] || 0
+                sellTransactionFee.current =  +data["fee"] || 0
+                sellKarmozdAmountR.current =  +data["total_fee"] || 0
                 sellConversionResultR.current =  sellConvertAmountP? +data["destination_price"]: 0
                 sellConversionResultStrR.current =  sellConvertAmountP? data["destination_price_str"]: 0
                 sellUnitPrice.current = data['unit_price']
                 const a = sellConversionResultR.current
-                const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
-                if(sellDestination.small_name === "IRT"){
+                // const a2 = sellUnitPrice.current * sellKarmozdAmountR.current
+                const a2 = sellKarmozdAmountR.current
+                sellFeeUnit.current = sellDestination.name
+                sellFeeUnitEqual.current = sellSourceR.current.small_name_slug
+                sellFixedFeeEqual.current = compute_fees(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellFixedKarmozdR.current)
+                sellVariableFeeEqual.current = compute_fees(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellTransactionFee.current) 
+                sellTotalFeeEqual.current = compute_fees(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current) 
+                sellFinalValue.current = sellConvertAmountP-sellKarmozdAmountR.current
+                sellFinalValueEqual.current = Number(sellConversionResultR.current) - compute_fee(sellSourceR.current.small_name_slug, sellUnitPrice.current, sellKarmozdAmountR.current)
+
+                if(sellSourceR.current.id === Constants.IRT_CURRENCY_ID && sellDestination.name.indexOf("تتر") >-1){
+                    sellFixedFeeEqual.current = sellFixedKarmozdR.current/ +sellUnitPrice.current 
+                    sellVariableFeeEqual.current =   (sellTransactionFee.current / +sellUnitPrice.current) 
+                    sellTotalFeeEqual.current = sellKarmozdAmountR.current / +sellUnitPrice.current
+                    sellFinalValue.current = sellConvertAmountP - (sellKarmozdAmountR.current / sellDestination.show_price_irt)
+                    sellFinalValueEqual.current = irt(sellFinalValue.current  * sellDestination.show_price_irt)
+                    sellFeeUnit.current = sellSourceR.current.name
+                    sellFeeUnitEqual.current = sellDestination.small_name_slug
+                    sellFixedKarmozdR.current = irt(sellFixedKarmozdR.current)
+                    sellTransactionFee.current = irt(sellTransactionFee.current)
+                    sellKarmozdAmountR.current = irt(sellKarmozdAmountR.current)
+                }
+                if(sellDestination.small_name === "IRT" && !isScheduledSell){
                     let v = a + sellKarmozdAmountR.current 
                     sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()
-                    sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
+                    // sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
                 }else{
                     sellTotalR.current = (a+a2).toLocaleString()
                 }
+                sellBuyerAmount.current = sellConvertAmountP
 
-                
+                if(isScheduledSell){    
+                    const fee = compute_fees(sellSourceR.current.small_name_slug, sellSchedulePriceP, sellKarmozdAmountR.current)
+                    console.log("T", sellConvertAmountP*sellSchedulePriceP, rnd(fee, 1));
+                    
+                    sellFinalValue.current = sellConvertAmountP*sellSchedulePriceP - rnd(fee, 1)
+                    sellFinalValueEqual.current = sellConvertAmountP - sellKarmozdAmountR.current
+                    sellLowCreditR.current = sellConvertAmountP > +sellAvailableCurrencyR.current
+                }else{
+                    sellLowCreditR.current = sellConvertAmountP > +sellAvailableCurrencyR.current
+                }
                 // setsellConvertAmount(sellConvertAmountP)
-                sellLowCreditR.current = !sellConvertAmountP || sellConvertAmountP > +sellAvailableCurrencyR.current
                 setSellConvertInvalid(Math.random())
                
            }).catch(error=>{
@@ -308,15 +522,47 @@ function FastBuySell() {
            })
         }
     }
-    useEffect(() => {
-       dispatch({type: "UPDATE_MENU", payload: "sale-fast"})
-   }, [])
    useEffect(() => {
         if(!buySource.id && currencyList.length>0) changeBuySource('',Constants.USDT_CURRENCY_ID)
         if(!sellDestination.id && currencyList.length>0) changeSellDestination('',Constants.USDT_CURRENCY_ID)
-        
    }, [currencyList])
+
+   useEffect(() => {
+       console.log("came", buySource.id);
+       
+        if(buySource.id){
+            changeBuySource('',buySource.id)
+            buyAvailableCurrencyR.current = get_available(buySource.id)   
+        }
+        if(sellSourceR.current.id) {
+            changeSellDestination('',Constants.USDT_CURRENCY_ID)
+            sellAvailableCurrencyR.current = get_available(sellSourceR.current.id)   
+        }
+        
+   }, [wallet])
    
+    const handleSelect = (key)=>{
+            setLastTab(prev=>{
+                return key!=="schedule"?key:prev
+            })
+            setTab(key)   
+    }
+    const cancelSchedule =()=>{
+        dispatch(cancel_schedule({id:cancelScheduleID}))
+        .then(response=>{
+            if(response.result === "success"){
+                toast.success(response.message)
+                setShowCancelModal(false)
+            }
+            else
+                toast.error(response.message)
+        }).catch(err=>{toast.error(err.message)})
+    }
+    
+    const openCancelModal =(id)=>{
+        setCancelSceduleID(id)
+        setShowCancelModal(true)
+    }
     return( <div className="card">
         <div className="card-body">
             <div className="buy-sell-widget">
@@ -341,7 +587,7 @@ function FastBuySell() {
                                 <option value={undefined}>انتخاب</option>
                                     { 
                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                        return  ((buySource.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20","USDT-ERC20"].includes(c.small_name)) || (buySource.small_name !== 'USDT-TRC20'))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                        return  ((buySource.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name)) || (buySource.small_name !== 'USDT'))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                     })
                                 }
                                     
@@ -351,9 +597,9 @@ function FastBuySell() {
 
                             <div className="mb-3">
                                 <label className="form-label">مقدار 
-                                    {buyDestinationR.current && buyDestinationR.current.id? 
+                                    {buyDestination? 
                                         <>
-                                        <i className="px-2"> {buyDestinationR.current.name}</i>    
+                                        <i className="px-2"> {buyDestination.name}</i>    
                                         مورد نظر
                                         </>:undefined
                                 }
@@ -388,14 +634,14 @@ function FastBuySell() {
                                     </small>
                                     <small className="text-nowrap flex-grow-1 text-start">
                                         <span className="text-success px-2">{buyConversionResultR.current}</span>
-                                        <span className="px-1">{buyDestinationR.current.name}</span>
+                                        <span className="px-1">{buyDestination&&buyDestination.name}</span>
                                         <span>دریافت میکنید</span>   
                                     </small>
                                 </div>
                                  <div className="col-12 row mb-3 mx-0 ">
                                     <small className="d-flex justify-content-between px-0 flex-wrap">
                                         <label className="text-nowrap">قیمت تمام شده هر واحد 
-                                            <i className="px-2">{ buyDestinationR.current.name }</i>
+                                            <i className="px-2">{ buyDestination&&buyDestination.name }</i>
                                             :
                                         </label>
                                         <span className="flex-grow-1 text-start"> <span className="text-nowrap text-success px-2 fs-4 ">{ buyUnitPrice.current }</span>  <i>{ buySource.name}</i></span>
@@ -407,7 +653,7 @@ function FastBuySell() {
                                     :undefined
                                 }
                             <button type="button" name="submit" onClick={handleBuyConfirm}
-                            disabled={!+buyConvertAmount || !buyDestinationR.current.id || !buySource.id || buyLowCreditR.current || _creating_order}
+                            disabled={!+buyConvertAmount || !buyDestination || !buySource.id || buyLowCreditR.current || _creating_order}
                                 className="btn btn-success w-100 d-flex justify-content-center">
                                     خرید
                                     {_creating_order? <Loader
@@ -436,7 +682,7 @@ function FastBuySell() {
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
                                                                     currencyList && currencyList.length && currencyList.map((c, idx)=>{
-                                                                        return   ((sellDestination.small_name === 'USDT-TRC20' && !["IRT", "USDT-TRC20", "USDT-ERC20"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
+                                                                        return   ((sellDestination.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
                                                         </select>
