@@ -56,7 +56,7 @@ function VerifyStep1() {
                 setShowVerify(false)
                 toast.success(data.message, {
                     onClose: ()=>{
-                        _history.push("/panel/verify-step-4")
+                        _history.push("/verify-step-2")
                     }
                 })
                 

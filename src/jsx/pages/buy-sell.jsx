@@ -61,7 +61,7 @@ function compute_fees(unit, unit_price, source_amount, subfrom=undefined) {
         return subfrom - tot 
     }
     if(unit === "IRT") 
-        return Number(tot.toFixed()).toLocaleString("fa-IR")
+        return Number(tot.toFixed())
     return  tot 
 }
 
@@ -372,23 +372,15 @@ function BuySell() {
                 const a = buyConversionResultR.current
                 const a2 = buyUnitPrice.current * buyKarmozdAmountR.current
                 
-                buyFeeUnit.current = buyDestination.name
-                buyFeeUnitEqual.current = buySource.small_name_slug
-                buyFixedFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)
-                buyVariableFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyTransactionFee.current) 
-                buyTotalFeeEqual.current = compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current) 
-                buyFinalValue.current = buyConvertAmountP-buyKarmozdAmountR.current
-                buyFinalValueEqual.current = Number(buyConversionResultR.current) - compute_fee(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
-
+                buyFeeUnit.current = buySource.name
+                buyFeeUnitEqual.current = buyDestination.small_name_slug
+                buyFixedFeeEqual.current =      compute_fees(buyDestination.small_name_slug, buyUnitPrice.current, buyFixedKarmozdR.current)
+                buyVariableFeeEqual.current =   compute_fees(buyDestination.small_name_slug, buyUnitPrice.current, buyTransactionFee.current) 
+                buyTotalFeeEqual.current =      compute_fees(buyDestination.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current) 
+                buyFinalValueEqual.current = buyConversionResultR.current - buyKarmozdAmountR.current
+                buyFinalValue.current = Number(buyConvertAmountP)-compute_fees(buySource.small_name_slug, buyUnitPrice.current, buyKarmozdAmountR.current)
+                
                 if(buySource.id === Constants.IRT_CURRENCY_ID && buyDestination.name.indexOf("تتر") >-1){
-                    buyFixedFeeEqual.current = (buyFixedKarmozdR.current/ +buyUnitPrice.current ).toFixed(6)
-                    buyVariableFeeEqual.current =   (buyTransactionFee.current / +buyUnitPrice.current).toFixed(6)
-                    buyTotalFeeEqual.current = (buyKarmozdAmountR.current / +buyUnitPrice.current).toFixed(6)
-                    buyFinalValue.current = buyConvertAmountP - (buyKarmozdAmountR.current / buyDestination.show_price_irt)
-                    buyFinalValueEqual.current = irt(buyFinalValue.current  * buyDestination.show_price_irt)
-                    buyFeeUnit.current = buySource.name
-                    buyFeeUnitEqual.current = buyDestination.small_name_slug
-
                     buyFixedKarmozdR.current = irt(buyFixedKarmozdR.current)
                     buyTransactionFee.current = irt(buyTransactionFee.current)
                     buyKarmozdAmountR.current = irt(buyKarmozdAmountR.current)
@@ -404,10 +396,13 @@ function BuySell() {
                     buyConversionResultStrR.current =  "-"
                    
                 }
+                buyBuyerAmount.current = buyConvertAmountP
                 if(buyConvertAll){
                     buyConversionResultR.current = +data['source_price']
                     buyConversionResultStrR.current = data['source_price_str']
-                    changeBuyAmount(data["destination_price"], false)
+                    buyFinalValue.current = data["destination_price"]
+                    buyBuyerAmount.current = data["amount_with_out_fee"]
+                    changeBuyAmount(data["amount_with_out_fee"], false)
                 }
 
                
@@ -423,7 +418,7 @@ function BuySell() {
                 }
 
                 
-                buyBuyerAmount.current = buyConvertAmountP
+                
 
                 setBuyConvertInvalid(Math.random())
                
@@ -901,10 +896,6 @@ function BuySell() {
                                                             <td>روش پرداخت</td>
                                                             <td>{ buySource.name || "-"}</td>
                                                         </tr>
-                                                        {/* <tr>
-                                                            <td>نسبت تبدیل</td>
-                                                            <td>{ buyConvertRate } {buySource.name}</td> */}
-                                                        {/* </tr> */}
                                                         <tr>
                                                             <td>کارمزد  ثابت</td>
                                                             <td>{buyFixedKarmozdR.current || 0} {" "} {buyFeeUnit.current}

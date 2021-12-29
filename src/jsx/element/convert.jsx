@@ -29,6 +29,7 @@ function Convert() {
     const karmozdUnit = useRef(false)
     const convertErrorMessage = useRef("")
     const [orderMessage, setOrderMessage] = useState("")
+    const [random, setRandom] = useState("")
     
 
     const get_available = (symbolid)=>{
@@ -142,16 +143,17 @@ function Convert() {
                 convertResult: Number(data["destination_price"]).toLocaleString()
             }
             dispatch({type: "UPDATE_DETAILS", payload: d})
-            const cond1 = [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyToP.id) && ![Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyFromP.id)
-            const cond2= [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyToP.id) && [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyFromP.id)
+            // const cond1 = [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyToP.id) && ![Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyFromP.id)
+            // const cond2= [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyToP.id) && [Constants.IRT_CURRENCY_ID, Constants.USDT_CURRENCY_ID].includes(currencyFromP.id)
              
 
-            if(cond1 || cond2){
-                karmozdUnit.current = currencyFromP.name
-            }else{
-                karmozdUnit.current = currencyToP.name
-            }
-            
+            // if(cond1 || cond2){
+            //     karmozdUnit.current = currencyFromP.name
+            // }else{
+            //     karmozdUnit.current = currencyToP.name
+            // }
+            karmozdUnit.current = data["source"]
+            setRandom(Math.random)
         }).catch(err=>{
             console.log(err);
             
