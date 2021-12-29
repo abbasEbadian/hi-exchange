@@ -15,58 +15,7 @@ import ProfileImages from '../layout/profile-images';
 
 
 function Settings() {
-    const [name, setName] = useState("");
-    const dispatch = useDispatch()
-    const avatarRef = useRef(undefined)
 
-    
-    let token = ""
-    sessionService.loadSession()
-    .then(currentSession => token=currentSession.token)
-    .catch(err => console.log(err))
-    const toastOpt = {
-        position: "bottom-left",
-        hideProgressBar: false,
-        closeOnClick: true,
-        draggable: true,
-        autoClose: 5000,
-    }
-    
-    const submitName =async  e=>{
-        e.preventDefault();
-        e.stopPropagation();
-        if (name){
-            var bodyFormData = new FormData();
-            bodyFormData.append("first_name", name);
-            bodyFormData.append("action", "profile");
-            axios.post(Constants.BASE_URL + "/api/v2/account/manage/", bodyFormData,
-                {headers: {Authorization: "Bearer "+ token }}
-            ).then(res=>{
-                const {data} = res;
-                if (data.error === 1)
-                toast.error(data.message)
-                else {
-                    axios.get(Constants.BASE_URL + "/api/v2/account/details/", {
-                        headers: {
-                            "Authorization": "Bearer "+token,
-                        }
-                    }).then(data=>{
-                        sessionService.saveUser(data.data).then(e=>{
-                            console.log("updated")
-                        })
-                    }).catch(err=>{
-                        console.log(err);
-                    })
-                }
-            })
-        
-        }
-        if (avatarRef.current.files.length>0){
-            dispatch(userUpdateAvatar(avatarRef.current.files[0], toast, toastOpt)); ;
-        }
-        return false;
-    }
-    
     return (
         <>
             <Header2 />
@@ -91,6 +40,7 @@ function Settings() {
                                 </div>
                                 <div className="col-xl-6">
                                     <ResetPassword />
+                                    
                                 </div>
                                 <div className="col-xl-12">
                                     <PersonalInfo></PersonalInfo>

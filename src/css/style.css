@@ -8956,7 +8956,8 @@ input:-internal-autofill-selected {
 .toggle {
   cursor: pointer;
   display: block;
-  margin-bottom: 30px !important; }
+  margin-bottom: 30px !important;
+  pointer-events: none; }
 
 .toggle-switch {
   display: inline-block;
@@ -8966,7 +8967,8 @@ input:-internal-autofill-selected {
   height: 20px;
   position: relative;
   vertical-align: middle;
-  transition: background 0.25s; }
+  transition: background 0.25s;
+  pointer-events: all; }
   .toggle-switch:before, .toggle-switch:after {
     content: ""; }
   .toggle-switch:before {
@@ -10271,6 +10273,47 @@ button.btn-simple {
 
 .fs-13 {
   font-size: 13px !important; }
+
+.in-progress {
+  position: absolute;
+  background: #202e37;
+  top: 6rem;
+  left: 0;
+  font-size: 12px;
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 0 0 6px 0; }
+  .in-progress svg {
+    margin-left: 4px;
+    color: yellow; }
+  @media (max-width: 1199px) {
+    .in-progress {
+      top: 5rem; } }
+
+.progress-percent2 {
+  border-radius: 25px;
+  display: block;
+  height: 41.5px;
+  width: 100%;
+  position: absolute;
+  top: -1px; }
+  .progress-percent2 .progress-bar {
+    background: #13990a; }
+  .progress-percent2 .progress {
+    border-radius: 25px;
+    background: #fff; }
+  .progress-percent2 .progress-bar, .progress-percent2 .progress {
+    height: 100%;
+    width: 100%; }
+
+.upload-images-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 41.5px; }
 
 @-moz-keyframes spin {
   from {

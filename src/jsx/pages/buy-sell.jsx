@@ -413,7 +413,8 @@ function BuySell() {
                
 
 
-                // setBuyConvertAmount(buyConvertAmountP)
+                // setBuyConvertAmount(buyConvertAmountP
+                
                 buyLowCreditR.current = +buyConversionResultR.current > +buyAvailableCurrencyR.current
                 if(isScheduledBuy){    
                     const fee = compute_fee(buySource.small_name_slug, buySchedulePriceP, buyKarmozdAmountR.current)
@@ -516,7 +517,7 @@ function BuySell() {
                     sellFinalValueEqual.current = sellConvertAmountP - sellKarmozdAmountR.current
                     sellLowCreditR.current = sellConvertAmountP > +sellAvailableCurrencyR.current
                 }else{
-
+                    sellLowCreditR.current = sellConvertAmountP > +sellAvailableCurrencyR.current
                 }
                 // setsellConvertAmount(sellConvertAmountP)
                 setSellConvertInvalid(Math.random())
@@ -708,13 +709,13 @@ function BuySell() {
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
                                                     disabled={(!buyScheduleAmount &&!+buyConvertAmount) || !buyDestination.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
-                                                            {isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
+                                                            
                                                             {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
                                                                 width={40}
                                                                 color="#fff"
-                                                            ></Loader>:undefined}
+                                                            ></Loader>:isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
                                                             </button>
 
                                                 </form>
@@ -848,14 +849,13 @@ function BuySell() {
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
                                                      disabled={(!sellScheduleAmount &&!+sellConvertAmount) || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">
-                                                            {isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}
 
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
                                                                 width={40}
                                                                 color="#fff"
-                                                            ></Loader>:undefined}</button>
+                                                            ></Loader>:isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}</button>
                                                 </form>
                                             </Tab>
                                             <Tab eventKey="schedule" title="سفارشات باز" tabClassName={"fs-13"}>

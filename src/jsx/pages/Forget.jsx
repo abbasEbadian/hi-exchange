@@ -107,17 +107,7 @@ function Forget() {
                                            
                                         </div>
                                     </form>
-                                    <ToastContainer
-                                        position="bottom-left"
-                                        autoClose={5000}
-                                        hideProgressBar={false}
-                                        newestOnTop={false}
-                                        closeOnClick
-                                        rtl={true}
-                                        pauseOnFocusLoss
-                                        draggable
-                                        pauseOnHover
-                                        />
+                                   
                                     <div className="new-account mt-3">
                                         <p>
                                             حساب جدید نیاز دارید؟{" "}

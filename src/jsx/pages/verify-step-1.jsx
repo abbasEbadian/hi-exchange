@@ -11,7 +11,7 @@ import axios from 'axios'
 
 function VerifyStep1() {
     const dispatch = useDispatch()
-    const history = useHistory()
+    const _history = useHistory()
 
     const user = useSelector(state=>state.session.user)
     const nationalCodeRef = useRef("")
@@ -20,6 +20,7 @@ function VerifyStep1() {
     const addressRef = useRef("")
     const birthRef = useRef("")
     const emailRef = useRef("")
+    const certifRef = useRef("")
 
     const [confirmed, setConfirmed] = useState("")
     const [verifyCode, setVerifyCode] = useState("")
@@ -29,9 +30,8 @@ function VerifyStep1() {
 
     const openConditionalModal = ()=>setConditionalModal(true)
     const closeConditionalModal = ()=>setConditionalModal(false)
-    const openVerify = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
+    const openVerify = () => {
+        
         axios.get(Constants.BASE_URL+"/api/v2/account/verify/phone/")
         .then(resp=>{
             const {data} = resp
@@ -54,20 +54,27 @@ function VerifyStep1() {
                 toast.error(data.message)
             }else{
                 setShowVerify(false)
-                submit()
+                toast.success(data.message, {
+                    onClose: ()=>{
+                        _history.push("/panel/verify-step-4")
+                    }
+                })
+                
             }
         })
         .catch(err=>console.log(err))
     }
-    const submit = ()=>{
-        
+    const submit = (e)=>{
+        e.preventDefault()
+        e.stopPropagation()
         const data = {
             card_id: nationalCodeRef.current.value,
             email: emailRef.current.value,
-            birth_certificate_id: "0",
+            birth_certificate_id: certifRef.current.value,
             birthday: birthRef.current.value ,
             address: addressRef.current.value,
-            phone: user.mobile,
+            phone: homePhoneRef.current.value,
+            post_code: postCodeRef.current.value,
             first_name: user.first_name,
             last_name: user.last_name,
         }
@@ -75,15 +82,16 @@ function VerifyStep1() {
         dispatch(userUpdatePersonal(data)).then(response=>{
             if(response === "sent"){
                setTimeout(() => {
-                history.push("/verify-step-2")
-               }, 2500);
+                   openVerify()
+               }, 1000);
             }
         })
     }
     React.useEffect(() => {
-        if(user&&user.personal_data&&user.personal_data.address&&user.personal_data.address.phone){
+        if(user&&user.is_phone_accepted){
             setAlready(true)
         }
+       
     }, [user])
     return (<>
             <Header2 />
@@ -103,7 +111,7 @@ function VerifyStep1() {
                                 <div className="card-body">
                                     <form
                                         action="#"
-                                        onSubmit={openVerify}
+                                        onSubmit={submit}
                                         className="identity-upload"
                                     >
                                         <div className="identity-content">
@@ -113,41 +121,63 @@ function VerifyStep1() {
                                             </h6>
                                            
                                         </div>
-                                        <div className="mb-3">
-                                            <label className="form-label">کد ملی</label>
-                                            <input ref={nationalCodeRef} className="form-control"/>                   
-                                        </div>
-                                       
-                                        {user && !user.email?
+                                       {user && user.personal_data&& user.personal_data.national_id?
+                                            <input type="hidden" ref={nationalCodeRef}  defaultValue={user.personal_data.national_id}/>
+                                        :
+                                            <div className="mb-3" >
+                                                <label className="form-label">کد ملی</label>
+                                                <input ref={nationalCodeRef} className="form-control"/>     
+                                            </div>
+                                        }
+                                        {user && user.personal_data&& user.personal_data.birth_certificate_id?
+                                            <input type="hidden" ref={certifRef}  defaultValue={user.personal_data.birth_certificate_id}/>
+                                        :
+                                            <div className="mb-3" >
+                                                <label className="form-label">شماره شناسنامه</label>
+                                                <input ref={certifRef} className="form-control"/>     
+                                            </div>
+                                        }
+                                        {user && user.email?
+                                            <input type="hidden" ref={emailRef}  defaultValue={user.email}/>
+                                        :
                                          <div className="mb-3" >
                                             <label className="form-label">ایمیل</label>
                                             <input ref={emailRef} type="email" className="form-control"/>
-                                        </div>:
-                                            <input type="hidden" ref={emailRef}  defaultValue={user.email}/>
+                                        </div>
                                         }
 
-                                        {user && !user.birthday?
+                                        {user && user.birthday?
+                                            <input type="hidden" ref={birthRef}  defaultValue={user.birthday}/>
+                                        :
                                          <div className="mb-3" >
                                             <label className="form-label">تاریخ تولد</label>
                                             <input ref={birthRef}  className="form-control" placeholder="1350/01/01"/>
-                                        </div>:
-                                            <input type="hidden" ref={birthRef}  defaultValue={user.birthday}/>
+                                        </div>
                                         }
 
                                         <div className="mb-3">
                                             <label className="form-label">شماره تلفن ثابت</label>
                                             <input ref={homePhoneRef} className="form-control"/>                   
                                         </div>
-                                        <div className="mb-3">
-                                            <label className="form-label">کد پستی</label>
-                                            <input ref={postCodeRef} className="form-control"/>                   
+
+                                      
+                                        {user && user.personal_data &&  user.personal_data.address&& user.personal_data.address.post_code?
+                                            <input defaultValue={user.personal_data.address.post_code} ref={postCodeRef} className="d-none"/>
+                                        :
+                                         <div className="mb-3" >
+                                             <label className="form-label">کد پستی</label>
+                                            <input ref={postCodeRef} className="form-control"/>  
                                         </div>
-                                        {user && !user.address?
+                                            
+                                        }
+                                        
+                                        {user && user.personal_data &&  user.personal_data.address&& user.personal_data.address.address?
+                                            <textarea defaultValue={user.personal_data.address.address} ref={addressRef} className="d-none"/>
+                                        :
                                          <div className="mb-3" >
                                              <label className="form-label">آدرس</label>
-                                             <textarea rows={6} ref={addressRef} className="form-control py-2"/>
-                                        </div>:
-                                            <textarea defaultValue={user.address} ref={addressRef} className="d-none"/>
+                                             <textarea rows={6} ref={addressRef} placeholder={"آدرس کامل"} className="form-control py-2"/>
+                                        </div>
                                         }
                                         
                                         <div className="row d-flex justify-content-between mt-4 mb-2">
@@ -185,17 +215,7 @@ function VerifyStep1() {
                         </div>
                     </div>
                 </div>
-                <ToastContainer
-                    position="bottom-left"
-                    autoClose={2500}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={true}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    />
+                
                 <Modal dialogClassName="modal-90w mx-auto" contentClassName="dark" show={conditionalModal} onHide={() => setConditionalModal(false)}>
                     <Modal.Header closeButton>
                     <Modal.Title>شرایط و مقررات</Modal.Title>

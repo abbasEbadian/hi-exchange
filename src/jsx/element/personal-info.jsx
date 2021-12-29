@@ -99,17 +99,7 @@ const PersonalInfo = () => {
                     </div>
                 </form>
             </div>
-            <ToastContainer
-                    position="bottom-left"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={true}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                />       
+          
         </div>:undefined} 
         </>               
     )

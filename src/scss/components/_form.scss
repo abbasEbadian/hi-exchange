@@ -118,6 +118,7 @@ input:-internal-autofill-selected {
     cursor       : pointer;
     display      : block;
     margin-bottom: 30px !important;
+    pointer-events: none;
 }
 
 .toggle-switch {
@@ -129,6 +130,7 @@ input:-internal-autofill-selected {
     position      : relative;
     vertical-align: middle;
     transition    : background 0.25s;
+    pointer-events: all;
 
     &:before,
     &:after {

@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import {  Card, Modal, Button } from 'react-bootstrap'
 import { fetch_currencies, update_next_refresh, creating_order, create_order } from '../../redux/actions'
 import {Link} from 'react-router-dom'
-import {toast, ToastContainer} from 'react-toastify'
+import {toast} from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux'
 import Timer from './Timer'
 import axios from 'axios'
 import qs from 'qs'
 import {Constants} from '../../Constants'
+import Loader from 'react-loader-spinner'
 function Convert() {
     const dispatch = useDispatch();
     const convertDetails = useSelector(state=>state.indexConverter.details);
     const { currencyList } = useSelector(state=>state.currencies);
+    const _creating_order = useSelector(state=>state.accounts.creating_order);
     const wallet = useSelector(state => state.wallet.wallet)
     const [interval, setInterval2] = useState(false) 
     // const {convertAmount, currencyTo, currencyFrom, currencyAvailable, showDetailModal} = indexConverter
@@ -30,19 +32,13 @@ function Convert() {
     
 
     const get_available = (symbolid)=>{
-        if (!wallet || wallet.length===0 )return 0
+         if (!wallet || wallet.length===0 )return 0
         const target = wallet.filter((item, i)=>{
             return item&& item["service"]&&item["service"]["id"] === symbolid
         })
          return target.length > 0 ? target[0]["balance"] : 0
     }
-    const convertFeeToIrt=(id, amount)=>{
-        if(!currencyList || !currencyList.length) return 0;
-        else{
-            const c = currencyList.filter((item)=>{return item&&item.id===id})
-            return c && c.length ?amount * (+c[0].show_price_irt): 0
-        }
-    }
+
     useEffect(() => {
         const currentTime = new Date()  
         const currentTimeUnix = currentTime.getTime();//current unix timestamp
@@ -327,7 +323,7 @@ function Convert() {
                                 <div className=" col-12 row flex-column p-0 mt-3">
                                     <div className="d-flex  align-items-end p-0 me-auto col-6">
                                         <button type="button" name="button" onClick={handleDetailModalShow}
-                                            className="btn btn-success px-5 w-100" style={{lineHeight: 1}} disabled={!convertAmount || !currencyFrom.small_name_slug || !currencyTo.small_name_slug ||convertInvalid}>تبدیل کن</button>
+                                            className="btn btn-success px-5 w-100" style={{lineHeight: 1}} disabled={!convertAmount || !currencyFrom.small_name_slug || !currencyTo.small_name_slug ||convertInvalid || _creating_order}>تبدیل کن</button>
                                     </div>
                                 </div>
                             </div>
@@ -387,22 +383,11 @@ function Convert() {
                 <Button variant="light" onClick={handleDetailModalClose}>
                     لغو
                 </Button>
-                <Button variant="success" onClick={handleDetailModalConfirm}>
-                    تایید تراکنش
+                <Button variant="success" onClick={handleDetailModalConfirm} disabled={_creating_order}>
+                   {_creating_order?<Loader type="ThreeDots" height="20" width="20" color="white"/>: " تایید تراکنش"}
                 </Button>
                 </Modal.Footer>
             </Modal>
-            <ToastContainer
-                    position="bottom-left"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={true}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    />
         </>
     )
 }

@@ -360,6 +360,7 @@ function Wallet(props) {
                                         <th>نماد</th>
                                         <th>نام</th>
                                         <th>کل دارایی</th>
+                                        <th>تغییر 24 ساعته</th>
                                         <th>عملیات</th>
                                         <th>بروزرسانی</th>
                                     </tr>
@@ -367,11 +368,14 @@ function Wallet(props) {
                                 <tbody>
                                     
                                     {wallet&& wallet.length ? wallet.map((item, idx)=>{
+                                        const change = item.value
+                                        const color = change>0? "success":change===0?"":"danger"
                                         return item && <tr key={idx}> 
                                             <td><img className="icon"src={item.service.image} alt="coin"></img> <span> { item.service.small_name } </span></td>
                                             <td> { item.service.name } </td>
                                             
                                             <td>{Number(Number(item.balance).toFixed()).toLocaleString()}</td>
+                                            <td className={`text-${color}`}>{change}</td>
                                             <td>
                                                 <button className="text-success  border-0 bg-transparent fs-5 py-0"
                                                     onClick={e=>openPreDepositModal(item.service.id)}

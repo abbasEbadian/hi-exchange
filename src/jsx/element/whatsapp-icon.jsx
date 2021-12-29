@@ -49,7 +49,7 @@ function WhatsappIcon() {
    
 
     return (
-       <div className="whatsapp-widget" style={style}>
+       <div className="whatsapp-widget" style={style} >
             <a href="https://wa.me/989196360599" className="position-absolute w-100 h-100" style={{zIndex: 1000}}>&nbsp;</a>
             <img src={require('../../images/whatsapp.png')} alt="whatsapp" className="w-100"/>
             

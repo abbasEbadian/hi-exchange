@@ -169,13 +169,12 @@ export const userUpdateImage =  (data, toastOpt=0)=>{
         return new Promise((resolve, reject)=>{
             axios.post(BASE+"/api/v2/account/document/", data,
             ).then(response=>{
-                const {error, message} = response.data 
-                console.log(error, message);
+                const {data} = response 
                 
-                if (+error === 1){
-                    return resolve({status:400, message})}
+                if (+data.error === 1){
+                    return resolve({status:400, message:data.message})}
                 else{
-                    return resolve({status:200, message}) 
+                    return resolve({status:200, message:data.message}) 
                 }
             }).catch(err=>{
                 return resolve({status:400,message: "با خطا مواجه شد."})
