@@ -486,14 +486,17 @@ function Wallet(props) {
                         <div className="col-12 mb-3">
                             <label htmlFor="card-select" className="form-label">آدرس کیف پول  مقصد</label>
                             <input type="text" className="form-control mb-2" value={withdrawWalletText} onChange={e=>setWithdrawWalletText(e.target.value)}/>
-                            {withdrawWallet.service && withdrawWallet.service.network && withdrawWallet.service.network.realName? <small className="form-text mt-4 mb-5">
+                            <small>کارمزد برداشت: <span className="text-success">{ withdrawWallet.service && withdrawWallet.service.withdrawFee}</span> {" "}{withdrawWallet.service.name}</small>
+                            {withdrawalNetwork && withdrawalNetwork.realName? <small className="form-text mt-4 mb-5">
                                 <span className="text-danger">توجه : </span>
                                 <span>کیف پول وارد شده الزاما باید در شبکه </span>
-                                <span className="text-success px-2">{withdrawWallet.service.network.realName} {"("}{withdrawWallet.service.network.name}{")"}</span>
+                                <span className="text-success px-2">{withdrawalNetwork.realName} {"("}{withdrawalNetwork.name}{")"}</span>
                                 <span>باشد.</span>
                                 <br/>
                                 در غیر اینصورت ، امکان از بین رفتن دارایی شما وجود دارد.
                             </small>:undefined}
+                                
+
                         </div>
                         <div className="col-12 mb-3 position-relative">
                             <label htmlFor="card-select" className="form-label">شبکه</label>

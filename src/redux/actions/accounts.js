@@ -226,9 +226,9 @@ export const create_order = ({
                         toast.info("سفارش شما ثبت شد.")
                     else {
                         if(type === "buy")
-                            toast.success("سفارش خرید شما با موفقیت انجام شد.")
+                            toast.success("سفارش  شما با موفقیت ثبت شد.")
                         else
-                            toast.success("سفارش فروش شما با موفقیت انجام شد.")
+                            toast.success("سفارش  شما با موفقیت ثبت شد.")
                     }
                     dispatch(fetch_user_all_data())
                 }).catch(err=>{
