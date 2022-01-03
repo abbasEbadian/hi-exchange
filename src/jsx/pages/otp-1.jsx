@@ -116,17 +116,6 @@ function Otp1() {
                                            
                                         </div>
                                     </form>
-                                    <ToastContainer
-                                        position="top-right"
-                                        autoClose={5000}
-                                        hideProgressBar={false}
-                                        newestOnTop={false}
-                                        closeOnClick
-                                        rtl={true}
-                                        pauseOnFocusLoss
-                                        draggable
-                                        pauseOnHover
-                                        />
                                     <div className="new-account mt-3">
                                         <p>
                                             حساب جدید نیاز دارید؟{" "}

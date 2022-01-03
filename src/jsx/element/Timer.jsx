@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { useSelector } from 'react-redux';
 
-function Timer() {
+function Timer({text="تا بروزرسانی"}) {
     const [time, setTime] = useState(60)
     const [next, setNext] = useState(undefined)
     const next_refresh = useSelector(state=>state.indexConverter.nextRefreshTime)
@@ -19,9 +19,9 @@ function Timer() {
         <div>
             {(time < 60 && time >=0) ?
             <> 
-               <small className="fs-6 text-center text-muted"> 
-                <span className="px-2  text-success">{time + " ثانیه "}</span>
-                تا بروزرسانی
+                <small className="text-center text-muted" style={{fontSize: "12px"}}> 
+                    <span className="px-2  text-success">{time + " ثانیه "}</span>
+                    {text}
                 </small>
             </>
             :

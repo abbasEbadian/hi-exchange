@@ -34,9 +34,10 @@ import BasicRoute from './routes/BasicRoute'
 import axios from 'axios'
 import { sessionService } from 'redux-react-session' 
 import { useDispatch }from 'react-redux'
-import { fetch_currencies,  fetch_user_all_data } from '../redux/actions'
+import { fetch_currencies,  fetch_user_all_data, update_next_refresh } from '../redux/actions'
 import { Constants } from '../Constants'
 import {ToastContainer} from 'react-toastify'
+
 // Set token to axios requestss
 
 
@@ -127,6 +128,7 @@ axios.interceptors.response.use((response) => {
 const Index = ()=> {
     const {checked, authenticated} = useSelector(state => state.session)
     const dispatch = useDispatch()
+    const [interval, setInterval2] = React.useState(false) 
 
     useEffect(() => {
         if(authenticated){
@@ -136,7 +138,32 @@ const Index = ()=> {
       
         
     }, [authenticated, dispatch])
+    useEffect(() => {
+            const currentTime = new Date()  
+            const currentTimeUnix = currentTime.getTime();//current unix timestamp
+            const execTime = new Date()
+            execTime.setMinutes(currentTime.getMinutes()+1)
+            execTime.setSeconds(2)
+            
+            let timeLeft = execTime - currentTimeUnix;
+            let inter = undefined
+            setTimeout(function() {
 
+                if(!interval){
+                    inter = setInterval(function() {
+                        dispatch(update_next_refresh(new Date().getTime()))
+                        dispatch(fetch_currencies());
+                    }, 60000)  
+                    setInterval2(true)
+                }
+        
+                dispatch(update_next_refresh(new Date().getTime()))
+                dispatch(fetch_currencies());
+            }, timeLeft); 
+            dispatch(fetch_currencies());
+            dispatch(update_next_refresh(execTime.getTime()))
+            return ()=>{clearInterval(inter)}
+        }, [dispatch, interval])
     return (
         <>  
         

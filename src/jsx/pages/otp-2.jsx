@@ -14,7 +14,7 @@ function Otp2({userLogin}) {
     
     const dispatch = useDispatch()
     const [code, setCode]= useState("");
-    const [timer, setTimer] = useState(60)
+    const [timer, setTimer] = useState(120)
     const [isSubmitting, setIsSubmitting] = useState(false); 
     const _history = useHistory()
     const ref = useRef()
@@ -121,8 +121,8 @@ function Otp2({userLogin}) {
                                     <div className="new-account mt-3 d-flex justify-content-between">
                                         {timer > 0?
                                             <small>امکان ارسال دوباره بعد از 
-                                                <span className="text-primary px-2">{timer}</span>    
-                                            ثانیه</small>
+        <span className="text-primary px-2">{Math.floor(timer/60)}:{String((timer%60).toFixed().padStart(2, "0"))}</span>    
+                                            دقیقه</small>
                                             :
                                             <p>
                                                 دریافت نکردید؟{" "}

@@ -6,7 +6,7 @@ import axios from "axios";
 import {Constants} from '../../Constants'
 import {useHistory} from 'react-router-dom'
 import { useDispatch } from "react-redux";
-
+import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
 function Signin() {
 
     const phoneRef = useRef("")
@@ -22,7 +22,17 @@ function Signin() {
     const submit = (e)=>{
         e.preventDefault()
         e.stopPropagation()
-        setIsSubmitting(true)
+        let user_captcha = document.getElementById('user_captcha_input').value;
+
+        if (!validateCaptcha(user_captcha)) {
+            toast.warning("کد امنیتی وارد شده صحیح نمی باشد")
+            loadCaptchaEnginge(4,'white','#216846','numbers')
+            document.getElementById('user_captcha_input').value = "";
+            return
+        }
+
+               setIsSubmitting(true)
+
         const data = {
             mobile: phoneRef.current.value,
             password: passRef.current.value,
@@ -61,8 +71,9 @@ function Signin() {
     useEffect(() => {
         phoneRef.current.focus()
         document.body.classList.toggle('signin', true);
+        loadCaptchaEnginge(4,'white','#216846','numbers')
     }, [])
-
+   
     return (
         <>
             <div className="authincation ">
@@ -110,7 +121,20 @@ function Signin() {
                                                 type={passVisible? "text": "password"} 
                                             />
                                             <span  className={"visible icofont-" + (passVisible? "eye-blocked": "eye")} onClick={e=>setPassVisible(s=>!s)} ></span>
-                      
+                                        </div>
+                                        <div className="d-flex flex-wrap">
+                                            <label className="col-12 " htmlFor="user_captcha_input"><small>کد امنیتی</small></label>
+                                            <div className="col-md-9 col-8">
+                                                <div>
+                                                
+                                                <input placeholder="" 
+                                                style={{height: "30px", }} className="w-100 form-control" 
+                                                id="user_captcha_input"  name="user_captcha_input" type="text"></input>
+                                                </div>
+                                            </div>
+                                             <div className="col-md-3 col-4 ">
+                                                <LoadCanvasTemplateNoReload  />
+                                            </div>
                                         </div>
                                         <div className="row d-flex justify-content-between mt-4">
                                             <div className=" ">

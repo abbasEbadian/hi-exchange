@@ -7883,7 +7883,7 @@ strong {
   src: url("https://farsifont.github.io/iranyekan/eot/iranyekanwebregular.eot?#iefix") format("embedded-opentype"), url("https://farsifont.github.io/iranyekan/woff2/iranyekanwebregular.woff2") format("woff2"), url("https://farsifont.github.io/iranyekan/woff/iranyekanwebregular.woff") format("woff"), url("https://farsifont.github.io/iranyekan/ttf/iranyekanwebregular.ttf") format("truetype"); }
 
 body {
-  font-family: farsi-numbers, IranYekan, roboto, Arial !important; }
+  font-family: farsi-numbers2, farsi-numbers, IranYekan, roboto, Arial !important; }
 
 i.cc {
   line-height: 19px; }
@@ -10314,6 +10314,10 @@ button.btn-simple {
   align-items: center;
   position: relative;
   height: 41.5px; }
+
+@media (min-width: 992px) {
+  .whatsapp-widget {
+    display: none !important; } }
 
 @-moz-keyframes spin {
   from {

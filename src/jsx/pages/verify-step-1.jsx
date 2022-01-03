@@ -27,7 +27,12 @@ function VerifyStep1() {
     const [showVerify, setShowVerify] = useState("")
     const [conditionalModal, setConditionalModal] = useState(false)
     const [already, setAlready] = useState(false)
-
+    const [timer, setTimer] = useState(600)
+    
+    setTimeout(e=>{
+        if(timer > 0 ) 
+        setTimer(timer-1)
+    }, 1000)
     const openConditionalModal = ()=>setConditionalModal(true)
     const closeConditionalModal = ()=>setConditionalModal(false)
     const openVerify = () => {
@@ -157,7 +162,7 @@ function VerifyStep1() {
 
                                         <div className="mb-3">
                                             <label className="form-label">شماره تلفن ثابت</label>
-                                            <input ref={homePhoneRef} className="form-control"/>                   
+                                            <input ref={homePhoneRef} className="form-control" placeholder="تلفن ثابت به همراه کد شهر"/>                   
                                         </div>
 
                                       
@@ -259,11 +264,25 @@ function VerifyStep1() {
                     <Modal.Title>کد تایید</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                    <p>لطفا کد تایید ارسال شده را وارد نمایید.</p>
+                    <p>کد تأیید خوانده شده در تماس تلفنی را وارد کنید..</p>
                         <div className="mb-4">
                             <label htmlFor="code" className="pb-2">کد تایید</label>
                             <input type="text" name="code" value={verifyCode} onChange={e=>setVerifyCode(e.target.value)} className="form-control"/>
                         </div>
+                        <div className="new-account mt-3 d-flex justify-content-between">
+                            {timer > 0?
+                                    <small>امکان ارسال دوباره بعد از 
+                                <span className="text-primary px-2">{Math.floor(timer/60)}:{String((timer%60).toFixed().padStart(2, "0"))}</span>    
+                                    دقیقه</small>
+                                    :
+                                    <p>
+                                        دریافت نکردید؟{" "}
+                                    
+                                        <button  className="text-primary bg-transparent border-0"
+                                            onClick={openVerify}>ارسال دوباره</button>
+                                    </p>    
+                                }
+                            </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <button

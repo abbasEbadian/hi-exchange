@@ -238,6 +238,8 @@ function Wallet(props) {
             })
             dispatch(check_transaction({depositTxID, wallet: _wallet[0].id })).then(({status, text})=>{
                 setTransactionResult({status, text})
+                toast.success("واریز شما با موفقیت انجام شد")
+                setDepositModalOpen(false)
             }).catch(err=>{
                 console.log(err);
 
@@ -374,7 +376,7 @@ function Wallet(props) {
                                             <td><img className="icon"src={item.service.image} alt="coin"></img> <span> { item.service.small_name } </span></td>
                                             <td> { item.service.name } </td>
                                             
-                                            <td>{Number(Number(item.balance).toFixed()).toLocaleString()}</td>
+                                            <td>{Number(item.balance).toLocaleString()}</td>
                                             <td className={`text-${color}`}>{change} {" % "}</td>
                                             <td>
                                                 <button className="text-success  border-0 bg-transparent fs-5 py-0"
@@ -412,17 +414,7 @@ function Wallet(props) {
                     </div>
                 </div>
             </div>
-            <ToastContainer
-                position="bottom-left"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={true}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                />
+            
 
             </div>
            <Modal show={depositModalOpen} onHide={closeDepositModal} className="convert-detail-modal">
@@ -644,7 +636,7 @@ function Wallet(props) {
                     {!depositNetwork?
                         <>
                             <div className="col-12 mb-3 position-relative">
-                            <label htmlFor="card-select" className="form-label">شبکه</label>
+                            <label htmlFor="card-select" className="form-label">شبکه واریز</label>
                             <select type="text" className="form-control mb-2" value={depositNetwork} onChange={e=>changeDepositNetwork(e.target.value)}>
                                 <option value={""}>انتخاب</option>
                                 
@@ -694,7 +686,7 @@ function Wallet(props) {
                         </>:
                             <>
                             <p>مشکلی در دریافت آدرس کیف پول مربوطه پیش آمد.</p> 
-                          <button onClick={e=>openPreDepositModal(selectedCurrency)} className="btn-simple text-warning d-flex justify-content-center">
+                            <button onClick={e=>openPreDepositModal(selectedCurrency)} className="btn-simple text-warning d-flex justify-content-center">
                               تلاش دوباره 
                                 {fetchingAddress? <Loader className="mx-3" type="Oval" color="#fff" width={25} height={25}></Loader>:undefined}
                                 </button>
@@ -702,9 +694,9 @@ function Wallet(props) {
                     ))}
                 </Modal.Body>
                 <Modal.Footer>
-                <button className="btn btn-sm btn-success " disabled={!address || !depositNetwork} onClick={openDepositModal}>
+                <button className="btn btn-sm btn-success" disabled={!address || !depositNetwork} onClick={openDepositModal}>
                 {!depositNetwork? 
-                    "شبکه  را انتخاب کنید"
+                    "شبکه را انتخاب کنید"
                 :fetchingAddress && !address ?
                     <Loader type="Oval" color="#fff" height={25} width={25}></Loader> 
                     :

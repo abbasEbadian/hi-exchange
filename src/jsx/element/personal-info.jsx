@@ -64,7 +64,7 @@ const PersonalInfo = () => {
                         <div className="mb-3 col-xl-6">
                             <label className="form-label">تلفن ثابت</label>
                             <input type="text" className="form-control" value={phnumber || ""} onChange={(e)=>setPhnumber(e.target.value)}
-                                placeholder="0215..." name="phnumber" />
+                                placeholder="تلفن ثابت به همراه کد شهر" name="phnumber" />
                         </div>
                         <div className="mb-3 col-xl-6">
                             <label className="form-label">ایمیل</label>

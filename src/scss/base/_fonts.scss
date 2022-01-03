@@ -18,7 +18,8 @@
     url('https://farsifont.github.io/iransans-farsi-numbers/ttf/IRANSansWeb(FaNum)_Black.ttf') format('truetype');
         font-weight: 100;
     unicode-range: U+30-39;
-    }
+}
+
 
     @font-face {
         font-family: IranYekan;
@@ -32,7 +33,7 @@
     }
     
     body {
-        font-family: farsi-numbers, IranYekan, roboto, Arial !important;
+        font-family: farsi-numbers2, farsi-numbers, IranYekan, roboto, Arial !important;
     }
 // @font-face {
 //     font-family: Vazir;

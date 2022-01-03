@@ -119,7 +119,7 @@ function IndexTransactions({visibleTrancactionCount}) {
                 <Modal.Title>توضیحات</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>شماره تراکنش: </p>
+                    <p>شناسه یکتا: </p>
                     <p className="text-success">{modalDetail.tx_id}</p>
                     {modalDetail.type === 'withdraw'?
                         <>

@@ -12,6 +12,7 @@ import {toast} from 'react-toastify'
 import Loader from 'react-loader-spinner'
 import { Constants } from '../../Constants';
 import Chart from '../element/chart'
+import Timer from '../element/Timer'
 import IRTChart from '../charts/IRTChart' 
 const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
 function irt(num) {
@@ -525,10 +526,12 @@ function BuySell() {
    useEffect(() => {
         if(!buySource.id && currencyList.length>0) changeBuySource('',Constants.USDT_CURRENCY_ID)
         if(!sellDestination.id && currencyList.length>0) changeSellDestination('',Constants.USDT_CURRENCY_ID)
+        setBuyConvertAmount("")
+        setSellConvertAmount("")
+        computePrices({buyConvertAmountP: undefined, sellConvertAmountP: undefined})
    }, [currencyList])
 
    useEffect(() => {
-       console.log("came", buySource.id);
        
         if(buySource.id){
             changeBuySource('',buySource.id)
@@ -866,6 +869,7 @@ function BuySell() {
                             <div className="card">
                                 <div className="card-body">
                                     <div className="buyer-seller" >
+                                        <div className="mb-3 d-flex justify-content-left"><Timer text="تا بروزرسانی قیمت ها" /></div>
                                         <div className="d-flex flex-column mb-3 border-bottom pb-1">
                                             <div className="d-flex justify-content-between">
                                                 {chartOpen ?

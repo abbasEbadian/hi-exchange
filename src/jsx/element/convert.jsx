@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {  Card, Modal, Button } from 'react-bootstrap'
-import { fetch_currencies, update_next_refresh, creating_order, create_order } from '../../redux/actions'
+import {  creating_order, create_order } from '../../redux/actions'
 import {Link} from 'react-router-dom'
 import {toast} from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux'
@@ -15,7 +15,6 @@ function Convert() {
     const { currencyList } = useSelector(state=>state.currencies);
     const _creating_order = useSelector(state=>state.accounts.creating_order);
     const wallet = useSelector(state => state.wallet.wallet)
-    const [interval, setInterval2] = useState(false) 
     // const {convertAmount, currencyTo, currencyFrom, currencyAvailable, showDetailModal} = indexConverter
     const [convertAmount, setConvertAmount]  = useState(0)
     const [currencyTo, setCurrencyTo]  = useState({})
@@ -40,33 +39,12 @@ function Convert() {
          return target.length > 0 ? target[0]["balance"] : 0
     }
 
-    useEffect(() => {
-        const currentTime = new Date()  
-        const currentTimeUnix = currentTime.getTime();//current unix timestamp
-        const execTime = new Date()
-        execTime.setMinutes(currentTime.getMinutes()+1)
-        execTime.setSeconds(2)
-        
-        let timeLeft = execTime - currentTimeUnix;
-        let inter = undefined
-        setTimeout(function() {
-
-            if(!interval){
-                inter = setInterval(function() {
-                    dispatch(update_next_refresh(new Date().getTime()))
-                    dispatch(fetch_currencies());
-                }, 60000)  
-                setInterval2(true)
-            }
     
-            dispatch(update_next_refresh(new Date().getTime()))
-            dispatch(fetch_currencies());
-        }, timeLeft); 
-        dispatch(fetch_currencies());
-        dispatch(update_next_refresh(execTime.getTime()))
-        return ()=>{clearInterval(inter)}
-    }, [dispatch, interval])
    
+   useEffect(() => {
+    setConvertAmount("")
+    setConvertInvalid(true)
+   }, [currencyList])
 
     const handleDetailModalConfirm = ()=>{
         dispatch(creating_order(true))

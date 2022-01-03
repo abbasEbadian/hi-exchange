@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import PageTitle from '../element/page-title';
 import Header2 from '../layout/header2';
 import Sidebar from '../layout/sidebar';
@@ -13,6 +13,7 @@ function AddDebitCard() {
     const [ card, setCard ] = useState("")
     const [ shaba, setShaba ] = useState("")
     const [ bank, setBank ] = useState("")
+    const history = useHistory()
     const dispatch = useDispatch()
 
     const user = useSelector(state => state.session.user)
@@ -24,7 +25,7 @@ function AddDebitCard() {
             toast.warn("تمامی فیلد ها الزامی است")
             return
         }
-        dispatch(add_credit_card({card, bank , shaba:"IR"+shaba}, toast))
+        dispatch(add_credit_card({card, bank , shaba:"IR"+shaba}, history))
     }
     const banks = [
             'سپه',
@@ -58,7 +59,7 @@ function AddDebitCard() {
     return (
         <>
        {user && user.authentication_status !== "accepted"?
-            <Redirect to={"/accounts"}></Redirect>:undefined
+            <Redirect to={"/settings-account"}></Redirect>:undefined
         }
             <Header2 />
             <Sidebar />

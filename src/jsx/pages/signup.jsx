@@ -6,6 +6,8 @@ import axios from "axios";
 import Loader from "react-loader-spinner";
 import qs from 'qs'
 import { Constants } from "../../Constants";
+import { loadCaptchaEnginge, LoadCanvasTemplate, LoadCanvasTemplateNoReload, validateCaptcha } from 'react-simple-captcha';
+
 function Signup() {
     const [first_name, setFirstName] = useState("")
     const [last_name, setLastName] = useState("")
@@ -20,6 +22,15 @@ function Signup() {
     const handleSignup =(e)=>{
         e.preventDefault();
         e.stopPropagation();
+         let user_captcha = document.getElementById('user_captcha_input').value;
+
+        if (!validateCaptcha(user_captcha)) {
+            toast.warning("کد امنیتی وارد شده صحیح نمی باشد")
+            loadCaptchaEnginge(4,'white','#216846','numbers')
+            document.getElementById('user_captcha_input').value = "";
+            return
+        }
+
         const validate = (data)=>{
             if(!first_name) return "نام نمیتواند خالی باشد"
             if(!last_name) return "نام خانوادگی نمیتواند خالی باشد"
@@ -76,9 +87,10 @@ function Signup() {
         
         // dispatch(userSignup(creds, history))
     }
+
     React.useEffect(() => {
-        console.log(window.location.search.indexOf("referral")>-1)  
-            referralRef.current.value = window.location.search.split("=")[1]
+        loadCaptchaEnginge(4,'white','#216846','numbers')
+        referralRef.current.value = window.location.search.split("=")[1]
     }, [])
     return (
         <>
@@ -162,6 +174,20 @@ function Signup() {
                                                 onChange={e=>setPassword(e.target.value)}
 
                                             />
+                                        </div>
+                                         <div className="d-flex flex-wrap">
+                                            <label className="col-12 " htmlFor="user_captcha_input"><small>کد امنیتی</small></label>
+                                            <div className="col-md-9 col-8">
+                                                <div>
+                                                
+                                                <input placeholder="" 
+                                                style={{height: "30px", }} className="w-100 form-control" 
+                                                id="user_captcha_input"  name="user_captcha_input" type="text"></input>
+                                                </div>
+                                            </div>
+                                             <div className="col-md-3 col-4 ">
+                                                <LoadCanvasTemplateNoReload  />
+                                            </div>
                                         </div>
                                         <div className="text-center mt-4">
                                             {!isSubmitting ? 

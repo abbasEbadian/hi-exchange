@@ -4,6 +4,7 @@ import { generate_wallet, get_wallet_list, update_fetching_state, get_network_li
 import { userUpdateDetail } from "./user";
 import { get_notifications, get_unread_notifications } from "./notifications";
 import { fetch_currencies } from "./currencies";
+import {toast} from 'react-toastify'
 export const FETCH_ACCOUNTS =  "FETCH_ACCOUNTS"
 export const UPDATE_ACCOUNTS =  "UPDATE_ACCOUNTS"
 export const UPDATE_ORDERS =  "UPDATE_ORDERS"
@@ -130,7 +131,7 @@ export const fetch_schedules = ()=>{
         })
     }
 }
-export const add_credit_card = ({card, shaba, bank}, toast)=>{
+export const add_credit_card = ({card, shaba, bank}, history)=>{
         return dispatch=>{
             axios.post(Constants.BASE_URL + "/api/v2/bank/add/", {
             card,
@@ -143,6 +144,7 @@ export const add_credit_card = ({card, shaba, bank}, toast)=>{
             }else{
                 toast.success("کارت شما ثبت شد و بعد از تایید، به لیست کارت ها اضافه خواهد شد.")
                 dispatch(fetch_accounts())
+                history.push("/settings-account")
             }
             if(!data.error){
                 toast.success(data.message)

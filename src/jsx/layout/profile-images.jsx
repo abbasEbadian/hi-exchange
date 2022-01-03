@@ -23,7 +23,7 @@ function ProfileImages({source=undefined}) {
 
     const [ uploading, setUploading ] = useState(false)
     const [ redirect, setRedirect ] = useState(false)
-
+   
     const handleFile = (e, id)=>{
         
         e.preventDefault()
@@ -94,7 +94,7 @@ function ProfileImages({source=undefined}) {
                 toast.success(data.message)
                 setTimeout(() => {
                     setUploading(false)
-                    if(!source) history.push("/panel/verify-step-2")
+                    if(!source) history.push("/panel/verify-step-4")
                 }, 1000);
 
             }else{
@@ -108,7 +108,7 @@ function ProfileImages({source=undefined}) {
         })
     }
     React.useEffect(() => {
-       if(false&&user&&user.scans&&user.scans.birth_certificate&&user.scans.national_card&&user.scans.selfie)
+       if(user&&user.scans&&user.scans.birth_certificate&&user.scans.national_card&&user.scans.selfie)
         setRedirect(true)
     }, [user])
 
