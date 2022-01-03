@@ -200,7 +200,7 @@ function Convert() {
                                 <select name='currency' className="form-control" onChange={changeCurrencyFrom} value={currencyFrom.id}>
                                     <option value={undefined}>انتخاب</option>
                                     { 
-                                        currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                        currencyList && currencyList.length && currencyList.filter(i=>i.is_active).map((c, idx)=>{
                                             return  <option key={idx} value={c.id}> {c.name}</option>
                                         })
                                     }
@@ -213,7 +213,7 @@ function Convert() {
                                  value={currencyTo.id}>
                                     <option value={undefined}>انتخاب</option>
                                     { 
-                                        currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                        currencyList && currencyList.length && currencyList.filter(i=>i.is_active).map((c, idx)=>{
                                             return c.id!==currencyFrom.id &&
                                                   <option key={idx} value={c.id}> {c.name}</option>
                                         })

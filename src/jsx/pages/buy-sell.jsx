@@ -599,7 +599,7 @@ function BuySell() {
                                                             <Form.Control as="select"  name='currency' className=" my-3 px-2 w-50" onChange={changeBuyDestination} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
-                                                                currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                                                currencyList && currencyList.length && currencyList.filter(i=>i.is_active).map((c, idx)=>{
                                                                     return  (
                                                                             (buySource.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name))
                                                                             || 
@@ -733,7 +733,7 @@ function BuySell() {
                                                         <select name='currency' className="form-control w-50 px-2 my-3" onChange={changeSellSource} >
                                                             <option value={undefined}>انتخاب</option>
                                                                 { 
-                                                                    currencyList && currencyList.length && currencyList.map((c, idx)=>{
+                                                                    currencyList && currencyList.length && currencyList.filter(i=>i.is_active).map((c, idx)=>{
                                                                         return   ((sellDestination.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name)) ||  (sellDestination.small_name === 'IRT' && c.small_name_slug!=="IRT")) && <option key={idx} value={c.id}> {c.name} / {sellDestination.name}</option>
                                                                     })
                                                                 }
