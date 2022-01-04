@@ -11,7 +11,9 @@ import {Constants} from '../../Constants'
 import Loader from 'react-loader-spinner'
 function Convert() {
     const dispatch = useDispatch();
+
     const convertDetails = useSelector(state=>state.indexConverter.details);
+    const nextRefresh = useSelector(state=>state.indexConverter.nextRefreshTime);
     const { currencyList } = useSelector(state=>state.currencies);
     const _creating_order = useSelector(state=>state.accounts.creating_order);
     const wallet = useSelector(state => state.wallet.wallet)
@@ -179,7 +181,7 @@ function Convert() {
                     <Card.Title className="w-100">
                         <div className="d-flex justify-content-between align-items-center">
                             <span>تبدیل</span>
-                            <Timer></Timer>
+                            <Timer key={nextRefresh}></Timer>
                         </div>
                     </Card.Title>
                 </Card.Header>

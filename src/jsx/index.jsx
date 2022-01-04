@@ -162,7 +162,11 @@ const Index = ()=> {
             }, timeLeft); 
             dispatch(fetch_currencies());
             dispatch(update_next_refresh(execTime.getTime()))
-            return ()=>{clearInterval(inter)}
+            // return ()=>{
+            //     console.log("end");
+                
+            //     clearInterval(inter)
+            // }
         }, [dispatch, interval])
     return (
         <>  

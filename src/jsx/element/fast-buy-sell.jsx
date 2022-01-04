@@ -587,7 +587,7 @@ function FastBuySell() {
                                 <option value={undefined}>انتخاب</option>
                                     { 
                                     currencyList && currencyList.length && currencyList.filter(i=>i.is_active).map((c, idx)=>{
-                                        return  ((buySource.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name)) || (buySource.small_name !== 'USDT'))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
+                                        return  ((buySource.small_name === 'USDT' && !["IRT", "USDT"].includes(c.small_name)) || (buySource.small_name === 'IRT' && c.small_name!=="IRT"))&& <option key={idx} value={c.id}> {c.name} / {buySource.name}</option>
                                     })
                                 }
                                     
