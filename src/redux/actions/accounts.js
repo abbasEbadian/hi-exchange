@@ -211,8 +211,8 @@ export const create_order = ({
                 }
 
                 axios.post(Constants.BASE_URL+"/api/v2/order/create/", {
-                    source_price,
-                    destination_price,
+                    source_price: source_price.replace(/,/g, ""),
+                    destination_price: destination_price.replace(/,/g, ""),
                     source_asset,
                     destination_asset,
                     wallet,

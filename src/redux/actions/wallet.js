@@ -210,8 +210,8 @@ export const check_withdraw = ({sourceWallet, Destwallet, amount, otp, network},
     return dispatch=>{
         dispatch(checking_transaction(true))
         axios.post(Constants.BASE_URL + "/api/v2/wallet/withdrawal/", {
-            id: sourceWallet,
-            wallet: Destwallet,
+            wallet: sourceWallet,
+            idwallet: Destwallet,
             amount: String(amount),
             otp,
             network
