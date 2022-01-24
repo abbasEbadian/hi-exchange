@@ -13,6 +13,7 @@ export const CREATING_ORDER =  "CREATING_ORDER"
 export const UPDATE_TRANSACTIONS =  "UPDATE_TRANSACTIONS"
 export const UPDATE_NETWORKS =  "UPDATE_NETWORKS"
 export const UPDATE_SCHEDULES =  "UPDATE_SCHEDULES"
+export const UPDATE_BANK_LIST =  "UPDATE_BANK_LIST"
 
 
 const BASE = Constants.BASE_URL
@@ -29,8 +30,8 @@ export const fetch_user_all_data = ()=>{
         dispatch(get_unread_notifications())
         dispatch(get_notifications())
         dispatch(fetch_schedules())
+        dispatch(fetch_bank_list())
         
-
         // Generate wallets if not aleady have them
         dispatch(get_wallet_list()).then(wallet=>{
             dispatch(fetch_currencies()).then(currencyList=>{
@@ -55,18 +56,18 @@ export const fetch_user_all_data = ()=>{
     }
 }
 
-// export const fetch_schedules = ()=>{
-//     return dispatch =>{
-//         axios.get(BASE+ "/api/v2/schedule/list/").then(response=>{
+export const fetch_bank_list = ()=>{
+    return dispatch =>{
+        axios.get(BASE+ "/api/v2/bank/name/list/").then(response=>{
             
-//             if(!response) throw Error(401)
-//             const {data} = response
-//             dispatch(update_schedules(data))
-//         }).catch(error=>{
-//             console.log("fetch accounts", 401);
-//         })
-//     }
-// }
+            if(!response) throw Error(401)
+            const {data} = response
+            dispatch(update_bank_list(data))
+        }).catch(error=>{
+            console.log("fetch accounts", 401);
+        })
+    }
+}
 export const fetch_networks = ()=>{
     return dispatch =>{
         axios.get(BASE+ "/api/v2/network/list/").then(response=>{
@@ -155,6 +156,12 @@ export const add_credit_card = ({card, shaba, bank}, history)=>{
         })
         }
 }  
+export const update_bank_list = (list)=>{
+    return {
+        type: UPDATE_BANK_LIST,
+        payload: list
+    }
+}
 export const update_accounts = (accounts)=>{
     return {
         type: UPDATE_ACCOUNTS,
@@ -211,8 +218,8 @@ export const create_order = ({
                 }
 
                 axios.post(Constants.BASE_URL+"/api/v2/order/create/", {
-                    source_price: source_price.replace(/,/g, ""),
-                    destination_price: destination_price.replace(/,/g, ""),
+                    source_price: String(source_price).replace(/,/g, ""),
+                    destination_price: String(destination_price).replace(/,/g, ""),
                     source_asset,
                     destination_asset,
                     wallet,

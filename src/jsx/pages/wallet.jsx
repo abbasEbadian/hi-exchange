@@ -54,6 +54,7 @@ function Wallet(props) {
     const [showVerify, setShowVerify] = useState("")
     const [verifyCode, setVerifyCode] = useState("")
 
+    const p2e = s => s.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
 
     /** 
      *  Predeposit :  displaying currency wallet address
@@ -238,8 +239,12 @@ function Wallet(props) {
             })
             dispatch(check_transaction({depositTxID, wallet: _wallet[0].id })).then(({status, text})=>{
                 setTransactionResult({status, text})
-                toast.success("واریز شما با موفقیت انجام شد")
-                setDepositModalOpen(false)
+                if(status === 200){
+                    toast.success(text)
+                    setDepositModalOpen(false)
+                }else{
+                    toast.error(text)
+                }
             }).catch(err=>{
                 console.log(err);
 
@@ -431,7 +436,7 @@ function Wallet(props) {
                                 })}
                             </select>
                             <label htmlFor="" className="d-flex justify-content-between form-label mt-3">مقدار  </label>
-                            <input type="text" className="form-control"  onFocus={e=>setDepositTxAmount("")} value={depositTxAmount} onChange={e=>setDepositTxAmount(Number(String(e.target.value).replace(/,/g,"")).toLocaleString())}/>
+                            <input type="text" className="form-control"  onFocus={e=>setDepositTxAmount("")} value={depositTxAmount} onChange={e=>setDepositTxAmount(Number(p2e(String(e.target.value)).replace(/[^0-9]/g,"")).toLocaleString())}/>
                         
                         </>:
                         <div className="col-12">
@@ -527,7 +532,7 @@ function Wallet(props) {
                         <span className="px-2 text-success fs-5">{withdrawWallet?withdrawWallet.service.name:undefined}</span>
                         </label>
                         {currencyID == Constants.IRT_CURRENCY_ID ?
-                        <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(Number(String(e.target.value).replace(/,/g,"")).toLocaleString())}/>
+                        <input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(Number(p2e(String(e.target.value)).replace(/[^0-9]/g,"")).toLocaleString())}/>
                         :<input type="text" className="form-control" onFocus={e=>setWithdrawAmount("")} value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}/>}
                         <div>
                             <small className='cursor-pointer' onClick={e=>setWithdrawAmount(withdrawWallet.balance)}>انتخاب کل موجودی</small>
@@ -679,7 +684,7 @@ function Wallet(props) {
                                     : "کپی کن !"}
                                     
                                     </button>
-                                در شبکه
+                                در شبکه {" "}
                                 {depositWallet.service && depositWallet.service.network && depositWallet.service.network.realName?
                                 <span className="px-2 fs-5 text-warning" >{depositWallet.service.network.realName} {"("}{depositWallet.service.network.name}{")"}</span>
                                 :undefined}

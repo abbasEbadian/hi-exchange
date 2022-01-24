@@ -67,7 +67,7 @@ function compute_fees(unit, unit_price, source_amount, subfrom=undefined) {
 
 function FastBuySell() {
     const dispatch = useDispatch()
-
+    const [isComputing, setIsComputing] = useState(false)
     const {currencyList}  = useSelector(state => state.currencies)
     const {schedules, creating_schedule}  = useSelector(state => state.accounts)
     const wallet  = useSelector(state => state.wallet.wallet)
@@ -339,6 +339,7 @@ function FastBuySell() {
                 return
 
             }
+            setIsComputing(true)
             const data = qs.stringify({
                 'source': String(buySource.id), 
                 'destination': String(buyDestination.id),
@@ -421,7 +422,7 @@ function FastBuySell() {
                 
 
                 setBuyConvertInvalid(Math.random())
-               
+                setIsComputing(false)
            }).catch(error=>{
                console.log(error);
            })
@@ -516,7 +517,7 @@ function FastBuySell() {
                 }
                 // setsellConvertAmount(sellConvertAmountP)
                 setSellConvertInvalid(Math.random())
-               
+                setIsComputing(false)
            }).catch(error=>{
                console.log(error);
            })
@@ -653,7 +654,7 @@ function FastBuySell() {
                                     :undefined
                                 }
                             <button type="button" name="submit" onClick={handleBuyConfirm}
-                            disabled={!+buyConvertAmount || !buyDestination || !buySource.id || buyLowCreditR.current || _creating_order}
+                            disabled={isComputing || !+buyConvertAmount || !buyDestination || !buySource.id || buyLowCreditR.current || _creating_order}
                                 className="btn btn-success w-100 d-flex justify-content-center">
                                     خرید
                                     {_creating_order? <Loader
@@ -661,7 +662,12 @@ function FastBuySell() {
                                         height={25}
                                         width={40}
                                         color="#fff"
-                                    ></Loader>:undefined}
+                                    ></Loader>:isComputing?<Loader
+                                            type="Circle"
+                                            height={25}
+                                            width={40}
+                                            color="#fff5"
+                                        />:undefined}
                                     </button>
 
                         </form>
@@ -754,14 +760,19 @@ function FastBuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
-                                                     disabled={!+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                     disabled={isComputing || !+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
                                                                 width={40}
                                                                 color="#fff"
-                                                            ></Loader>:undefined}</button>
+                                                            ></Loader>:isComputing?<Loader
+                                                            type="Circle"
+                                                            height={25}
+                                                            width={40}
+                                                            color="#fff5"
+                                                        />:undefined}</button>
                                                 </form>
                                             </Tab>
 

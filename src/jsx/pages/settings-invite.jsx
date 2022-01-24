@@ -60,7 +60,7 @@ function SettingsInvite() {
         <Sidebar />
         <PageTitle />
 
-        <div className="content-body">
+        <div className="content-body pb-5">
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-xl-3 col-md-4">

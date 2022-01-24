@@ -109,6 +109,7 @@ function Signin() {
                                                 name="phone"
                                                 ref={phoneRef}
                                                 autoFocus
+                                                autoComplete="username"
                                             />
                                         </div>
                                         <div className="mb-3 visibility">

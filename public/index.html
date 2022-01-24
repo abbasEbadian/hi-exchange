@@ -28,22 +28,53 @@
 
     <!---start GOFTINO code--->
     <script type="text/javascript">
-      !function(){var i="qsvwml",a=window,d=document;function g(){var g=d.createElement("script"),s="https://www.goftino.com/widget/"+i,l=localStorage.getItem("goftino_"+i);g.async=!0,g.src=l?s+"?o="+l:s;d.getElementsByTagName("head")[0].appendChild(g);}"complete"===d.readyState?g():a.attachEvent?a.attachEvent("onload",g):a.addEventListener("load",g,!1);}();
+      !function(){var i="qsvwml",a=window,d=document;function g(){var g=d.createElement("script"),s="https://www.goftino.com/widget/"+i,l=localStorage.getItem("goftino_"+i);g.async=!0,g.src=l?s+"?o="+l:s;d.getElementsByTagName("head")[0].appendChild(g);d.getElementsByTagName("head")[0].appendChild(style)}"complete"===d.readyState?g():a.attachEvent?a.attachEvent("onload",g):a.addEventListener("load",g,!1);}();
+        
+      window.addEventListener('goftino_ready', function () {
+        
+        Goftino.setUser({
+          // email : 'test@email.com',
+          // name : 'Ali Rahimi',
+          // about : 'about me...',
+          // phone : '09123456789',
+          // avatar : 'http://goftino.com/mypic.jpg',
+          // tags : 'tag1,tag2,tag3',
+          forceUpdate : false
+        });
+        
+        
+      });
+      
     </script>
+    <script>
+      if(window.innerWidth<769){
+          window.addEventListener('goftino_ready', function () {
+              Goftino.setWidget({
+                  marginBottom: 60
+              });
+          });
+      }
+  </script>
+
     <!---end GOFTINO code--->
     
-    <title></title>
+    <title> پنل کاربری صرافی های اکسچنج</title>
     <style>
       #goftino_w{
         display: block !important;
+        
       } 
       .whatsapp-widget{
         transform: translateY(60px);
         transition: 0.2s;
       }
       @media screen and (max-width: 768px) {
+        #box-widget-icon{
+          /* bottom: 50px !important; */
+          transform: translateY(-50px);
+        }
         #goftino_w{
-          bottom: 50px !important;
+          /* bottom: 50px !important; */
         }
         
       }

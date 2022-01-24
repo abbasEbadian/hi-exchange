@@ -190,7 +190,7 @@ export const check_transaction = ({depositTxID, wallet}, setTransactionResult)=>
                 }
             }).catch(err=>{
                 console.log(err);
-                return resolve({status:40, text:'بررسی با خطا مواجه شد'})
+                return resolve({status:400, text:'بررسی با خطا مواجه شد'})
             }).finally(fn=>{
                 dispatch(checking_transaction(false))
             })

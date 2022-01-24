@@ -10180,7 +10180,8 @@ input[type=number] {
   white-space: -o-pre-wrap;
   /* Opera 7 */
   word-wrap: break-word;
-  /* IE */ }
+  /* IE */
+  overflow-wrap: anywhere; }
 
 .chart-selector .widget-card {
   cursor: pointer; }

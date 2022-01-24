@@ -68,7 +68,7 @@ function compute_fees(unit, unit_price, source_amount, subfrom=undefined) {
 
 function BuySell() {
     const dispatch = useDispatch()
-
+    const [isComputing, setIsComputing] = useState(false)
     const {currencyList}  = useSelector(state => state.currencies)
     const {schedules, creating_schedule}  = useSelector(state => state.accounts)
     const wallet  = useSelector(state => state.wallet.wallet)
@@ -340,6 +340,7 @@ function BuySell() {
                 return
 
             }
+            setIsComputing(true)
             const data = qs.stringify({
                 'source': String(buySource.id), 
                 'destination': String(buyDestination.id),
@@ -423,6 +424,7 @@ function BuySell() {
 
                 setBuyConvertInvalid(Math.random())
                
+                setIsComputing(false)
            }).catch(error=>{
                console.log(error);
            })
@@ -439,9 +441,11 @@ function BuySell() {
                 sellConvertErrorMessage.current = ""
 
                 setSellConvertInvalid(true)
+                
                 return
 
             }
+            setIsComputing(true)
             const data = qs.stringify({
                 'source': String(sellSourceR.current.id), 
                 'destination': String(sellDestination.id),
@@ -517,7 +521,7 @@ function BuySell() {
                 }
                 // setsellConvertAmount(sellConvertAmountP)
                 setSellConvertInvalid(Math.random())
-               
+                setIsComputing(false)
            }).catch(error=>{
                console.log(error);
            })
@@ -705,15 +709,20 @@ function BuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" name="submit" onClick={handleBuyConfirm}
-                                                    disabled={(!buyScheduleAmount &&!+buyConvertAmount) || !buyDestination.id || !buySource.id || buyLowCreditR.current || _creating_order}
+                                                    disabled={isComputing || (!buyScheduleAmount &&!+buyConvertAmount) || !buyDestination.id || !buySource.id || buyLowCreditR.current || _creating_order}
                                                         className="btn btn-success w-100 d-flex justify-content-center">
-                                                            
+                                                            {isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
                                                             {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
                                                                 width={40}
                                                                 color="#fff"
-                                                            ></Loader>:isScheduledBuy>0? "ایجاد سفارش خرید": "خرید"}
+                                                            ></Loader>:isComputing?<Loader
+                                                                type="Circle"
+                                                                height={25}
+                                                                width={40}
+                                                                color="#fff5"
+                                                            />:undefined}
                                                             </button>
 
                                                 </form>
@@ -845,15 +854,20 @@ function BuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
-                                                     disabled={(!sellScheduleAmount &&!+sellConvertAmount) || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                     disabled={isComputing || (!sellScheduleAmount &&!+sellConvertAmount) || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">
-
+                                                        {isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"
                                                                 height={25}
                                                                 width={40}
                                                                 color="#fff"
-                                                            ></Loader>:isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}</button>
+                                                            ></Loader>:isComputing?<Loader
+                                                                type="Circle"
+                                                                height={25}
+                                                                width={40}
+                                                                color="#fff5"
+                                                            />:undefined}</button>
                                                 </form>
                                             </Tab>
                                             <Tab eventKey="schedule" title="سفارشات باز" tabClassName={"fs-13"}>

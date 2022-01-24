@@ -5,7 +5,8 @@ import {
     CREATING_ORDER,
     UPDATE_TRANSACTIONS,
     UPDATE_NETWORKS,
-    UPDATE_SCHEDULES
+    UPDATE_SCHEDULES,
+    UPDATE_BANK_LIST
 } from "../actions/accounts";
 
 const init_state = {
@@ -14,6 +15,7 @@ const init_state = {
     transactions:[],
     networks: [],
     schedules: [],
+    bankList: [],
     getting_orders: false,
     creating_order: false
 }
@@ -54,6 +56,11 @@ export const accountsReducer = (state=init_state, action) => {
             return {
                 ...state, 
                 transactions : action.payload
+            }
+        case UPDATE_BANK_LIST:
+            return {
+                ...state, 
+                bankList : action.payload
             }
         default:
             return state;

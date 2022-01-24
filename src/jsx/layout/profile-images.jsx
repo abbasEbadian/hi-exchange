@@ -123,7 +123,7 @@ function ProfileImages({source=undefined}) {
                 
 
                 <div className="mb-5">
-                
+                    <small style={{fontSize: "11px"}}>حداکثر اندازه فایل ها: یک مگابایت</small>
                 <div
                     className="file-upload-wrapper"
                     data-text={filename1}

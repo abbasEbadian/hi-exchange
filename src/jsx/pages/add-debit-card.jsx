@@ -17,7 +17,7 @@ function AddDebitCard() {
     const dispatch = useDispatch()
 
     const user = useSelector(state => state.session.user)
-
+    const banks =  useSelector(state => state.accounts.bankList)
     const onsubmit = e=>{
         e.preventDefault()
         e.stopPropagation()
@@ -27,35 +27,7 @@ function AddDebitCard() {
         }
         dispatch(add_credit_card({card, bank , shaba:"IR"+shaba}, history))
     }
-    const banks = [
-            'سپه',
-            'صنعت و معدن',
-            'کشاورزی',
-            'مسکن',
-            'صادرات',
-            'تعاون',
-            'ایران',
-            'اقتصاد نوین',
-            'پارسیان',
-            'کارآفرین',
-            'سامان',
-            'سینا',
-            'خاورمیانه',
-            'شهر',
-            'دی',
-            'ملت',
-            'تجارت',
-            'رفاه',
-            'آینده',
-            'گردشگری',
-            'ایران زمین',
-            'قوامین',
-            'انصار',
-            'سرمایه',
-            'پاسارگاد',
-            'رسالت',
-            'مهر ایران',
-    ]
+    
     return (
         <>
        {user && user.authentication_status !== "accepted"?
@@ -86,16 +58,16 @@ function AddDebitCard() {
                                                 <label className="form-label w-100">شماره شبا </label>
                                                 <input type="text" className="form-control" value={shaba} onChange={e=>setShaba(e.target.value)}
                                                 placeholder="85***********" />
-                                                <div class="input-group-append pe-0">
-                                                    <span class="input-group-text px-3" id="basic-addon1">IR</span>
+                                                <div className="input-group-append pe-0">
+                                                    <span className="input-group-text px-3" id="basic-addon1">IR</span>
                                                 </div>
                                             </div>
                                             <div className="mb-4 col-xl-12 position-relative">
                                                 <label className="form-label">نام بانک</label>
                                                 <select  className="form-control"  value={bank} onChange={e=>setBank(e.target.value)}>
-                                                    {banks.map((item, idx)=>{
-                                                        return <option key={idx} value={item}>{item}</option>
-                                                    })}
+                                                    {banks.length ?banks.map((item, idx)=>{
+                                                        return <option key={idx} value={item.name}>{item.name}</option>
+                                                    }):""}
                                                 </select>
                                                 <FiChevronDown className="position-absolute" style={{left: "18px", bottom: "12px"}}/>
 
