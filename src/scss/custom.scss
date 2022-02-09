@@ -138,6 +138,26 @@ button.btn-simple{
   
     }
 }
+.w-20{
+    width: 20% !important;
+}
+.uploadableAvatar .image{
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-position: center;
+    background-size: cover;
+}
+.uploadableAvatar img{
+    width: 100%;
+}
+.uploadableAvatar i {
+    position: absolute;
+    font-size: 18px;
+    cursor: pointer;
+    right: 0;
+    top: 0;
+}
 .upload-images-btn{
     width: 100%;
     display: flex;

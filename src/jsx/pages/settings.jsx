@@ -12,6 +12,7 @@ import {  toast } from 'react-toastify';
 import ResetPassword from '../element/ResetPassword';
 import { Constants } from '../../Constants';
 import ProfileImages from '../layout/profile-images';
+import UploadableAvatar from '../layout/uploadable-avatar';
 
 
 function Settings() {
@@ -35,6 +36,7 @@ function Settings() {
                                         <div className="card-header">
                                             <h4 className="card-title">پروفایل کاربر</h4>
                                         </div>
+                                        <UploadableAvatar/>
                                         <ProfileImages source="settting"/>
                                     </div>
                                 </div>

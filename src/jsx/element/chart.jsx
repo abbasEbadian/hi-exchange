@@ -20,7 +20,7 @@ function Chart({selectedChart}) {
                 withdateranges={true}
                 />
             <div className='d-block'>
-                <a onClick={e=>setShow(true)}><small>نمایش تمام صفحه</small></a>
+                <a onClick={e=>setShow(true)}><small className="cursor-pointer">نمایش تمام صفحه</small></a>
 
             </div>
             <Modal dialogClassName="modal-100w"  contentClassName="dark"     show={show} fullscreen={true} onHide={() => setShow(false)}>

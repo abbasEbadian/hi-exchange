@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef} from "react";
 import { Link, useHistory } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { userLogin, userSignup, userForget } from '../../redux/actions'
+import { userLogin, userSignup, userForget, resendToken} from '../../redux/actions'
 import Loader from 'react-loader-spinner'
 import { connect, useDispatch } from 'react-redux'
 
@@ -35,12 +35,17 @@ function Otp2({userLogin}) {
     
 
     const resetAuth = e=>{
-        if(otpType === "login")
-            _history.push('/signin')
-        else if(otpType === 'signup')
-            _history.push("/signup")
-        else if(otpType === "forget")
-            _history.push("/forget")
+       
+        dispatch(resendToken({mobile: otpPhone})).then(({status, message})=>{
+          if(status === 200){
+            toast.success("اکد مجددا ارسال شد.")
+            setTimer(60)
+          }else{
+            toast.error(message)
+
+          }
+          
+        })
     }
     const verifyCode = e=>{
         e.preventDefault()

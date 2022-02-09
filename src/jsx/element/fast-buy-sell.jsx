@@ -760,7 +760,7 @@ function FastBuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
-                                                     disabled={isComputing || !+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                     disabled={_creating_order||isComputing || !+sellConvertAmount || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">فروش
                                                         {_creating_order? <Loader
                                                                 type="ThreeDots"

@@ -151,6 +151,7 @@ function BuySell() {
     const sellBuyerAmount = useRef(0)
 
     const handleBuyConfirm = ()=>{
+        if(isComputing) return false
         if(isScheduledBuy){
             dispatch(create_schedule({
                 pair: buySource.id,
@@ -187,6 +188,7 @@ function BuySell() {
         }
     }
     const handleSellConfirm = ()=>{
+        if(isComputing) return false;
         if(isScheduledSell){
             dispatch(create_schedule({
                 asset: sellSourceR.current.id,
@@ -279,7 +281,6 @@ function BuySell() {
         sellLowCreditR.current = false
         setSellConvertAmount(0)
         changeLastChartName(selectedCurrency.small_name_slug)
-
         computePrices({sellConvertAmountP: 0})
     }
      const changeLastChartName =(name)=>{
@@ -500,10 +501,12 @@ function BuySell() {
                     sellTransactionFee.current = irt(sellTransactionFee.current)
                     sellKarmozdAmountR.current = irt(sellKarmozdAmountR.current)
                 }
+
                 if(sellDestination.small_name === "IRT" && !isScheduledSell){
                     let v = a + sellKarmozdAmountR.current 
                     sellTotalR.current =Number(Number(v).toFixed()).toLocaleString()
                     // sellTransactionFee.current = Number(Number(sellTransactionFee.current).toFixed()).toLocaleString()
+                    sellUnitPrice.current = irt(sellUnitPrice.current)
                 }else{
                     sellTotalR.current = (a+a2).toLocaleString()
                 }
@@ -570,6 +573,7 @@ function BuySell() {
         setCancelSceduleID(id)
         setShowCancelModal(true)
     }
+    
     return (
         <>
             <Header2 />
@@ -854,7 +858,7 @@ function BuySell() {
                                                         :undefined
                                                     }
                                                     <button type="button" onClick={handleSellConfirm} name="submit"
-                                                     disabled={isComputing || (!sellScheduleAmount &&!+sellConvertAmount) || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
+                                                     disabled={_creating_order||isComputing || (!sellScheduleAmount &&!+sellConvertAmount) || !sellDestination.small_name_slug || !sellSourceR.current.small_name_slug || sellLowCreditR.current}
                                                         className="btn btn-crimson w-100 d-flex justify-content-center">
                                                         {isScheduledSell>0? "ایجاد سفارش فروش": "فروش"}
                                                         {_creating_order? <Loader
@@ -887,8 +891,8 @@ function BuySell() {
                                         <div className="d-flex flex-column mb-3 border-bottom pb-1">
                                             <div className="d-flex justify-content-between">
                                                 {chartOpen ?
-                                                    <><span className="fa fa-arrow-up fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
-                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
+                                                    <><span className="fa fa-arrow-up fs-3 mb-1 cursor-pointer" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>بستن نمودار</small></span> </>
+                                                    :<><span span className="fa fa-arrow-down fs-3 mb-1 cursor-pointer" onClick={e=>setChartOpen(!chartOpen)}><small style={{fontSize: "14px", marginRight:"8px"}}>نمایش نمودار</small></span></>
                                                     
                                                 }
                                                 <span className="text-primary">{lastChartName}</span>

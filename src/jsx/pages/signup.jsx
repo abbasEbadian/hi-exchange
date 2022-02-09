@@ -17,6 +17,7 @@ function Signup() {
     const [submitted, setSubmitted] = useState(false); 
     const referralRef = useRef("")
     
+    const [passVisible, setPassVisible] = useState(false)
     const history = useHistory();
 
     const handleSignup =(e)=>{
@@ -95,7 +96,11 @@ function Signup() {
     return (
         <>
             <div className="authincation ">
-            
+            <style JSX>{`
+                    #main-wrapper{
+                        margin-top: 0;
+                    }
+                `}</style>
                 <div className="container h-100">
                     <div className="row justify-content-center h-100 align-items-center">
                         <div className="col-xl-5 col-md-6">
@@ -149,7 +154,7 @@ function Signup() {
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="09...."
-                                                name="number"
+                                                name="username"
                                                 value={mobile}
                                                 onChange={e=>setMobile(e.target.value)}
                                             />
@@ -163,7 +168,7 @@ function Signup() {
                                                 ref={referralRef}
                                             />
                                         </div>
-                                        <div className="mb-3">
+                                        <div className="mb-3 visibility">
                                             <label className="form-label">رمز عبور</label>
                                             <input
                                                 type="password"
@@ -172,8 +177,10 @@ function Signup() {
                                                 name="password"
                                                 value={password}
                                                 onChange={e=>setPassword(e.target.value)}
-
+                                                type={passVisible? "text": "password"} 
                                             />
+                                            <span  className={"visible icofont-" + (passVisible? "eye-blocked": "eye")} onClick={e=>setPassVisible(s=>!s)} ></span>
+
                                         </div>
                                          <div className="d-flex flex-wrap">
                                             <label className="col-12 " htmlFor="user_captcha_input"><small>کد امنیتی</small></label>

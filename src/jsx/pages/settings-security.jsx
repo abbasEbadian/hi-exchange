@@ -112,7 +112,7 @@ function SettingsSecurity() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row d-none">
                                         <div className="col-xl-12">
                                             <div className="phone_verify">
                                                 <h4 className="card-title mb-3">

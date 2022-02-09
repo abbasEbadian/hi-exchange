@@ -27,7 +27,24 @@ const toastOpt = {
 
 const BASE = Constants.BASE_URL
 
-
+export const resendToken =  (data)=>{
+    return dispatch=>{
+        return new Promise((resolve, reject)=>{
+            axios.post(BASE+"/api/v2/token/otp/resend/", data,
+            ).then(response=>{
+                const {data} = response 
+                
+                if (+data.error === 1){
+                    return resolve({status:400, message:data.message})}
+                else{
+                    return resolve({status:200, message:data.message}) 
+                }
+            }).catch(err=>{
+                return resolve({status:400,message: "با خطا مواجه شد."})
+            })
+        })
+    }
+}   
 export const userLogout = (_history)=>{
     return (dispatch)=>{
         dispatch(toggle_loader_on())
@@ -174,6 +191,7 @@ export const userUpdateImage =  (data, toastOpt=0)=>{
                 if (+data.error === 1){
                     return resolve({status:400, message:data.message})}
                 else{
+                    dispatch(userUpdateDetail())
                     return resolve({status:200, message:data.message}) 
                 }
             }).catch(err=>{

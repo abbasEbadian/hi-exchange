@@ -375,7 +375,7 @@ function Wallet(props) {
                                 <tbody>
                                     
                                     {wallet&& wallet.length ? wallet.map((item, idx)=>{
-                                        const change = item.changed
+                                        const change = item.changed || -2
                                         const color = change>0? "success":change===0?"":"danger"
                                         return item && <tr key={idx}> 
                                             <td><img className="icon"src={item.service.image} alt="coin"></img> <span> { item.service.small_name } </span></td>
@@ -561,11 +561,6 @@ function Wallet(props) {
                 </Modal.Header>
                 <Modal.Body>
                         <p>شما کارت  تایید شده ای ندارید</p>
-                        <p className="text-success">
-                            <Link to="/settings-account">
-                                <span className="text-success">افزودن حساب</span>
-                            </Link>
-                        </p>
                     
                 </Modal.Body>
                 <Modal.Footer>
